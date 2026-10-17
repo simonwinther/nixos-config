@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+exec hyprctl eval "require('actions').toggle_transparency()"

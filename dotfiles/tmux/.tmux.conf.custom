@@ -1,0 +1,147 @@
+##### ────────────────────────────────
+##### TERMINAL & BASICS
+##### ────────────────────────────────
+
+set -g default-terminal "tmux-256color"
+set -as terminal-features ",xterm-256color:RGB"
+
+set -g base-index 1
+setw -g pane-base-index 1
+set -g renumber-windows on
+
+# Prefix key: C-a instead of C-b
+set -g prefix C-a
+unbind C-b
+bind-key C-a send-prefix
+
+# Splits: | for vertical, - for horizontal
+unbind %
+bind | split-window -h
+unbind '"'
+bind - split-window -v
+
+# Reload config with prefix + r
+unbind r
+bind r source-file ~/.tmux.conf \; display-message "Reloaded ~/.tmux.conf ✅"
+
+# Pane resizing with vim-like keys
+bind -r j resize-pane -D 5
+bind -r k resize-pane -U 5
+bind -r h resize-pane -L 5
+bind -r l resize-pane -R 5
+bind -r m resize-pane -Z
+
+# Mouse + vi copy mode
+set -g mouse on
+setw -g mode-keys vi
+bind-key -T copy-mode-vi v send -X begin-selection
+bind-key -T copy-mode-vi y send -X copy-selection
+unbind -T copy-mode-vi MouseDragEnd1Pane
+
+set -sg escape-time 10
+
+##### ────────────────────────────────
+##### PLUGINS
+##### ────────────────────────────────
+
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'christoomey/vim-tmux-navigator'
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+set -g @plugin 'tmux-plugins/tmux-cpu'
+set -g @plugin 'tmux-plugins/tmux-battery'
+set -g @plugin 'olimorris/tmux-pomodoro-plus'
+
+set -g @resurrect-capture-pane-contents 'on'
+set -g @continuum-restore 'off'
+
+##### ────────────────────────────────
+##### POMODORO (RSI-FRIENDLY)
+##### ────────────────────────────────
+# Edit these if you want longer/shorter focus or break times
+
+set -g @pomodoro_mins 15
+set -g @pomodoro_break_mins 3
+set -g @pomodoro_intervals 3
+set -g @pomodoro_long_break_mins 8
+set -g @pomodoro_repeat 'off'
+set -g @pomodoro_granularity 'on'
+set -g status-interval 1
+
+set -g @pomodoro_on "⏱ "
+set -g @pomodoro_complete "✔"
+set -g @pomodoro_pause "⏸ "
+set -g @pomodoro_prompt_break "☕ "
+set -g @pomodoro_prompt_pomodoro "▶"
+
+##### ────────────────────────────────
+##### THEME  (TOKYONIGHT-ISH)
+##### ────────────────────────────────
+# Palette:
+#   bg        #1e2031
+#   fg        #c0caf5
+#   blue      #7aa2f7
+#   cyan      #7dcfff
+#   magenta   #bb9af7
+#   yellow    #e0af68
+#   green     #9ece6a
+#   dim       #565f89
+
+set -g status on
+set -g status-position bottom
+
+# Global status style: transparent background (center area is "see-through")
+set -g status-style "fg=#c0caf5,bg=default"
+
+set -g status-left-length 20
+set -g status-right-length 70
+
+# Window list alignment: left side of status line
+set -g status-justify left
+
+# LEFT: session badge (blue block) + padding
+set -g status-left "\
+#[fg=#1e2031,bg=#7aa2f7,bold]  #S \
+#[default]  "
+
+# Between windows: thin dim separator
+set -g window-status-separator " #[fg=#565f89]│ #[default]"
+
+# INACTIVE WINDOWS
+# muted gray for everything
+set -g window-status-format "\
+#[fg=#565f89] \
+#[fg=#565f89]#W \
+#[fg=#565f89][#I]#[default]"
+
+# ACTIVE WINDOW
+# bright blue highlight for everything
+set -g window-status-current-format "\
+#[fg=#7aa2f7] \
+#[fg=#7aa2f7,bold]#W \
+#[fg=#7aa2f7][#I]#[default]"
+
+# RIGHT: SYSTEM MODULES BLOCK
+set -g status-right "\
+#[fg=#7aa2f7]CPU #{cpu_percentage}\
+#[fg=#565f89]│#[fg=#e0af68]RAM #{ram_percentage}\
+#[fg=#565f89]│#[fg=#e0af68]#{battery_icon} #{battery_percentage}\
+#[fg=#565f89]│#[fg=#9ece6a]#{pomodoro_status}\
+#[fg=#565f89]│#(hostname -s)#[default]"
+
+
+# PANE BORDERS
+# - Change these if you want different inactive/active border colors
+set -g pane-border-style "fg=#292e42"
+set -g pane-active-border-style "fg=#7aa2f7"
+
+# POPUP MESSAGES (e.g. prompts, command feedback)
+set -g message-style "fg=#1e2031,bg=#e0af68,bold"
+set -g message-command-style "fg=#1e2031,bg=#bb9af7,bold"
+
+##### ────────────────────────────────
+##### TPM INIT (LAST)
+##### ────────────────────────────────
+
+run '~/.tmux/plugins/tpm/tpm'
+

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+native=$(desktopctl path background-grid-native 2>/dev/null) || native=
+if [ -n "$native" ] && [ -x "$native" ]; then exec "$native" "$@"; fi
+exec python3 "${XDG_CONFIG_HOME:-$HOME/.config}/background-grid/picker.py" "$@"

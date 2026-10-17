@@ -1,0 +1,37 @@
+[
+  {
+    "appId": "com.discordapp.Discord",
+    "arch": "x86_64",
+    "branch": "stable",
+    "origin": "flathub",
+    "commit": "4ff9d3b6fe8876147407176e1c346d077f2e70e6d2f0f9a2172f7b9411f27d76"
+  },
+  {
+    "appId": "com.google.AndroidStudio",
+    "arch": "x86_64",
+    "branch": "stable",
+    "origin": "flathub",
+    "commit": "992f56dacf69587945e75a282d4ff7288e9a5ceab5e340c09dc089a2af89cfa6"
+  },
+  {
+    "appId": "com.nvidia.geforcenow",
+    "arch": "x86_64",
+    "branch": "master",
+    "origin": "GeForceNOW",
+    "commit": "ace8681dcfb970ef9dba9dc8e572489e57b5c9feec5b8ea396c39f8090a94b5c"
+  },
+  {
+    "appId": "net.hovancik.Stretchly",
+    "arch": "x86_64",
+    "branch": "stable",
+    "origin": "flathub",
+    "commit": "1ffd12c60cb7ad7e54b91d341e2d0c51f84cda735305fec426a8fe5aed66d7bf"
+  },
+  {
+    "appId": "org.vinegarhq.Sober",
+    "arch": "x86_64",
+    "branch": "stable",
+    "origin": "flathub",
+    "commit": "7b6430c703e8178baa536062099fc5a1e0c7cf213c0789695fa7660b62cb9d26"
+  }
+]

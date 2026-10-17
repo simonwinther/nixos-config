@@ -1,0 +1,932 @@
+#!/usr/bin/env python3
+"""Portable desktop coordination. Configuration is read-only; choices are XDG state."""
+from __future__ import annotations
+
+import argparse
+import contextlib
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import shlex
+import shutil
+import signal
+import socket
+import subprocess
+import sys
+import tempfile
+import time
+import tomllib
+import uuid
+
+HOME = Path.home()
+CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", HOME / ".config"))
+DATA = Path(os.environ.get("XDG_DATA_HOME", HOME / ".local/share"))
+STATE = Path(os.environ.get("XDG_STATE_HOME", HOME / ".local/state")) / "desktop"
+RUNTIME = Path(os.environ.get("XDG_RUNTIME_DIR", Path(tempfile.gettempdir()) / f"desktop-{os.getuid()}")) / "desktop"
+
+
+def read_json(path: Path, default=None):
+    try:
+        return json.loads(path.read_text())
+    except FileNotFoundError:
+        return {} if default is None else default
+
+
+def atomic_write(path: Path, content: str | bytes, mode=0o600):
+    raw = content.encode() if isinstance(content, str) else content
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if path.is_file() and not path.is_symlink() and path.read_bytes() == raw:
+        return
+    if path.is_symlink():
+        raise ValueError(f"Refusing to overwrite a link: {path}")
+    descriptor, name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(name, mode)
+        os.replace(name, path)
+    finally:
+        with contextlib.suppress(FileNotFoundError):
+            os.unlink(name)
+
+
+@contextlib.contextmanager
+def state_lock(name="state", *, wait=True):
+    STATE.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with (STATE / f"{name}.lock").open("a") as stream:
+        try:
+            fcntl.flock(stream, fcntl.LOCK_EX | (0 if wait else fcntl.LOCK_NB))
+        except BlockingIOError:
+            yield False
+            return
+        yield True
+
+
+def settings():
+    return read_json(CONFIG / "desktop/settings.json")
+
+
+def state():
+    return read_json(STATE / "state.json")
+
+
+def save_state(value):
+    atomic_write(STATE / "state.json", json.dumps(value, indent=2) + "\n")
+
+
+def expand(value):
+    return Path(os.path.expandvars(os.path.expanduser(str(value))))
+
+
+def run(argv, *, check=True, capture=False, **kwargs):
+    return subprocess.run([str(x) for x in argv], check=check, text=True,
+                          capture_output=capture, **kwargs)
+
+
+def background(argv, **kwargs):
+    return subprocess.Popen([str(x) for x in argv], start_new_session=True,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kwargs)
+
+
+def executable(name):
+    variable = "DESKTOP_" + re.sub(r"[^A-Z0-9]", "_", name.upper()) + "_BIN"
+    selected = os.environ.get(variable) or read_json(CONFIG / "desktop/paths.json").get(name)
+    if selected:
+        if not Path(selected).exists():
+            raise ValueError(f"Declared {name} path is missing: {selected}")
+        return selected
+    for directory in os.get_exec_path():
+        candidate = Path(directory) / name
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            # Skip our portable launch adapters when resolving their native binary.
+            with candidate.open("rb") as stream:
+                first = stream.read(512)
+            if b"desktopctl run " not in first:
+                return str(candidate)
+    raise ValueError(f"{name} is unavailable; install it or declare desktop/paths.json")
+
+
+def theme_directories():
+    return [expand(x) for x in settings().get("themeDirectories", [str(CONFIG / "desktop/themes")])] + [DATA / "desktop/themes"]
+
+
+def theme_path(name):
+    if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", name):
+        raise ValueError("Theme names use lowercase letters, digits, underscores, and hyphens")
+    for directory in theme_directories():
+        candidate = directory / name
+        if candidate.is_dir():
+            return candidate
+    raise ValueError(f"Unknown theme: {name}")
+
+
+def selected_theme():
+    return state().get("theme", settings().get("defaultTheme", "tokyoled"))
+
+
+def colors(path):
+    palette = tomllib.loads((path / "colors.toml").read_text())
+    for key in ("accent", "foreground", "background", *[f"color{i}" for i in range(16)]):
+        if not re.fullmatch(r"#[0-9a-fA-F]{6}", palette.get(key, "")):
+            raise ValueError(f"Invalid or missing color {key} in {path.name}")
+    return palette
+
+
+def prepare_theme(name=None):
+    name = name or selected_theme()
+    source = theme_path(name)
+    c = colors(source)
+    light = (source / "light.mode").exists()
+    target = STATE / "theme"
+    css = {
+        "base": c["background"], "text": c["foreground"], "border": c["accent"],
+        "selected-text": c["accent"], "background-color": c["background"],
+        "border-color": c["accent"], "label": c["foreground"], "image": c["foreground"],
+        "progress": c["accent"], "foreground": c["foreground"], "background": c["background"],
+    }
+    css_text = "\n".join(f"@define-color {k} {v};" for k, v in css.items()) + "\n"
+    templates = {
+        "walker.css": css_text,
+        "swayosd.css": css_text,
+        "waybar.css": css_text,
+        "mako.ini": f"background-color={c['background']}\ntext-color={c['foreground']}\nborder-color={c['accent']}\nborder-size=2\nfont=JetBrainsMono Nerd Font 11\n",
+        "hyprland.conf": "general {\n    col.active_border = rgba(" + c['accent'][1:] + "ee)\n    col.inactive_border = rgba(" + c['color8'][1:] + "aa)\n}\n",
+        "hyprlock.conf": "\n".join(f"${k} = rgba({v[1:]}ff)" for k, v in {
+            "color": c["background"], "inner_color": c["background"], "outer_color": c["foreground"],
+            "font_color": c["foreground"], "check_color": c["accent"],
+        }.items()) + "\n",
+    }
+    for filename, fallback in templates.items():
+        original = source / filename
+        atomic_write(target / filename, original.read_text() if original.is_file() else fallback)
+    atomic_write(target / "colors.toml", (source / "colors.toml").read_text())
+    btop = source / "btop.theme"
+    fallback = "\n".join(f'theme[{key}]="{value}"' for key, value in {
+        "main_bg": c["background"], "main_fg": c["foreground"], "title": c["foreground"],
+        "hi_fg": c["accent"], "selected_bg": c["accent"], "selected_fg": c["background"],
+    }.items()) + "\n"
+    atomic_write(target / "current.theme", btop.read_text() if btop.exists() else fallback)
+    eza = source / "eza.yml"
+    if eza.is_file():
+        atomic_write(target / "theme.yml", eza.read_text())
+    else:
+        (target / "theme.yml").unlink(missing_ok=True)
+    marker = target / "light.mode"
+    if light:
+        atomic_write(marker, "")
+    elif marker.exists():
+        marker.unlink()
+    atomic_write(target / "name", name + "\n")
+    # The runtime search path lets Walker find generated CSS without writing to managed configuration.
+    walker = RUNTIME / "walker/themes/desktop-rounded"
+    template = CONFIG / "walker/templates/rounded"
+    if template.is_dir():
+        for item in template.iterdir():
+            if item.is_file():
+                content = item.read_text()
+                if item.name == "style.css":
+                    content = (target / "walker.css").read_text() + "\n" + content
+                atomic_write(walker / item.name, content)
+    os.environ["XDG_CONFIG_DIRS"] = str(RUNTIME) + ":" + os.environ.get("XDG_CONFIG_DIRS", "/etc/xdg")
+    return source, c, light
+
+
+def notify(title, body=""):
+    if shutil.which("notify-send"):
+        run(["notify-send", title, body], check=False)
+
+
+def selected_units(units):
+    if not read_json(CONFIG / "desktop/bar-outputs.json").get("minimal", ["eDP-1"]):
+        return [unit for unit in units if unit != "desktop-waybar-minimal"]
+    return units
+
+
+def restart(group):
+    groups = {
+        "launcher": ["desktop-elephant", "desktop-walker"],
+        "bar": ["desktop-waybar", "desktop-waybar-minimal", "desktop-workspaces"],
+        "theme": ["desktop-walker", "desktop-waybar", "desktop-waybar-minimal", "desktop-swayosd"],
+    }
+    if group not in groups:
+        raise ValueError(f"Unknown service group: {group}")
+    return run(["systemctl", "--user", "try-restart", *[x + ".service" for x in selected_units(groups[group])]], check=False).returncode
+
+
+def theme(args):
+    action = args[0] if args else "current"
+    if action == "list":
+        print("\n".join(sorted({p.name for d in theme_directories() if d.is_dir() for p in d.iterdir() if p.is_dir()})))
+    elif action == "current":
+        print(selected_theme())
+    elif action in ("init", "set"):
+        name = args[1] if action == "set" and len(args) > 1 else selected_theme()
+        with state_lock():
+            source, _, light = prepare_theme(name)
+            value = state(); value["theme"] = name; save_state(value)
+        if action == "set" and "--no-reload" not in args:
+            apply_appearance(source, light)
+            run(["hyprctl", "reload"], check=False)
+            run(["makoctl", "reload"], check=False)
+            restart("theme")
+    elif action == "generate":
+        image_args = [x for x in args[1:] if not x.startswith("--")]
+        if not image_args:
+            chosen = run(["zenity", "--file-selection", "--title=Choose a wallpaper for the new palette"], check=False, capture=True)
+            if chosen.returncode or not chosen.stdout.strip():
+                return
+            image_args = [chosen.stdout.strip()]
+        if len(image_args) != 1:
+            raise ValueError("usage: desktopctl theme generate [IMAGE] [--light] [--no-reload]")
+        image = expand(image_args[0]).resolve()
+        if not image.is_file():
+            raise ValueError(f"Missing image: {image}")
+        mode = "light" if "--light" in args else "dark"
+        config = RUNTIME / "matugen.toml"
+        atomic_write(config, "[config]\n[templates]\n")
+        result = run(["matugen", "image", image, "--dry-run", "--json", "hex", "--config", config,
+                      "--source-color-index", "0", "--mode", mode], capture=True)
+        roles = json.loads(result.stdout)["colors"]
+        def role(name):
+            value = roles[name][mode]["color"]
+            if not re.fullmatch(r"#[0-9a-fA-F]{6}", value):
+                raise ValueError("Matugen returned an invalid color")
+            return value
+        stem = re.sub(r"[^a-z0-9]+", "-", image.stem.lower()).strip("-")[:32] or "wallpaper"
+        name = f"generated-{stem}-{hashlib.sha256(image.read_bytes()).hexdigest()[:8]}-{mode}"
+        directory = DATA / "desktop/themes" / name
+        palette = {"background": role("background"), "foreground": role("on_surface"), "accent": role("primary"), "cursor": role("primary")}
+        ansi = ["surface_container_lowest", "error", "tertiary", "secondary", "primary", "tertiary", "inverse_primary", "on_surface_variant",
+                "surface_bright", "error", "tertiary", "secondary", "primary", "tertiary", "inverse_primary", "on_surface"]
+        palette.update({f"color{i}": role(key) for i, key in enumerate(ansi)})
+        atomic_write(directory / "colors.toml", "\n".join(f'{key} = "{value}"' for key, value in palette.items()) + "\n")
+        if mode == "light":
+            atomic_write(directory / "light.mode", "")
+        theme(["set", name, *(["--no-reload"] if "--no-reload" in args else [])])
+        if "--no-reload" not in args:
+            wallpaper(["set", str(image)])
+        print(name)
+    else:
+        raise ValueError("theme: list, current, init, set NAME [--no-reload], or generate IMAGE")
+
+
+def apply_appearance(source, light):
+    for key, value in [
+        ("color-scheme", "prefer-light" if light else "prefer-dark"),
+        ("gtk-theme", "Adwaita" if light else "Adwaita-dark"),
+        ("icon-theme", (source / "icons.theme").read_text().strip() if (source / "icons.theme").exists() else "Yaru-magenta"),
+    ]:
+        run(["gsettings", "set", "org.gnome.desktop.interface", key, value], check=False)
+
+
+def wallpaper(args):
+    action = args[0] if args else "current"
+    value = state()
+    if action == "current":
+        print(value.get("wallpaper", settings().get("defaultWallpaper", "")))
+        return
+    if action == "grid":
+        os.execvp("background-grid", ["background-grid"])
+    choices = sorted(p for d in settings().get("wallpaperDirectories", [str(DATA / "wallpapers")])
+                     for p in expand(d).rglob("*") if p.is_file() and p.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp", ".avif"})
+    if action == "next":
+        if not choices:
+            raise ValueError("No wallpapers found")
+        current = expand(value.get("wallpaper", ""))
+        image = choices[(choices.index(current) + 1) % len(choices)] if current in choices else choices[0]
+    elif action == "restore":
+        image = expand(value.get("wallpaper", settings().get("defaultWallpaper", "")))
+    elif action == "set" and len(args) >= 2:
+        image = expand(args[1]).resolve()
+    else:
+        raise ValueError("wallpaper: current, grid, next, restore, or set IMAGE [OUTPUT]")
+    if not image.is_file():
+        raise ValueError(f"Wallpaper is missing: {image}")
+    output = args[2] if action == "set" and len(args) > 2 else None
+    if run(["awww", "query"], check=False, capture=True).returncode:
+        managed = run(["systemctl", "--user", "start", "desktop-awww.service"], check=False, capture=True)
+        if managed.returncode:
+            background(["awww-daemon", "--no-cache"])
+        for _ in range(80):
+            if not run(["awww", "query"], check=False, capture=True).returncode:
+                break
+            time.sleep(.05)
+        else:
+            raise ValueError("The wallpaper daemon did not become ready")
+    transition = read_json(CONFIG / "background-grid/transition.json", {"type": "any", "duration": 2, "fps": 60, "step": 80})
+    command = ["awww", "img", "--resize", "crop", "--transition-type", "none" if action == "restore" else transition['type'],
+               "--transition-duration", str(transition['duration']), "--transition-fps", str(transition['fps']), "--transition-step", str(transition['step'])]
+    if output:
+        command += ["--outputs", output]
+    run([*command, image])
+    with state_lock():
+        value = state(); value["wallpaper"] = str(image)
+        value.setdefault("wallpapers", {})[output or "*"] = str(image)
+        save_state(value)
+        atomic_write(STATE / "background", image.read_bytes())
+    if action == "restore":
+        for monitor, saved in value.get("wallpapers", {}).items():
+            if monitor != "*" and expand(saved).is_file():
+                run(["awww", "img", "--outputs", monitor, "--transition-type", "none", saved], check=False)
+
+
+def cwd():
+    try:
+        window = json.loads(run(["hyprctl", "-j", "activewindow"], capture=True).stdout)
+        pid = str(window.get("pid", ""))
+        children = run(["pgrep", "-P", pid], check=False, capture=True).stdout.split()
+        for child in reversed(children):
+            path = Path(f"/proc/{child}/cwd").resolve()
+            if path.is_dir():
+                return str(path)
+    except (subprocess.CalledProcessError, OSError, ValueError):
+        pass
+    return str(HOME)
+
+
+def terminal(args):
+    args = list(args)
+    floating = "--float" in args
+    shell = "--shell" in args
+    args = [x for x in args if x not in ("--float", "--shell")]
+    app_id = "TUI.float" if floating else "org.desktop.terminal"
+    if args and args[0] == "--app-id":
+        app_id, args = args[1], args[2:]
+    command = ["xdg-terminal-exec", "--dir=" + cwd(), "--app-id=" + app_id]
+    if args:
+        command += ["-e", "bash", "-lc", args[0]] if shell else ["-e", *args]
+    os.execvp(command[0], command)
+
+
+def launch(args):
+    if not args:
+        raise ValueError("launch: browser, webapp URL, tui COMMAND, editor, focus CLASS COMMAND, audio, bluetooth, wifi")
+    what, rest = args[0], args[1:]
+    if what == "focus":
+        if len(rest) < 2:
+            raise ValueError("focus requires a class expression and a command")
+        windows = json.loads(run(["hyprctl", "-j", "clients"], capture=True).stdout)
+        found = next((w for w in windows if re.search(rest[0], w.get("class", ""))), None)
+        if found:
+            selector = json.dumps("address:" + found["address"])
+            run(["hyprctl", "eval", f'hl.dispatch(hl.dsp.focus({{ window = {selector} }}))'])
+        else:
+            command = shlex.split(rest[1]) if len(rest) == 2 else rest[1:]
+            os.execvp(command[0], command)
+    elif what in ("audio", "bluetooth", "wifi"):
+        terminal(["--app-id", "org.desktop." + {"audio": "wiremix", "bluetooth": "bluetui", "wifi": "impala"}[what], {"audio": "wiremix", "bluetooth": "bluetui", "wifi": "impala"}[what]])
+    elif what == "tui":
+        if not rest:
+            raise ValueError("tui requires a command")
+        terminal(["--app-id", "org.desktop." + Path(rest[0]).name, *rest])
+    elif what == "editor":
+        terminal([settings().get("editor", "nvim"), *rest])
+    elif what in ("browser", "webapp"):
+        command = [settings().get("browser", "chromium")]
+        if what == "webapp":
+            if len(rest) != 1 or not re.match(r"https?://", rest[0]):
+                raise ValueError("webapp requires one HTTP(S) URL")
+            command += ["--app=" + rest[0]]
+        else:
+            command += ["--incognito" if x == "--private" else x for x in rest]
+        os.execvp(command[0], command)
+    else:
+        raise ValueError(f"Unknown launch action: {what}")
+
+
+def run_application(args):
+    if not args:
+        raise ValueError("run requires an application")
+    app, rest = args[0], args[1:]
+    if rest[:1] == ["--"]:
+        rest = rest[1:]
+    _, _, light = prepare_theme()
+    raw = executable(app)
+    if app == "walker":
+        rest = ["--theme", "desktop-rounded", *rest]
+    elif app == "mako":
+        source = (CONFIG / "mako/config").read_text().replace("~/.local/state/desktop", str(STATE))
+        target = RUNTIME / "mako.conf"; atomic_write(target, source)
+        rest = ["--config", str(target), *rest]
+    elif app == "swayosd-server":
+        css = (STATE / "theme/swayosd.css").read_text() + (CONFIG / "swayosd/style.css").read_text()
+        target = RUNTIME / "swayosd.css"; atomic_write(target, css)
+        rest = ["--style", str(target), *rest]
+    elif app == "btop":
+        rest = ["--themes-dir", str(STATE / "theme"), *rest]
+    elif app == "waybar":
+        def take(short, long, default):
+            for i, arg in enumerate(rest):
+                if arg in (short, long) and i + 1 < len(rest):
+                    return Path(rest[i + 1]).expanduser()
+            return default
+        source = take("-c", "--config", CONFIG / "waybar/config.jsonc")
+        style = take("-s", "--style", CONFIG / "waybar/style.css")
+        if source.name in ("config.jsonc", "config-minimal.jsonc"):
+            text = source.read_text()
+            bar = read_json(CONFIG / "desktop/bar-outputs.json")
+            if bar:
+                config = json.loads(text)
+                config["output"] = bar.get("minimal" if "minimal" in source.name else "full", ["*"])
+                text = json.dumps(config)
+            if light:
+                mapping = {"#f4f4f5": "#4c4f69", "#cdd6f4": "#4c4f69", "#60a5fa": "#1e66f5", "#89b4fa": "#1e66f5", "#4ade80": "#40a02b", "#eab308": "#df8e1d", "#f87171": "#d20f39"}
+                text = re.sub(r"#[0-9a-fA-F]{6}", lambda m: mapping.get(m[0].lower(), m[0]), text)
+                alternate = style.with_name(style.stem + "-light.css")
+                if alternate.exists():
+                    style = alternate
+            text = re.sub(r'("NordVPN"\s*:\s*")[^"]*(")', lambda m: m[1] + ("nordvpn-tray-black" if light else "nordvpn-tray-white") + m[2], text)
+            target = RUNTIME / ("waybar-" + source.name); atomic_write(target, text)
+            filtered = []
+            skip = False
+            for arg in rest:
+                if skip:
+                    skip = False; continue
+                if arg in ("-c", "--config", "-s", "--style"):
+                    skip = True; continue
+                filtered.append(arg)
+            rest = ["--config", str(target), "--style", str(style), *filtered]
+    os.execv(raw, [raw, *rest])
+
+
+def launcher(args):
+    run(["systemctl", "--user", "start", "desktop-elephant.service", "desktop-walker.service"], check=False)
+    run_application(["walker", "--width", "644", "--maxheight", "300", "--minheight", "300", *args])
+
+
+def toggle(args):
+    if not args:
+        raise ValueError("toggle requires a feature")
+    feature = args[0]
+    marker = STATE / "toggles" / feature
+    if feature == "enabled":
+        return 0 if len(args) > 1 and (STATE / "toggles" / args[1]).exists() else 1
+    services = {"bar": ["desktop-waybar", "desktop-waybar-minimal", "desktop-workspaces"], "idle": ["desktop-hypridle"], "nightlight": ["desktop-hyprsunset"]}
+    if feature in services:
+        services[feature] = selected_units(services[feature])
+        service = services[feature][0] + ".service"
+        active = run(["systemctl", "--user", "is-active", "--quiet", service], check=False).returncode == 0
+        run(["systemctl", "--user", "stop" if active else "start", *[x + ".service" for x in services[feature]]])
+        return
+    if feature == "notifications":
+        run(["makoctl", "mode", "-t", "do-not-disturb"])
+        return
+    if feature == "layout":
+        workspace = json.loads(run(["hyprctl", "-j", "activeworkspace"], capture=True).stdout)
+        layout = "scrolling" if workspace.get("tiledLayout") == "dwindle" else "dwindle"
+        run(["hyprctl", "eval", f'hl.workspace_rule({{ workspace = {json.dumps(str(workspace["id"]))}, layout = {json.dumps(layout)} }})'])
+        return
+    with state_lock():
+        enabled = not marker.exists()
+        if args[1:2] in (["on"], ["off"]):
+            enabled = args[1] == "off"  # marker records the disabled state
+        if enabled:
+            atomic_write(marker, "")
+        else:
+            marker.unlink(missing_ok=True)
+        values = {"gaps": "general {\n gaps_in = 0\n gaps_out = 0\n}\n", "square": "layout {\n single_window_aspect_ratio = 1 1\n}\n"}
+        if feature == "touchpad":
+            devices = json.loads(run(["hyprctl", "-j", "devices"], capture=True).stdout)
+            values[feature] = "".join("device {\n name = " + m["name"] + "\n enabled = false\n}\n" for m in devices.get("mice", []) if "touchpad" in m["name"])
+        if feature not in values:
+            marker.unlink(missing_ok=True)
+            raise ValueError(f"Unknown toggle: {feature}")
+        path = STATE / "toggles/hypr" / (feature + ".conf")
+        if enabled:
+            atomic_write(path, values[feature])
+        else:
+            path.unlink(missing_ok=True)
+    run(["hyprctl", "reload"])
+
+
+def display(args):
+    monitors = json.loads(run(["hyprctl", "-j", "monitors", "all"], capture=True).stdout)
+    external = [m for m in monitors if not m["name"].startswith(("eDP", "LVDS")) and not m.get("disabled")]
+    if args == ["external"]:
+        return 0 if external else 1
+    internal = next((m for m in monitors if m["name"].startswith(("eDP", "LVDS"))), None)
+    if not internal:
+        raise ValueError("No internal display is present")
+    action = args[1] if len(args) > 1 else "toggle"
+    mirror = args[:1] == ["mirror"]
+    file = STATE / "toggles/hypr/internal-display.conf"
+    disabled = not file.exists() if action == "toggle" else action == "off"
+    if disabled and not external:
+        raise ValueError("Refusing to disable the only available display")
+    if mirror and action == "toggle" and file.exists() and "mirror" in file.read_text():
+        file.unlink()
+    elif mirror and external and action != "off":
+        atomic_write(file, f"monitor = {internal['name']}, preferred, auto, auto, mirror, {external[0]['name']}\n")
+    elif disabled:
+        atomic_write(file, f"monitor = {internal['name']}, disable\n")
+    else:
+        file.unlink(missing_ok=True)
+    run(["hyprctl", "reload"])
+
+
+def brightness(args):
+    if len(args) < 2:
+        raise ValueError("brightness requires display|keyboard and an adjustment")
+    kind, value = args[:2]
+    if kind == "display" and value in ("on", "off"):
+        run(["hyprctl", "dispatch", "dpms", value]); return
+    directory = Path("/sys/class/leds" if kind == "keyboard" else "/sys/class/backlight")
+    devices = sorted(p.name for p in directory.glob("*") if kind != "keyboard" or "kbd_backlight" in p.name)
+    if not devices:
+        raise ValueError(f"No {kind} brightness device is available")
+    device = devices[0]
+    if kind == "keyboard":
+        if value in ("off", "restore"):
+            run(["brightnessctl", "-d", device, "-s" if value == "off" else "-r", *(["set", "0"] if value == "off" else [])]); return
+        current = int(run(["brightnessctl", "-d", device, "get"], capture=True).stdout)
+        maximum = int(run(["brightnessctl", "-d", device, "max"], capture=True).stdout)
+        step = max(1, maximum // 10)
+        target = (current + step) % (maximum + 1) if value == "cycle" else min(maximum, max(0, current + (step if value == "up" else -step)))
+        value = str(target)
+    run(["brightnessctl", "-d", device, "set", value])
+    percent = round(100 * int(run(["brightnessctl", "-d", device, "get"], capture=True).stdout) / int(run(["brightnessctl", "-d", device, "max"], capture=True).stdout))
+    run(["swayosd-client", "--custom-icon", "keyboard-brightness-symbolic" if kind == "keyboard" else "display-brightness-symbolic", "--custom-progress", str(percent / 100)], check=False)
+
+
+def osd(args):
+    monitor = json.loads(run(["hyprctl", "-j", "activeworkspace"], capture=True).stdout).get("monitor")
+    command = ["swayosd-client", *(["--monitor", monitor] if monitor else []), *args]
+    return run(command, check=False).returncode
+
+
+def wake():
+    run(["hyprctl", "dispatch", "dpms", "on"], check=False)
+    with contextlib.suppress(ValueError, subprocess.CalledProcessError):
+        brightness(["keyboard", "restore"])
+
+
+def lock(args):
+    if run(["pgrep", "-u", str(os.getuid()), "-x", "hyprlock"], check=False, capture=True).returncode == 0:
+        return
+    unit = "desktop-lock-only.service" if "--only" in args or os.environ.get("DESKTOP_LOCK_ONLY") == "true" else "desktop-lock.service"
+    result = run(["systemctl", "--user", "start", unit], check=False, capture=True)
+    if result.returncode:
+        background([sys.executable, __file__, "lock-worker", *(args or [])])
+
+
+def lock_worker(args):
+    with state_lock("screen-lock", wait=False) as acquired:
+        if not acquired:
+            return
+        prepare_theme()
+        if shutil.which("1password"):
+            background(["1password", "--lock"])
+        run(["hyprctl", "switchxkblayout", "all", "0"], check=False)
+        source = (CONFIG / "hypr/hyprlock.conf").read_text().replace("~/.local/state/desktop", str(STATE))
+        target = RUNTIME / "hyprlock.conf"; atomic_write(target, source)
+        child = subprocess.Popen(["hyprlock", "--config", str(target)])
+        if "--only" not in args:
+            time.sleep(3)
+            if child.poll() is None:
+                run(["hyprctl", "dispatch", "dpms", "off"], check=False)
+                with contextlib.suppress(ValueError, subprocess.CalledProcessError):
+                    brightness(["keyboard", "off"])
+        result = child.wait()
+        wake()
+        if result:
+            raise subprocess.CalledProcessError(result, child.args)
+
+
+def copy_data(data, mime):
+    process = subprocess.Popen(["wl-copy", "--foreground", "--type", mime], stdin=subprocess.PIPE,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    process.stdin.write(data); process.stdin.close()
+
+
+def copy_text(text):
+    copy_data(text.encode(), "text/plain;charset=utf-8")
+
+
+def screenshot_geometry(mode):
+    if mode == "region":
+        selected = run(["slurp"], check=False, capture=True)
+        return selected.stdout.strip() if not selected.returncode else None
+    monitors = json.loads(run(["hyprctl", "-j", "monitors"], capture=True).stdout)
+    focused = next((m for m in monitors if m.get("focused")), monitors[0] if monitors else None)
+    if not focused:
+        raise ValueError("No output is available for capture")
+    def rect(m):
+        w, h = int(m["width"] / m["scale"]), int(m["height"] / m["scale"])
+        if m.get("transform", 0) % 2:
+            w, h = h, w
+        return f'{m["x"]},{m["y"]} {w}x{h}'
+    if mode == "fullscreen":
+        return rect(focused)
+    clients = json.loads(run(["hyprctl", "-j", "clients"], capture=True).stdout)
+    rectangles = [f'{w["at"][0]},{w["at"][1]} {w["size"][0]}x{w["size"][1]}' for w in clients
+                  if w.get("workspace", {}).get("id") == focused.get("activeWorkspace", {}).get("id")
+                  and not w.get("hidden")]
+    rectangles.append(rect(focused))
+    selected = run(["slurp", *(["-r"] if mode == "windows" else [])], input="\n".join(rectangles), check=False, capture=True)
+    if selected.returncode or not selected.stdout.strip():
+        return None
+    geometry = selected.stdout.strip()
+    click = re.fullmatch(r"(-?\d+),(-?\d+) (\d+)x(\d+)", geometry)
+    if mode == "smart" and click and int(click[3]) * int(click[4]) < 20:
+        x, y = int(click[1]), int(click[2])
+        for rectangle in rectangles:
+            r = re.fullmatch(r"(-?\d+),(-?\d+) (\d+)x(\d+)", rectangle)
+            if r and int(r[1]) <= x < int(r[1]) + int(r[3]) and int(r[2]) <= y < int(r[2]) + int(r[4]):
+                return rectangle
+    return geometry
+
+
+def capture(args):
+    action = args[0] if args else "screenshot"
+    if action == "record":
+        pidfile = STATE / "recording.json"
+        current = read_json(pidfile)
+        if current:
+            pid = current.get("pid")
+            try:
+                command = Path(f"/proc/{pid}/cmdline").read_bytes()
+            except FileNotFoundError:
+                command = b""
+            if b"gpu-screen-recorder" in command:
+                os.kill(pid, signal.SIGINT)
+            pidfile.unlink(missing_ok=True)
+            return
+        directory = HOME / settings().get("recordings", "Videos"); directory.mkdir(parents=True, exist_ok=True)
+        output = directory / time.strftime("%Y-%m-%d_%H-%M-%S.mp4")
+        mode = args[1] if len(args) > 1 else "screen"
+        command = ["gpu-screen-recorder", "-w", "portal" if mode == "screen" else mode, "-f", "60", "-fallback-cpu-encoding", "yes"]
+        if mode == "region":
+            geometry = screenshot_geometry("smart")
+            if not geometry:
+                return
+            rectangle = re.fullmatch(r"(-?\d+),(-?\d+) (\d+)x(\d+)", geometry)
+            if not rectangle:
+                raise ValueError("Invalid recording region")
+            command += ["-region", f"{rectangle[3]}x{rectangle[4]}+{rectangle[1]}+{rectangle[2]}"]
+        if "--silent" not in args:
+            command += ["-a", "default_output"]
+        if "--microphone" in args:
+            command += ["-a", "default_input"]
+        child = background([*command, "-o", output])
+        time.sleep(.25)
+        if child.poll() is not None:
+            raise ValueError("Screen recorder exited before recording started; check the capture backend and driver")
+        atomic_write(pidfile, json.dumps({"pid": child.pid, "output": str(output)}))
+        notify("Recording started", str(output)); return
+    if action == "edit-latest":
+        files = sorted((HOME / settings().get("screenshots", "Pictures")).glob("Screenshot_*.png"))
+        if not files:
+            raise ValueError("No saved screenshot is available")
+        run(["satty", "--filename", files[-1], "--output-filename", files[-1], "--save-after-copy", "--copy-command", "wl-copy"])
+        return
+    mode = args[1] if len(args) > 1 else ("region" if action == "ocr" else "smart")
+    if mode not in ("smart", "region", "windows", "fullscreen"):
+        raise ValueError("Screenshot mode: smart, region, windows, or fullscreen")
+    geometry = screenshot_geometry(mode)
+    if not geometry:
+        return
+    image = subprocess.run(["grim", "-g", geometry, "-"], check=True, capture_output=True).stdout
+    if action == "ocr":
+        result = subprocess.run(["tesseract", "stdin", "stdout", "--oem", "1", "--psm", "6", "-l", "eng", "--dpi", "300"], input=image, check=True, capture_output=True)
+        copy_text(result.stdout.decode()); notify("Text copied from selection")
+    else:
+        directory = HOME / settings().get("screenshots", "Pictures"); directory.mkdir(parents=True, exist_ok=True)
+        output = directory / time.strftime("Screenshot_%Y-%m-%d_%H-%M-%S.png")
+        output.write_bytes(image)
+        if "--edit" in args:
+            run(["satty", "--filename", output, "--output-filename", output, "--actions-on-enter", "save-to-clipboard", "--save-after-copy", "--copy-command", "wl-copy"])
+        else:
+            copy_data(image, "image/png")
+            notify("Screenshot saved and copied", str(output))
+
+
+def reminder(args):
+    action = args[0] if args else "show"
+    if action == "show":
+        run(["systemctl", "--user", "list-timers", "--all", "--no-pager", "desktop-reminder-*"])
+    elif action == "clear":
+        units = run(["systemctl", "--user", "list-units", "--all", "--plain", "--no-legend", "desktop-reminder-*.timer"], capture=True).stdout
+        names = [line.split()[0] for line in units.splitlines() if line.split()]
+        if names:
+            run(["systemctl", "--user", "stop", *names])
+    else:
+        minutes = float(action)
+        if not 0 < minutes <= 525600:
+            raise ValueError("Reminder delay must be positive and at most one year")
+        message = " ".join(args[1:]) or "Reminder"
+        run(["systemd-run", "--user", "--collect", "--unit=desktop-reminder-" + uuid.uuid4().hex,
+             f"--on-active={minutes * 60}s", "notify-send", "Reminder", message])
+
+
+def menu(args):
+    group = args[0] if args else "main"
+    menus = {
+        "main": {"Applications": ["launcher"], "Themes": ["menu", "theme"], "Wallpapers": ["wallpaper", "grid"], "Capture": ["menu", "capture"], "Toggle": ["menu", "toggle"], "Hardware": ["menu", "hardware"], "System": ["menu", "system"]},
+        "system": {"Lock": ["lock"], "Suspend": ["power", "suspend"], "Log out": ["power", "logout"], "Restart": ["power", "reboot"], "Shut down": ["power", "poweroff"]},
+        "capture": {"Screenshot": ["capture", "screenshot"], "Region": ["capture", "screenshot", "region"], "Window": ["capture", "screenshot", "windows"], "Full output": ["capture", "screenshot", "fullscreen"], "Edit last screenshot": ["capture", "edit-latest"], "Record / stop": ["capture", "record"], "Extract text": ["capture", "ocr"]},
+        "screenrecord": {"Choose output/window with audio / stop": ["capture", "record"], "Record selected region / stop": ["capture", "record", "region"], "Record silently / stop": ["capture", "record", "screen", "--silent"], "Record desktop and microphone / stop": ["capture", "record", "screen", "--microphone"]},
+        "toggle": {x.title(): ["toggle", x] for x in ["bar", "idle", "nightlight", "notifications", "gaps", "square", "touchpad"]},
+        "hardware": {"Wi-Fi": ["launch", "wifi"], "Bluetooth": ["launch", "bluetooth"], "Audio": ["launch", "audio"]},
+        "share": {"LocalSend": ["exec", "localsend"], "Send to iPhone": ["exec", "send-to-iphone"], "Files from iPhone": ["iphone-folder"]},
+        "theme": {**{p.name: ["theme", "set", p.name] for d in theme_directories() if d.exists() for p in d.iterdir() if p.is_dir()}, "Generate from wallpaper…": ["theme", "generate"]},
+    }
+    if group == "background":
+        wallpaper(["grid"]); return
+    if group == "reminder-set":
+        delay = run([executable("walker"), "--dmenu", "--inputonly", "--placeholder", "Minutes"], input="", check=False, capture=True)
+        if not delay.returncode and delay.stdout.strip():
+            message = run([executable("walker"), "--dmenu", "--inputonly", "--placeholder", "Reminder"], input="", check=False, capture=True)
+            if not message.returncode:
+                reminder([delay.stdout.strip(), message.stdout.strip()])
+        return
+    if group not in menus:
+        raise ValueError(f"Unknown menu: {group}")
+    prepare_theme()
+    choices = menus[group]
+    result = run([executable("walker"), "--theme", "desktop-rounded", "--dmenu", "--width", "295", "--minheight", "1", "--maxheight", "630", "--placeholder", group.title()],
+                 input="\n".join(choices) + "\n", check=False, capture=True)
+    selected = result.stdout.strip()
+    if not result.returncode and selected in choices:
+        return dispatch(*choices[selected][:1], choices[selected][1:])
+
+
+def transcode(args):
+    if not args:
+        result = run(["zenity", "--file-selection", "--multiple", "--separator=\n"], check=False, capture=True)
+        if result.returncode:
+            return
+        args = result.stdout.rstrip("\n").split("\n")
+    for value in args:
+        source = expand(value)
+        if not source.is_file():
+            raise ValueError(f"Missing media: {source}")
+        if source.suffix.lower() in (".mp4", ".mov", ".mkv", ".webm", ".avi"):
+            output = source.with_name(source.stem + "-converted.mp4")
+            run(["ffmpeg", "-n", "-i", source, "-c:v", "libx264", "-crf", "23", "-c:a", "aac", output])
+        else:
+            output = source.with_name(source.stem + "-converted.jpg")
+            if output.exists():
+                raise ValueError(f"Output already exists: {output}")
+            run(["magick", source, "-quality", "90", output])
+
+
+def keybindings():
+    source = CONFIG / "hypr"
+    lines = []
+    for path in source.rglob("*.lua"):
+        text = path.read_text()
+        lines.extend(f"{key}  {description}" for key, description in re.findall(r'hl\.bind\(\s*"([^"]+)".*?description\s*=\s*"([^"]+)"', text, re.S))
+    prepare_theme()
+    run([executable("walker"), "--theme", "desktop-rounded", "--dmenu", "--placeholder", "Keybindings"], input="\n".join(sorted(set(lines))), check=False)
+
+
+def integrate():
+    defaults = CONFIG / "breakd/default.toml"
+    preferences = CONFIG / "breakd/config.toml"
+    if defaults.is_file() and not preferences.exists():
+        atomic_write(preferences, defaults.read_text())
+    manifest = read_json(CONFIG / "desktop/native-host.json")
+    if manifest:
+        manifest["path"] = str(HOME / ".local/bin/chatgpt-dictate-audio-duck-host")
+        for browser in ("chromium", "google-chrome"):
+            target = CONFIG / browser / "NativeMessagingHosts" / (manifest["name"] + ".json")
+            if not target.is_symlink():
+                atomic_write(target, json.dumps(manifest, indent=2) + "\n")
+
+
+def session(args):
+    desktop_environment = (
+        "WAYLAND_DISPLAY", "DISPLAY", "HYPRLAND_INSTANCE_SIGNATURE", "XDG_CURRENT_DESKTOP", "XDG_SESSION_DESKTOP",
+        "XDG_SESSION_TYPE", "XCURSOR_SIZE", "HYPRCURSOR_SIZE", "GDK_BACKEND", "QT_QPA_PLATFORM",
+        "QT_STYLE_OVERRIDE", "MOZ_ENABLE_WAYLAND", "ELECTRON_OZONE_PLATFORM_HINT", "OZONE_PLATFORM", "XCOMPOSEFILE",
+    )
+    names = [name for name in desktop_environment if name in os.environ]
+    if names:
+        run(["systemctl", "--user", "import-environment", *names], check=False)
+        run(["dbus-update-activation-environment", "--systemd", *names], check=False)
+    if shutil.which("uwsm"):
+        run(["uwsm", "finalize", *names], check=False)
+    prepare_theme()
+    integrate()
+    flags = STATE / "toggles/hypr/internal-display.conf"
+    if flags.is_file() and shutil.which("hyprctl"):
+        monitors = json.loads(run(["hyprctl", "-j", "monitors", "all"], capture=True).stdout)
+        if not any(not m["name"].startswith(("eDP", "LVDS")) and not m.get("disabled") for m in monitors):
+            flags.unlink(); run(["hyprctl", "reload"], check=False)
+    run(["systemctl", "--user", "start", "desktop-session.target"], check=False)
+    run(["hyprctl", "reload"], check=False)
+
+
+def monitor_watch(args):
+    signature = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
+    if not signature:
+        raise ValueError("Monitor watching requires a Hyprland session")
+    runtime = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"))
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
+        connection.connect(str(runtime / "hypr" / signature / ".socket2.sock"))
+        with connection.makefile() as events:
+            for event in events:
+                if not event.startswith(("monitorremoved", "monitoradded")):
+                    continue
+                marker = STATE / "toggles/hypr/internal-display.conf"
+                if not marker.exists():
+                    continue
+                monitors = json.loads(run(["hyprctl", "-j", "monitors", "all"], capture=True).stdout)
+                external = [m for m in monitors if not m["name"].startswith(("eDP", "LVDS")) and not m.get("disabled")]
+                if not external:
+                    marker.unlink(missing_ok=True)
+                    run(["hyprctl", "reload"], check=False)
+                    wake()
+
+
+def dispatch(command, args):
+    functions = {"theme": theme, "wallpaper": wallpaper, "terminal": terminal, "launch": launch, "run": run_application,
+                 "launcher": launcher, "toggle": toggle, "display": display, "brightness": brightness, "osd": osd,
+                 "lock": lock, "lock-worker": lock_worker, "capture": capture, "reminder": reminder, "menu": menu,
+                 "transcode": transcode, "session": session, "monitor-watch": monitor_watch}
+    if command in functions:
+        return functions[command](args)
+    if command == "prepare":
+        source, _, light = prepare_theme()
+        apply_appearance(source, light)
+        integrate()
+    elif command == "cwd":
+        print(cwd())
+    elif command == "path":
+        if len(args) != 1:
+            raise ValueError("path requires a tool name")
+        print(executable(args[0]))
+    elif command == "restart":
+        return restart(args[0] if args else "theme")
+    elif command == "wake":
+        wake()
+    elif command == "keybindings":
+        keybindings()
+    elif command == "integrate":
+        integrate()
+    elif command == "weather":
+        os.execv(str(CONFIG / "waybar/weather.sh"), [str(CONFIG / "waybar/weather.sh")])
+    elif command == "battery":
+        batteries = list(Path("/sys/class/power_supply").glob("BAT*/capacity"))
+        print(" · ".join(p.read_text().strip() + "%" for p in batteries) or "No battery")
+        if "--notify" in args:
+            low = [p for p in batteries if int(p.read_text()) <= 10 and (p.parent / "status").read_text().strip() == "Discharging"]
+            marker = RUNTIME / "battery-notified"
+            if low and not marker.exists():
+                run(["notify-send", "-u", "critical", "Time to recharge", f"Battery is down to {low[0].read_text().strip()}%"], check=False)
+                atomic_write(marker, "")
+            elif not low:
+                marker.unlink(missing_ok=True)
+    elif command == "audio":
+        if args == ["mic-mute"]:
+            run(["wpctl", "set-mute", "@DEFAULT_SOURCE@", "toggle"])
+        elif args == ["switch"]:
+            sinks = run(["pactl", "list", "short", "sinks"], capture=True).stdout.splitlines()
+            current = run(["pactl", "get-default-sink"], capture=True).stdout.strip()
+            names = [line.split()[1] for line in sinks]
+            if names:
+                run(["pactl", "set-default-sink", names[(names.index(current) + 1) % len(names)] if current in names else names[0]])
+        else:
+            raise ValueError("audio: mic-mute or switch")
+    elif command == "dictation-status":
+        result = run(["dictate", "live", "status"], check=False, capture=True)
+        print(json.dumps({"text": "󰍬" if "recording" in result.stdout.lower() else "", "tooltip": result.stdout.strip(), "class": "dictation"}))
+    elif command == "iphone-folder":
+        run(["nautilus", HOME / "From iPhone"])
+    elif command == "power":
+        if args == ["logout"]:
+            run(["uwsm", "stop"])
+        elif args[:1] in (["suspend"], ["reboot"], ["poweroff"]):
+            if args[0] == "suspend":
+                lock(["--only"])
+            run(["systemctl", args[0]])
+        else:
+            raise ValueError("power: suspend, reboot, poweroff, or logout")
+    elif command == "screensaver":
+        terminal(["--app-id", "org.desktop.screensaver", "cmatrix", "-ab"])
+    elif command == "exec" and args:
+        os.execvp(args[0], args)
+    else:
+        raise ValueError(f"Unknown command: {command}")
+    return 0
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("command", help="theme, wallpaper, launcher, menu, launch, terminal, capture, reminder, toggle, lock, session, prepare, or path")
+    parser.add_argument("args", nargs=argparse.REMAINDER)
+    parsed = parser.parse_args(argv)
+    try:
+        return dispatch(parsed.command, parsed.args) or 0
+    except (ValueError, OSError, subprocess.CalledProcessError, tomllib.TOMLDecodeError) as error:
+        print(f"desktopctl: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

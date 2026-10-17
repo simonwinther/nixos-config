@@ -1,0 +1,712 @@
+[
+  {
+    "id": "ms-python.python",
+    "version": "2026.4.0",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "ms-python.debugpy",
+    "version": "2026.6.0",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "ms-toolsai.jupyter-keymap",
+    "version": "1.1.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-toolsai.vscode-jupyter-slideshow",
+    "version": "0.1.6",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-toolsai.vscode-jupyter-cell-tags",
+    "version": "0.1.9",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-toolsai.jupyter",
+    "version": "2025.9.1",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "ms-toolsai.jupyter-renderers",
+    "version": "1.3.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-python.vscode-python-envs",
+    "version": "1.36.0",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "ms-python.vscode-pylance",
+    "version": "2026.3.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "mechatroner.rainbow-csv",
+    "version": "3.24.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "github.github-vscode-theme",
+    "version": "6.3.5",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.cpptools-extension-pack",
+    "version": "1.5.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode-remote.remote-ssh-edit",
+    "version": "0.87.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "orangex4.latex-sympy-calculator",
+    "version": "1.6.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "mikestead.dotenv",
+    "version": "1.0.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "1yib.rust-bundle",
+    "version": "1.0.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "earshinov.simple-alignment",
+    "version": "1.0.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "anaganisk.theme-onedark-plus",
+    "version": "2.0.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "natqe.reload",
+    "version": "0.0.7",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-azuretools.vscode-docker",
+    "version": "2.0.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-dotnettools.blazorwasm-companion",
+    "version": "1.1.4",
+    "platform": "undefined"
+  },
+  {
+    "id": "github.remotehub",
+    "version": "0.64.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "nyxiative.rust-and-friends",
+    "version": "1.0.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "subframe7536.custom-ui-style",
+    "version": "0.7.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "vintharas.learn-vim",
+    "version": "0.0.28",
+    "platform": "undefined"
+  },
+  {
+    "id": "emeraldwalk.runonsave",
+    "version": "1.0.3",
+    "platform": "undefined"
+  },
+  {
+    "id": "k--kato.docomment",
+    "version": "1.0.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "formulahendry.auto-rename-tag",
+    "version": "0.1.10",
+    "platform": "undefined"
+  },
+  {
+    "id": "dunstontc.dark-plus-syntax",
+    "version": "0.2.11",
+    "platform": "undefined"
+  },
+  {
+    "id": "vscjava.vscode-spring-boot-dashboard",
+    "version": "0.14.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "eriksik2.vscode-ghci",
+    "version": "0.0.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "dbaeumer.vscode-eslint",
+    "version": "3.0.34",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.cpptools-themes",
+    "version": "2.0.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "dustypomerleau.rust-syntax",
+    "version": "0.6.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "xaver.clang-format",
+    "version": "1.9.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "dnek.auto-region-folder",
+    "version": "1.0.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "zhwu95.riscv",
+    "version": "0.0.8",
+    "platform": "undefined"
+  },
+  {
+    "id": "albert.tabout",
+    "version": "0.2.4",
+    "platform": "undefined"
+  },
+  {
+    "id": "polymeilex.rust-targets",
+    "version": "1.2.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "vmware.vscode-boot-dev-pack",
+    "version": "0.2.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "kevinrose.vsc-python-indent",
+    "version": "1.21.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "frinkr.pdf",
+    "version": "0.0.6",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.remote-explorer",
+    "version": "0.5.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "pedro-w.tmlanguage",
+    "version": "1.2.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "wesbos.theme-cobalt2",
+    "version": "2.5.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "uctakeoff.vscode-counter",
+    "version": "3.7.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "vscjava.vscode-java-dependency",
+    "version": "0.27.6",
+    "platform": "undefined"
+  },
+  {
+    "id": "ltex-plus.vscode-ltex-plus",
+    "version": "15.7.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "usernamehw.errorlens",
+    "version": "3.28.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "haskell.haskell",
+    "version": "2.8.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode-remote.remote-wsl",
+    "version": "0.104.3",
+    "platform": "undefined"
+  },
+  {
+    "id": "lorenzopirro.rust-flash-snippets",
+    "version": "3.1.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "icrawl.discord-vscode",
+    "version": "5.9.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.azure-repos",
+    "version": "0.40.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "draivin.hsnips",
+    "version": "0.2.9",
+    "platform": "undefined"
+  },
+  {
+    "id": "redhat.vscode-yaml",
+    "version": "1.24.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "gruntfuggly.todo-tree",
+    "version": "0.0.226",
+    "platform": "undefined"
+  },
+  {
+    "id": "njpwerner.autodocstring",
+    "version": "0.6.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "divyanshuagrawal.competitive-programming-helper",
+    "version": "2026.8.1785865132",
+    "platform": "undefined"
+  },
+  {
+    "id": "vscjava.vscode-spring-initializr",
+    "version": "0.12.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.makefile-tools",
+    "version": "0.12.17",
+    "platform": "undefined"
+  },
+  {
+    "id": "serenade.serenade",
+    "version": "1.5.3",
+    "platform": "undefined"
+  },
+  {
+    "id": "syler.sass-indented",
+    "version": "1.8.33",
+    "platform": "undefined"
+  },
+  {
+    "id": "ginfuru.ginfuru-onedark-raincoat-theme",
+    "version": "0.9.9",
+    "platform": "undefined"
+  },
+  {
+    "id": "s-nlf-fh.glassit",
+    "version": "0.2.6",
+    "platform": "undefined"
+  },
+  {
+    "id": "be5invis.vscode-custom-css",
+    "version": "7.5.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "vivaxy.vscode-conventional-commits",
+    "version": "1.31.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "github.vscode-github-actions",
+    "version": "0.32.3",
+    "platform": "undefined"
+  },
+  {
+    "id": "bradlc.vscode-tailwindcss",
+    "version": "0.16.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "zhangyue.rust-mod-generator",
+    "version": "1.0.12",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-python.autopep8",
+    "version": "2026.4.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-python.isort",
+    "version": "2026.6.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-python.black-formatter",
+    "version": "2026.6.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "jcanero.hoogle-vscode",
+    "version": "0.0.7",
+    "platform": "undefined"
+  },
+  {
+    "id": "theumletteam.umlet",
+    "version": "15.1.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "steoates.autoimport",
+    "version": "1.5.4",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.remote-repositories",
+    "version": "0.42.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "mushan.vscode-paste-image",
+    "version": "1.0.4",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-dotnettools.vscode-dotnet-runtime",
+    "version": "3.1.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "chouzz.vscode-better-align",
+    "version": "1.4.5",
+    "platform": "undefined"
+  },
+  {
+    "id": "evgeniypeshkov.syntax-highlighter",
+    "version": "0.5.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode-remote.remote-containers",
+    "version": "0.466.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "deadrevolver.dark-space-theme",
+    "version": "1.1.7",
+    "platform": "undefined"
+  },
+  {
+    "id": "teabyii.ayu",
+    "version": "1.1.12",
+    "platform": "undefined"
+  },
+  {
+    "id": "draivin.hscopes",
+    "version": "0.0.9",
+    "platform": "undefined"
+  },
+  {
+    "id": "msjsdiag.vscode-react-native",
+    "version": "1.13.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "grapecity.gc-excelviewer",
+    "version": "4.2.66",
+    "platform": "undefined"
+  },
+  {
+    "id": "vscjava.vscode-java-pack",
+    "version": "0.31.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "jscearcy.rust-doc-viewer",
+    "version": "4.2.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "josemurilloc.aura-spirit-dracula",
+    "version": "0.1.10",
+    "platform": "undefined"
+  },
+  {
+    "id": "esbenp.prettier-vscode",
+    "version": "12.4.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "dsznajder.es7-react-js-snippets",
+    "version": "4.4.3",
+    "platform": "undefined"
+  },
+  {
+    "id": "vscjava.vscode-java-debug",
+    "version": "0.59.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "mcright.auto-save",
+    "version": "1.0.3",
+    "platform": "undefined"
+  },
+  {
+    "id": "formulahendry.auto-close-tag",
+    "version": "0.5.15",
+    "platform": "undefined"
+  },
+  {
+    "id": "vscjava.vscode-java-test",
+    "version": "0.46.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "alefragnani.bookmarks",
+    "version": "14.1.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "vscjava.vscode-maven",
+    "version": "0.45.3",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vsliveshare.vsliveshare",
+    "version": "1.1.122",
+    "platform": "undefined"
+  },
+  {
+    "id": "iamhyc.overleaf-workshop",
+    "version": "0.15.10",
+    "platform": "undefined"
+  },
+  {
+    "id": "tinaciousdesign.theme-tinaciousdesign",
+    "version": "2.4.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "wix.vscode-import-cost",
+    "version": "3.3.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "twxs.cmake",
+    "version": "0.0.17",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.cmake-tools",
+    "version": "1.23.52",
+    "platform": "undefined"
+  },
+  {
+    "id": "prisma.prisma",
+    "version": "31.11.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-toolsai.datawrangler",
+    "version": "1.24.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "perkovec.emoji",
+    "version": "1.0.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "tamasfe.even-better-toml",
+    "version": "0.21.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "docker.docker",
+    "version": "0.18.0",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "vscjava.vscode-gradle",
+    "version": "3.18.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "lokalise.i18n-ally",
+    "version": "2.13.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "ionide.ionide-fsharp",
+    "version": "7.31.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "vmware.vscode-spring-boot",
+    "version": "2.3.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "redhat.java",
+    "version": "1.55.0",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "georgewfraser.fsharp-language-server",
+    "version": "0.1.28",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.vscode-speech",
+    "version": "0.16.0",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "ms-dotnettools.csharp",
+    "version": "2.140.9",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "vadimcn.vscode-lldb",
+    "version": "1.11.4",
+    "platform": null
+  },
+  {
+    "id": "zhuangtongfa.material-theme",
+    "version": "3.20.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "rickaym.manim-sideview",
+    "version": "0.4.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "github.codespaces",
+    "version": "1.18.16",
+    "platform": "undefined"
+  },
+  {
+    "id": "brandonkirbyson.vscode-animations",
+    "version": "2.0.8",
+    "platform": "undefined"
+  },
+  {
+    "id": "james-yu.latex-workshop",
+    "version": "10.18.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "svelte.svelte-vscode",
+    "version": "110.3.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "codescene.codescene-vscode",
+    "version": "0.28.0",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "enkia.tokyo-night",
+    "version": "1.1.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "catppuccin.catppuccin-vsc",
+    "version": "3.19.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "bjarne.white-theme",
+    "version": "0.0.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "tomoki1207.pdf",
+    "version": "1.2.2",
+    "platform": "undefined"
+  },
+  {
+    "id": "bjarne.vantablack-omarchy",
+    "version": "1.0.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "fill-labs.dependi",
+    "version": "0.7.28",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-azuretools.vscode-containers",
+    "version": "2.5.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "vscjava.migrate-java-to-azure",
+    "version": "1.23.0",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "ms-vscode-remote.remote-ssh",
+    "version": "0.128.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "streetsidesoftware.code-spell-checker",
+    "version": "4.7.3",
+    "platform": "undefined"
+  },
+  {
+    "id": "chakrounanas.turbo-console-log",
+    "version": "3.28.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "golang.go",
+    "version": "0.56.1",
+    "platform": "undefined"
+  },
+  {
+    "id": "ms-vscode.cpptools",
+    "version": "1.34.2",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "openai.chatgpt",
+    "version": "26.825.51511",
+    "platform": "linux-x64"
+  },
+  {
+    "id": "mathematic.vscode-latex",
+    "version": "2.2.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "eamodio.gitlens",
+    "version": "19.1.0",
+    "platform": "undefined"
+  },
+  {
+    "id": "rust-lang.rust-analyzer",
+    "version": "0.3.3033",
+    "platform": "linux-x64"
+  }
+]

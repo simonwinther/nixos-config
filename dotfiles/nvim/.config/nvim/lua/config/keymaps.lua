@@ -1,0 +1,327 @@
+-- Keymaps are automatically loaded on the VeryLazy event Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua Add any additional keymaps here local opts = { noremap = true, silent = true }
+local opts = { noremap = true, silent = true }
+
+----------------------------------------
+--- Helper functions
+----------------------------------------
+local function is_mapped(mode, lhs)
+  if vim.keymap and vim.keymap.get then
+    local maps = vim.keymap.get(mode, lhs)
+    return maps and #maps > 0, maps
+  end
+end
+
+-- <leader>. is free , and a very fast bind for something i use often, <leader>S is also free
+vim.keymap.set("n", "<leader>.", function()
+  Snacks.picker.resume()
+end, { desc = "Find Files (Root Dir)" })
+
+--------------------------------------------
+--- Custom command lists below
+--------------------------------------------
+
+--- List Greek letters from the letters.lua snippet file in a picker
+--- Because I always forget the exact name of the Greek letter
+vim.api.nvim_create_user_command("ListGreek", function()
+  local path = vim.fn.stdpath("config") .. "/snippets/tex/letters.lua"
+  local lines = vim.fn.readfile(path)
+  local in_map, items = false, {}
+
+  for _, l in ipairs(lines) do
+    if l:match("greek_map%s*=%s*{") then
+      in_map = true
+    end
+    if in_map then
+      local k, v = l:match('^%s*([%w_]+)%s*=%s*"([^"]+)"')
+      if k and v then
+        table.insert(items, { text = v .. "    ;" .. k .. "    \\" .. v })
+      end
+      if l:match("^%s*}%s*$") then
+        break
+      end
+    end
+  end
+
+  Snacks.picker.pick({
+    title = "Greek",
+    items = items,
+    format = "text",
+    layout = { preview = false },
+    confirm = function(picker)
+      picker:close()
+    end,
+  })
+end, {})
+
+----------------------------------------
+--- Oil
+----------------------------------------
+vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory" })
+
+-- -----------------------------------------
+-- --- Disable mouse support
+-- -----------------------------------------
+-- vim.opt.mouse = ""
+
+----------------------------------
+--- Fuzzy search buffer keymap
+--- The smart thing is that my flash.nvim is set to use / by default
+--- So, `s` remaps to /, and `S` remaps to ?
+--- But they are done before this keymap overrides /,
+--- Hence `s` and `S` still work with flash.nvim (normal /)
+--- But now allowing / to do fuzzy search with snacks.nvim
+--- This is the exact same as LazyVim's default keymap for <leader>sb (search buffer)
+----------------------------------
+vim.keymap.set("n", "/", function()
+  require("snacks").picker.lines({
+    title = "󰱼 Search Buffer",
+    prompt = "   ",
+    layout = {
+      preset = "dropdown", -- deelte this
+      layout = { -- and this
+        width = 0.85, -- and this
+        height = 0.80, -- and this
+        row = 0.10,
+        col = 0.075,
+      }, -- and this if i want to get rid of layout and old
+      preview = false,
+    },
+  })
+end, {
+  desc = "Search buffer",
+  silent = true,
+})
+
+-----------------------------------------
+--- Terminal mode keymap
+-----------------------------------------
+vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], {
+  desc = "Exit terminal mode",
+})
+
+-----------------------------------------
+--- Smart Leader just to try
+-----------------------------------------
+vim.keymap.set("n", "<leader>se", function()
+  Snacks.picker.smart()
+end, { desc = "Smart Find Files" })
+
+-----------------------------------------
+--- Project-wide fuzzy grep
+-----------------------------------------
+
+-- Snacks version (comment out the fzf mapping below before restoring):
+-- And delete ~/dotfiles/nvim/.config/nvim/lua/plugins/fzf.lua file.
+
+-- vim.keymap.set(
+--   "n",
+--   "<leader>sf",
+--   LazyVim.pick("live_grep", {
+--     live = false,
+--     need_search = false,
+--     hidden = true,
+--     args = { "--replace", "$0", "--max-filesize", "5M" },
+--     title = "Fuzzy Grep (Root Dir)",
+--   }),
+--   { desc = "Fuzzy Grep (Root Dir)" }
+-- )
+
+vim.keymap.set("n", "<leader>sf", function()
+  local cwd = LazyVim.root()
+  local picker_ignore = require("config.picker_ignore")
+  local rg_opts = {
+    "--column",
+    "--line-number",
+    "--no-heading",
+    "--color=always",
+    "--smart-case",
+    "--max-columns=500",
+    "--max-columns-preview",
+    "--max-filesize=5M",
+  }
+
+  vim.list_extend(rg_opts, picker_ignore.shell_argv(cwd))
+  table.insert(rg_opts, "-e")
+
+  require("fzf-lua").grep_project({
+    cwd = cwd,
+    hidden = true,
+    prompt = "Fuzzy Grep [content]> ",
+    rg_opts = table.concat(rg_opts, " "),
+    fzf_opts = {
+      ["--delimiter"] = ":",
+      ["--nth"] = "3..",
+    },
+    actions = {
+      ["alt-f"] = false,
+    },
+    keymap = {
+      fzf = {
+        ["alt-f"] = [[change-nth(1..|3..)+transform-prompt(if [ "$FZF_NTH" = ".." ]; then printf "Fuzzy Grep [with files]> "; else printf "Fuzzy Grep [content]> "; fi)]],
+      },
+    },
+    winopts = {
+      title = " Fuzzy Grep (fzf) ",
+      width = 0.95,
+      preview = {
+        layout = "horizontal",
+        horizontal = "right:50%",
+      },
+    },
+  })
+end, { desc = "Fuzzy Grep (fzf)" })
+
+-----------------------------------------
+--- Overwriting LazyVim's default <leader>sw and <leader>sW keymaps for Snacks grep_word with hidden files enabled
+-----------------------------------------
+vim.keymap.set({ "n", "x" }, "<leader>sw", function()
+  Snacks.picker.grep_word({ hidden = true })
+end, { desc = "Visual selection or word (Root Dir)" })
+
+vim.keymap.set({ "n", "x" }, "<leader>sW", function()
+  Snacks.picker.grep_word({ hidden = true, root = false })
+end, { desc = "Visual selection or word (cwd)" })
+
+----------------------------------------
+--- Grep in Neovim config keymap
+----------------------------------------
+vim.keymap.set("n", "<leader>fC", function()
+  require("snacks").picker.grep({
+    hidden = true,
+    title = "Grep Config",
+    cwd = vim.fn.stdpath("config"),
+  })
+end, { desc = "Grep in Neovim config" })
+
+----------------------------------------
+--- Grep And Search files in Dotfiles config keymap
+---------------------------------------
+vim.keymap.set("n", "<leader>f.", function()
+  require("snacks").picker.files({
+    title = "Find Files in Dotfiles",
+    cwd = vim.env.DOTFILES or vim.fn.stdpath("config"),
+    hidden = true,
+  })
+end, { desc = "Find files in Dotfiles config" })
+
+vim.keymap.set("n", "<leader>s.", function()
+  require("snacks").picker.grep({
+    title = "Grep Dotfiles",
+    cwd = vim.env.DOTFILES or vim.fn.stdpath("config"),
+    hidden = true,
+  })
+end, { desc = "Grep in Dotfiles config" })
+
+----------------------------------------
+--- System clipboard keymaps
+----------------------------------------
+-- Delete to system clipboard
+vim.keymap.set({ "n" }, "<leader>dd", '"+dd', { desc = "Delete to system clipboard" })
+vim.keymap.set({ "x" }, "<leader>d", '"+d', { desc = "Delete to system clipboard" })
+
+-- Yank to system clipboard
+vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Yank to system clipboard" })
+vim.keymap.set({ "n", "x" }, "<leader>Y", '"+Y', { desc = "Yank to system clipboard (to end of line)", remap = true })
+
+-- Paste from system clipboard
+vim.keymap.set({ "n", "x" }, "<leader>p", '"+p', { desc = "Paste from system clipboard" })
+vim.keymap.set({ "n", "x" }, "<leader>P", '"+P', { desc = "Paste from system clipboard" })
+
+-- A few from yanky.nvim
+vim.keymap.set("n", "<leader>]p", '"+]p', {
+  remap = true,
+  desc = "Clipboard paste indent after linewise",
+})
+
+vim.keymap.set("n", "<leader>[p", '"+[p', {
+  remap = true,
+  desc = "Clipboard paste indent before linewise",
+})
+
+vim.keymap.set("n", "<leader>>p", '"+>p', {
+  remap = true,
+  desc = "Clipboard paste shift right",
+})
+
+vim.keymap.set("n", "<leader><p", '"+<p', {
+  remap = true,
+  desc = "Clipboard paste shift left",
+})
+
+-- Paste the entire buffer to system clipboard
+vim.keymap.set("n", "<leader>ay", function()
+  local view = vim.fn.winsaveview()
+  vim.cmd("silent %y+")
+  vim.fn.winrestview(view)
+end, { desc = "All Yank" })
+
+-- Paste from system clipboard to entire buffer
+vim.keymap.set("n", "<leader>ap", function()
+  local view = vim.fn.winsaveview()
+  vim.cmd("silent %delete")
+  vim.cmd("silent 0put +")
+  vim.cmd("silent $delete _")
+  vim.fn.winrestview(view)
+end, { desc = "All Paste" })
+
+----------------------------------------
+--- Buffer
+----------------------------------------
+-- Move the current buffer to the left
+vim.keymap.set("n", "<A-S-h>", "<cmd>BufferLineMovePrev<cr>", { desc = "Move buffer left" })
+
+-- Move the current buffer to the right
+vim.keymap.set("n", "<A-S-l>", "<cmd>BufferLineMoveNext<cr>", { desc = "Move buffer right" })
+
+----------------------------------------
+--- Move lines keymaps
+----------------------------------------
+-- Move selected line / block of text in visual mode
+-- This does not work with Luasnip, try to do a snip, then when in
+-- Select mode, and I try to write 'Justification', it will move
+-- because of 'J' and same with 'K'.
+-- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts)
+-- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", opts)
+
+----------------------------------------
+--- Window management keymaps
+----------------------------------------
+-- Remove q: (which opens command history) and replace it with q to quit the window
+-- I have <leader>: to open command history, so I don't need q: for that
+vim.keymap.set("n", "q:", "<cmd>q<cr>", { desc = "Quit window" })
+
+-- Save and quit window with <leader>ww if not already mapped
+local exists = is_mapped("n", "<leader>ww")
+if not exists then
+  vim.keymap.set("n", "<leader>ww", "<cmd>wq<cr>", { desc = "Save and Quit Window" })
+else
+  print("Mapping <leader>ww already exists")
+end
+
+-----------------------------------------
+--- Visual Selection keymap
+-----------------------------------------
+vim.keymap.set("n", "gb", "`[v`]", { desc = "Select last pasted text" })
+
+----------------------------------------
+--- Search and Find in Home Directory (~)
+----------------------------------------
+-- Find Files in Home
+vim.keymap.set("n", "<leader>f~", function()
+  Snacks.picker.files({
+    cwd = "~",
+    hidden = true,
+    title = "Find Files (Home)",
+  })
+end, { desc = "Find Files (Home)" })
+
+-- Grep in Home
+vim.keymap.set("n", "<leader>s~", function()
+  Snacks.picker.grep({
+    cwd = "~",
+    hidden = true,
+    title = "Grep (Home)",
+  })
+end, { desc = "Grep (Home)" })
+
+---------- End of File ----------

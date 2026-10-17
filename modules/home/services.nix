@@ -1,0 +1,188 @@
+{
+  config,
+  lib,
+  pkgs,
+  packages,
+  profile,
+  ...
+}:
+let
+  ctl = "${packages.desktop-tools}/bin/desktopctl";
+  environment = [
+    "PATH=/run/wrappers/bin:${config.home.profileDirectory}/bin:/run/current-system/sw/bin:/home/simon/.local/bin"
+    "HYPRSPACE_PLUGIN=${packages.hyprspace}/lib/libhyprspace.so"
+    "WORKSPACES_SLIDER_CONFIG=/home/simon/.config/desktop/workspaces.json"
+    "HENDRIX_VPN_RUNNER=${packages.hendrix-vpn}/bin/ku-vpn"
+    "HENDRIX_VPN_ROUTES=${packages.hendrix-vpn}/bin/ku-vpn-routes"
+    "DESKTOP_SSH_BIN=${pkgs.openssh}/bin/ssh"
+  ];
+  service = description: command: {
+    Unit = {
+      Description = description;
+      PartOf = [ "desktop-session.target" ];
+      After = [ "desktop-prepare.service" ];
+    };
+    Service = {
+      Type = "exec";
+      ExecStart = command;
+      Restart = "on-failure";
+      RestartSec = 2;
+      Environment = environment;
+    };
+    Install.WantedBy = [ "desktop-session.target" ];
+  };
+  warmPicker = pdf: {
+    Unit = {
+      Description = if pdf then "Prepare the PDF picker" else "Prepare the file picker";
+      PartOf = [ "desktop-session.target" ];
+      After = [ "desktop-prepare.service" ];
+    };
+    Service = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${packages.file-picker}/bin/file-picker --warm${lib.optionalString pdf " --pdf"}";
+      Environment = environment;
+      TimeoutStartSec = 20;
+    };
+    Install.WantedBy = [ "desktop-session.target" ];
+  };
+in
+{
+  xdg.configFile."desktop/paths.json".text = builtins.toJSON {
+    walker = "${packages.walker}/bin/walker";
+    elephant = "${packages.elephant}/bin/elephant";
+    waybar = "${packages.waybar}/bin/waybar";
+    dictate = "${packages.dictate}/bin/dictate";
+    file-picker-native = "${packages.file-picker}/bin/file-picker-native";
+    hyprspace = "${packages.hyprspace}/lib/libhyprspace.so";
+    mako = "${pkgs.mako}/bin/mako";
+    swayosd-server = "${pkgs.swayosd}/bin/swayosd-server";
+    background-grid-native = "${packages.background-grid}/bin/background-grid-native";
+    workspaces-slider-native = "${packages.workspaces-slider}/bin/workspaces-slider";
+    btop = "${pkgs.btop}/bin/btop";
+  };
+  systemd.user.targets.desktop-session.Unit = {
+    Description = "Personal Hyprland desktop";
+    Requires = [ "desktop-prepare.service" ];
+    After = [ "desktop-prepare.service" ];
+    BindsTo = [ "graphical-session.target" ];
+    PartOf = [ "graphical-session.target" ];
+  };
+  systemd.user.services = {
+    desktop-file-picker = warmPicker false;
+    desktop-pdf-picker = warmPicker true;
+    desktop-prepare = {
+      Unit = {
+        Description = "Prepare writable appearance and browser integration";
+        Before = [ "desktop-session.target" ];
+        PartOf = [ "desktop-session.target" ];
+      };
+      Service = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${ctl} prepare";
+        Environment = environment;
+      };
+    };
+    desktop-elephant = service "Desktop search providers" "${packages.elephant}/bin/elephant";
+    desktop-walker = (service "Application launcher" "${ctl} run walker -- --gapplication-service") // {
+      Unit = {
+        Description = "Application launcher";
+        PartOf = [ "desktop-session.target" ];
+        After = [
+          "desktop-prepare.service"
+          "desktop-elephant.service"
+        ];
+        Requires = [ "desktop-elephant.service" ];
+      };
+    };
+    desktop-waybar = service "Main desktop bar" "${ctl} run waybar -- --config /home/simon/.config/waybar/config.jsonc --style /home/simon/.config/waybar/style.css";
+    desktop-workspaces = service "Workspace slider overlays" "${packages.workspaces-slider}/bin/workspaces-slider";
+    desktop-mako = service "Notifications" "${ctl} run mako";
+    desktop-monitor-watch = service "Recover the internal display after unplugging a dock" "${ctl} monitor-watch";
+    desktop-awww = service "Wallpaper daemon" "${pkgs.awww}/bin/awww-daemon --no-cache";
+    desktop-swayosd = service "Volume and brightness display" "${ctl} run swayosd-server";
+    desktop-hypridle = service "Idle and suspend coordination" "${pkgs.hypridle}/bin/hypridle";
+    desktop-hyprsunset = (service "Night light" "${pkgs.hyprsunset}/bin/hyprsunset") // {
+      Install = { };
+    };
+    desktop-polkit = service "Privilege prompts" "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
+    desktop-wallpaper = (service "Restore wallpapers" "${ctl} wallpaper restore") // {
+      Unit = {
+        Description = "Restore wallpapers";
+        PartOf = [ "desktop-session.target" ];
+        After = [
+          "desktop-prepare.service"
+          "desktop-awww.service"
+        ];
+        Requires = [ "desktop-awww.service" ];
+      };
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${ctl} wallpaper restore";
+        Environment = environment;
+      };
+    };
+    desktop-lock = {
+      Unit.Description = "Lock session and turn displays off";
+      Service = {
+        Type = "exec";
+        ExecStart = "${ctl} lock-worker";
+        Environment = environment;
+      };
+    };
+    desktop-lock-only = {
+      Unit.Description = "Lock session";
+      Service = {
+        Type = "exec";
+        ExecStart = "${ctl} lock-worker --only";
+        Environment = environment;
+      };
+    };
+    desktop-battery = {
+      Unit.Description = "Low battery notifications";
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${ctl} battery --notify";
+        Environment = environment;
+      };
+    };
+    desktop-waybar-minimal =
+      (service "Laptop display bar" "${ctl} run waybar -- --config /home/simon/.config/waybar/config-minimal.jsonc --style /home/simon/.config/waybar/style-minimal.css")
+      // {
+        Install = lib.mkIf (config.desktop.outputs.minimal != [ ]) {
+          WantedBy = [ "desktop-session.target" ];
+        };
+      };
+    breakd = lib.mkIf (profile != "live" && profile != "recovery") (
+      service "Break reminders and posture coaching" "${packages.breakd}/bin/breakd daemon"
+    );
+    canvas-mcp = lib.mkIf (profile != "live" && profile != "recovery") {
+      Unit = {
+        Description = "Canvas MCP HTTP server (on demand, loopback only)";
+        ConditionPathExists = "/home/simon/.config/canvas-mcp/http-environment";
+      };
+      Service = {
+        Type = "exec";
+        ExecStart = "${packages.canvas-mcp}/bin/canvas-mcp-server --transport streamable-http --host 127.0.0.1 --port 8819";
+        EnvironmentFile = "/home/simon/.config/canvas-mcp/http-environment";
+        Environment = environment;
+        Restart = "on-failure";
+      };
+    };
+    taildrop-receive = lib.mkIf (profile != "live" && profile != "recovery") (
+      service "Receive and sort iPhone Taildrop files" "/home/simon/.local/bin/receive-iphone-files"
+    );
+  };
+  systemd.user.timers.desktop-battery = {
+    Unit = {
+      Description = "Monitor battery level";
+      PartOf = [ "desktop-session.target" ];
+    };
+    Timer = {
+      OnBootSec = "2m";
+      OnUnitActiveSec = "1m";
+    };
+    Install.WantedBy = [ "desktop-session.target" ];
+  };
+}

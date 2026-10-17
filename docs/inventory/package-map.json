@@ -1,0 +1,1949 @@
+[
+  {
+    "arch": "1password-beta",
+    "referenceVersion": "8.12.42_34.BETA-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "_1password-gui",
+    "group": "applications"
+  },
+  {
+    "arch": "1password-cli",
+    "referenceVersion": "2.41.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "_1password-cli",
+    "group": "applications"
+  },
+  {
+    "arch": "7zip",
+    "referenceVersion": "26.03-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "_7zz",
+    "group": "applications"
+  },
+  {
+    "arch": "aerc",
+    "referenceVersion": "0.21.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "aerc",
+    "group": "applications"
+  },
+  {
+    "arch": "aether",
+    "referenceVersion": "4.32.0-2",
+    "kind": "module",
+    "reason": "Independent theme controller and Matugen"
+  },
+  {
+    "arch": "amd-ucode",
+    "referenceVersion": "20260810-2",
+    "kind": "module",
+    "reason": "CPU microcode module"
+  },
+  {
+    "arch": "ant",
+    "referenceVersion": "1.10.17-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "ant",
+    "group": "applications"
+  },
+  {
+    "arch": "apache-ant-contrib",
+    "referenceVersion": "1.0b3-5",
+    "kind": "custom",
+    "attribute": "ant-contrib",
+    "group": "applications"
+  },
+  {
+    "arch": "ascii",
+    "referenceVersion": "3.32-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "ascii",
+    "group": "applications"
+  },
+  {
+    "arch": "asdcontrol",
+    "referenceVersion": "1:0.6.0-2",
+    "kind": "excluded",
+    "reason": "Apple-display-only utility; excluded until an Apple display is inventoried"
+  },
+  {
+    "arch": "awww",
+    "referenceVersion": "0.12.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "awww",
+    "group": "applications"
+  },
+  {
+    "arch": "base",
+    "referenceVersion": "3-3",
+    "kind": "module",
+    "reason": "NixOS base system"
+  },
+  {
+    "arch": "base-devel",
+    "referenceVersion": "1-2",
+    "kind": "module",
+    "reason": "Development profile"
+  },
+  {
+    "arch": "bash-completion",
+    "referenceVersion": "2.18.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "bash-completion",
+    "group": "applications"
+  },
+  {
+    "arch": "bat",
+    "referenceVersion": "0.26.1-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "bat",
+    "group": "applications"
+  },
+  {
+    "arch": "bc",
+    "referenceVersion": "1.08.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "bc",
+    "group": "applications"
+  },
+  {
+    "arch": "bluetui",
+    "referenceVersion": "0.8.1-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "bluetui",
+    "group": "applications"
+  },
+  {
+    "arch": "bolt",
+    "referenceVersion": "0.9.11-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "bolt",
+    "group": "applications"
+  },
+  {
+    "arch": "boosteroid",
+    "referenceVersion": "1.10.22-1",
+    "kind": "custom",
+    "attribute": "boosteroid",
+    "group": "applications"
+  },
+  {
+    "arch": "breakd",
+    "referenceVersion": "0.1.12-1",
+    "kind": "custom",
+    "attribute": "breakd",
+    "group": "applications"
+  },
+  {
+    "arch": "brightnessctl",
+    "referenceVersion": "0.5.1-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "brightnessctl",
+    "group": "applications"
+  },
+  {
+    "arch": "btop",
+    "referenceVersion": "1.4.7-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "btop",
+    "group": "applications"
+  },
+  {
+    "arch": "btrfs-progs",
+    "referenceVersion": "7.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "btrfs-progs",
+    "group": "applications"
+  },
+  {
+    "arch": "chatgpt-bin",
+    "referenceVersion": "26.1007.71326-1",
+    "kind": "package",
+    "source": "unstable",
+    "attribute": "chatgpt",
+    "group": "applications"
+  },
+  {
+    "arch": "chromium",
+    "referenceVersion": "152.0.7977.82-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "chromium",
+    "group": "applications"
+  },
+  {
+    "arch": "clang",
+    "referenceVersion": "22.1.8-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "clang",
+    "group": "applications"
+  },
+  {
+    "arch": "cliamp",
+    "referenceVersion": "2.3.0-3",
+    "kind": "package",
+    "source": "unstable",
+    "attribute": "cliamp",
+    "group": "applications"
+  },
+  {
+    "arch": "cmatrix",
+    "referenceVersion": "2.0-4",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "cmatrix",
+    "group": "applications"
+  },
+  {
+    "arch": "cppman",
+    "referenceVersion": "0.6.3-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "cppman",
+    "group": "applications"
+  },
+  {
+    "arch": "cups",
+    "referenceVersion": "2:2.4.19-1",
+    "kind": "module",
+    "reason": "Printing module"
+  },
+  {
+    "arch": "cups-browsed",
+    "referenceVersion": "2.1.1-1",
+    "kind": "module",
+    "reason": "Printer discovery module"
+  },
+  {
+    "arch": "cups-filters",
+    "referenceVersion": "2.0.1-2",
+    "kind": "module",
+    "reason": "Printing module"
+  },
+  {
+    "arch": "cups-pdf",
+    "referenceVersion": "3.0.3-1",
+    "kind": "module",
+    "reason": "Printing module"
+  },
+  {
+    "arch": "cursor-bin",
+    "referenceVersion": "3.24.18-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "code-cursor",
+    "group": "applications"
+  },
+  {
+    "arch": "docker",
+    "referenceVersion": "1:29.7.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "docker",
+    "group": "applications"
+  },
+  {
+    "arch": "docker-buildx",
+    "referenceVersion": "0.37.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "docker-buildx",
+    "group": "applications"
+  },
+  {
+    "arch": "docker-compose",
+    "referenceVersion": "5.5.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "docker-compose",
+    "group": "applications"
+  },
+  {
+    "arch": "dosfstools",
+    "referenceVersion": "4.2-5",
+    "kind": "module",
+    "reason": "Installation tooling"
+  },
+  {
+    "arch": "dotnet-runtime-9.0",
+    "referenceVersion": "9.0.19.sdk120-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "dotnet-runtime_9",
+    "group": "applications"
+  },
+  {
+    "arch": "dust",
+    "referenceVersion": "1.2.5-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "dust",
+    "group": "applications"
+  },
+  {
+    "arch": "efibootmgr",
+    "referenceVersion": "18-4",
+    "kind": "module",
+    "reason": "UEFI boot module"
+  },
+  {
+    "arch": "evince",
+    "referenceVersion": "1:48.4-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "evince",
+    "group": "applications"
+  },
+  {
+    "arch": "exfatprogs",
+    "referenceVersion": "1.4.3-1",
+    "kind": "module",
+    "reason": "Filesystem support module"
+  },
+  {
+    "arch": "expac",
+    "referenceVersion": "10-13",
+    "kind": "module",
+    "reason": "Arch package database tool; no NixOS counterpart needed"
+  },
+  {
+    "arch": "eza",
+    "referenceVersion": "0.23.5-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "eza",
+    "group": "applications"
+  },
+  {
+    "arch": "fastfetch",
+    "referenceVersion": "2.68.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "fastfetch",
+    "group": "applications"
+  },
+  {
+    "arch": "fcitx5",
+    "referenceVersion": "5.1.22-1",
+    "kind": "module",
+    "reason": "NixOS Fcitx5 module"
+  },
+  {
+    "arch": "fcitx5-gtk",
+    "referenceVersion": "5.1.7-1",
+    "kind": "module",
+    "reason": "NixOS Fcitx5 module"
+  },
+  {
+    "arch": "fcitx5-qt",
+    "referenceVersion": "5.1.15-1",
+    "kind": "module",
+    "reason": "NixOS Fcitx5 module"
+  },
+  {
+    "arch": "fd",
+    "referenceVersion": "10.5.0-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "fd",
+    "group": "applications"
+  },
+  {
+    "arch": "ffmpegthumbnailer",
+    "referenceVersion": "2.3.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "ffmpegthumbnailer",
+    "group": "applications"
+  },
+  {
+    "arch": "firefox",
+    "referenceVersion": "155.0.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "firefox",
+    "group": "applications"
+  },
+  {
+    "arch": "flatpak",
+    "referenceVersion": "1:1.18.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "flatpak",
+    "group": "applications"
+  },
+  {
+    "arch": "flutter",
+    "referenceVersion": "3.41.2-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "flutter",
+    "group": "applications"
+  },
+  {
+    "arch": "fontconfig",
+    "referenceVersion": "2:2.18.3-2",
+    "kind": "module",
+    "reason": "Font module"
+  },
+  {
+    "arch": "fuse2",
+    "referenceVersion": "2.9.9-6",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "fuse2",
+    "group": "applications"
+  },
+  {
+    "arch": "fzf",
+    "referenceVersion": "0.74.3-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "fzf",
+    "group": "applications"
+  },
+  {
+    "arch": "gcc-fortran",
+    "referenceVersion": "16.2.1+r23+gd564253eb6c8-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "gfortran",
+    "group": "applications"
+  },
+  {
+    "arch": "ghostty",
+    "referenceVersion": "1.3.1-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "ghostty",
+    "group": "applications"
+  },
+  {
+    "arch": "git",
+    "referenceVersion": "2.55.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "git",
+    "group": "applications"
+  },
+  {
+    "arch": "git-delta",
+    "referenceVersion": "0.19.2-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "delta",
+    "group": "applications"
+  },
+  {
+    "arch": "git-filter-repo",
+    "referenceVersion": "2.47.0-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "git-filter-repo",
+    "group": "applications"
+  },
+  {
+    "arch": "github-cli",
+    "referenceVersion": "2.100.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "github-cli",
+    "group": "applications"
+  },
+  {
+    "arch": "gnome-calculator",
+    "referenceVersion": "50.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "gnome-calculator",
+    "group": "applications"
+  },
+  {
+    "arch": "gnome-disk-utility",
+    "referenceVersion": "46.1-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "gnome-disk-utility",
+    "group": "applications"
+  },
+  {
+    "arch": "gnome-keyring",
+    "referenceVersion": "1:50.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "gnome-keyring",
+    "group": "applications"
+  },
+  {
+    "arch": "gnome-themes-extra",
+    "referenceVersion": "1:3.28-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "gnome-themes-extra",
+    "group": "applications"
+  },
+  {
+    "arch": "gpu-screen-recorder",
+    "referenceVersion": "6.1.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "gpu-screen-recorder",
+    "group": "applications"
+  },
+  {
+    "arch": "grim",
+    "referenceVersion": "1.5.0-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "grim",
+    "group": "applications"
+  },
+  {
+    "arch": "gst-plugin-pipewire",
+    "referenceVersion": "1:1.6.8-1",
+    "kind": "module",
+    "reason": "PipeWire GStreamer integration"
+  },
+  {
+    "arch": "gum",
+    "referenceVersion": "2.0.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "gum",
+    "group": "applications"
+  },
+  {
+    "arch": "gvfs-mtp",
+    "referenceVersion": "1.60.2-4",
+    "kind": "module",
+    "reason": "GVFS module"
+  },
+  {
+    "arch": "gvfs-nfs",
+    "referenceVersion": "1.60.2-4",
+    "kind": "module",
+    "reason": "GVFS module"
+  },
+  {
+    "arch": "gvfs-smb",
+    "referenceVersion": "1.60.2-4",
+    "kind": "module",
+    "reason": "GVFS module"
+  },
+  {
+    "arch": "hlint",
+    "referenceVersion": "3.6.1-68",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "hlint",
+    "group": "applications"
+  },
+  {
+    "arch": "htop",
+    "referenceVersion": "3.5.3-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "htop",
+    "group": "applications"
+  },
+  {
+    "arch": "hypridle",
+    "referenceVersion": "0.1.8-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "hypridle",
+    "group": "applications"
+  },
+  {
+    "arch": "hyprland",
+    "referenceVersion": "0.56.2-2",
+    "kind": "module",
+    "reason": "Pinned compositor and Hyprspace package"
+  },
+  {
+    "arch": "hyprland-guiutils",
+    "referenceVersion": "0.2.2-3",
+    "kind": "module",
+    "reason": "Pinned compositor input provides dialog utilities"
+  },
+  {
+    "arch": "hyprland-preview-share-picker",
+    "referenceVersion": "0.2.1-1",
+    "kind": "package",
+    "source": "unstable",
+    "attribute": "hyprland-preview-share-picker",
+    "group": "applications"
+  },
+  {
+    "arch": "hyprlock",
+    "referenceVersion": "0.9.6-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "hyprlock",
+    "group": "applications"
+  },
+  {
+    "arch": "hyprpicker",
+    "referenceVersion": "0.4.7-4",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "hyprpicker",
+    "group": "applications"
+  },
+  {
+    "arch": "hyprsunset",
+    "referenceVersion": "0.4.0-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "hyprsunset",
+    "group": "applications"
+  },
+  {
+    "arch": "imagemagick",
+    "referenceVersion": "7.1.2.31-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "imagemagick",
+    "group": "applications"
+  },
+  {
+    "arch": "impala",
+    "referenceVersion": "0.9.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "impala",
+    "group": "applications"
+  },
+  {
+    "arch": "imv",
+    "referenceVersion": "5.0.1-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "imv",
+    "group": "applications"
+  },
+  {
+    "arch": "inetutils",
+    "referenceVersion": "2.8-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "inetutils",
+    "group": "applications"
+  },
+  {
+    "arch": "inxi",
+    "referenceVersion": "3.3.41.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "inxi",
+    "group": "applications"
+  },
+  {
+    "arch": "iwd",
+    "referenceVersion": "3.12-1",
+    "kind": "module",
+    "reason": "Wireless module"
+  },
+  {
+    "arch": "jq",
+    "referenceVersion": "1.8.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "jq",
+    "group": "applications"
+  },
+  {
+    "arch": "kdenlive",
+    "referenceVersion": "26.08.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "kdePackages.kdenlive",
+    "group": "applications"
+  },
+  {
+    "arch": "kernel-modules-hook",
+    "referenceVersion": "0.1.7-3",
+    "kind": "module",
+    "reason": "NixOS kernel generation management"
+  },
+  {
+    "arch": "kvantum-qt5",
+    "referenceVersion": "1.1.8-1",
+    "kind": "module",
+    "reason": "Qt appearance module"
+  },
+  {
+    "arch": "lazydocker",
+    "referenceVersion": "0.25.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "lazydocker",
+    "group": "applications"
+  },
+  {
+    "arch": "lazygit",
+    "referenceVersion": "0.65.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "lazygit",
+    "group": "applications"
+  },
+  {
+    "arch": "less",
+    "referenceVersion": "1:704-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "less",
+    "group": "applications"
+  },
+  {
+    "arch": "libpulse",
+    "referenceVersion": "17.0+r98+gb096704c0-1",
+    "kind": "module",
+    "source": "stable",
+    "attribute": "libpulseaudio",
+    "group": "applications",
+    "note": "PipeWire provides PulseAudio compatibility; pulseaudio supplies client commands and the shared libraries. Avoid duplicate profile links from libpulseaudio."
+  },
+  {
+    "arch": "libqalculate",
+    "referenceVersion": "5.12.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "libqalculate",
+    "group": "applications"
+  },
+  {
+    "arch": "libreoffice-fresh",
+    "referenceVersion": "26.8.0-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "libreoffice-fresh",
+    "group": "applications"
+  },
+  {
+    "arch": "libyaml",
+    "referenceVersion": "0.2.5-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "libyaml",
+    "group": "applications"
+  },
+  {
+    "arch": "limine",
+    "referenceVersion": "12.8.0-1",
+    "kind": "module",
+    "reason": "Systemd-boot module"
+  },
+  {
+    "arch": "limine-mkinitcpio-hook",
+    "referenceVersion": "1.38.0-1.1",
+    "kind": "module",
+    "reason": "NixOS boot generation management"
+  },
+  {
+    "arch": "limine-snapper-sync",
+    "referenceVersion": "1.31.0-1.1",
+    "kind": "module",
+    "reason": "NixOS generations and separate data snapshots"
+  },
+  {
+    "arch": "linux",
+    "referenceVersion": "7.2.3.arch1-3",
+    "kind": "module",
+    "reason": "NixOS kernel module"
+  },
+  {
+    "arch": "linux-firmware",
+    "referenceVersion": "20260810-2",
+    "kind": "module",
+    "reason": "Firmware module"
+  },
+  {
+    "arch": "llvm",
+    "referenceVersion": "22.1.8-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "llvm",
+    "group": "applications"
+  },
+  {
+    "arch": "localsend",
+    "referenceVersion": "1.18.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "localsend",
+    "group": "applications"
+  },
+  {
+    "arch": "luarocks",
+    "referenceVersion": "3.13.0-5",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "luarocks",
+    "group": "applications"
+  },
+  {
+    "arch": "mako",
+    "referenceVersion": "1.11.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "mako",
+    "group": "applications"
+  },
+  {
+    "arch": "man-db",
+    "referenceVersion": "2.13.1-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "man-db",
+    "group": "applications"
+  },
+  {
+    "arch": "mariadb-libs",
+    "referenceVersion": "12.3.3-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "mariadb",
+    "group": "applications"
+  },
+  {
+    "arch": "mise",
+    "referenceVersion": "2026.9.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "mise",
+    "group": "applications"
+  },
+  {
+    "arch": "mission-center",
+    "referenceVersion": "1.2.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "mission-center",
+    "group": "applications"
+  },
+  {
+    "arch": "mpv",
+    "referenceVersion": "1:0.41.0-6",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "mpv",
+    "group": "applications"
+  },
+  {
+    "arch": "nautilus",
+    "referenceVersion": "50.3.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "nautilus",
+    "group": "applications"
+  },
+  {
+    "arch": "nautilus-python",
+    "referenceVersion": "4.1.0-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "nautilus-python",
+    "group": "applications"
+  },
+  {
+    "arch": "neovim",
+    "referenceVersion": "0.12.5-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "neovim",
+    "group": "applications"
+  },
+  {
+    "arch": "nlohmann-json",
+    "referenceVersion": "3.12.0-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "nlohmann_json",
+    "group": "applications"
+  },
+  {
+    "arch": "nordvpn-bin",
+    "referenceVersion": "5.4.1-1",
+    "kind": "module",
+    "reason": "NordVPN module from pinned unstable input"
+  },
+  {
+    "arch": "nordvpn-tui-bin",
+    "referenceVersion": "0.1.0-1",
+    "kind": "custom",
+    "attribute": "nordvpn-tui",
+    "group": "applications"
+  },
+  {
+    "arch": "noto-fonts",
+    "referenceVersion": "1:2026.09.01-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "noto-fonts",
+    "group": "applications"
+  },
+  {
+    "arch": "noto-fonts-cjk",
+    "referenceVersion": "20240730-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "noto-fonts-cjk-sans",
+    "group": "applications"
+  },
+  {
+    "arch": "noto-fonts-emoji",
+    "referenceVersion": "1:2.051-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "noto-fonts-color-emoji",
+    "group": "applications"
+  },
+  {
+    "arch": "noto-fonts-extra",
+    "referenceVersion": "1:2026.09.01-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "noto-fonts",
+    "group": "applications"
+  },
+  {
+    "arch": "nss-mdns",
+    "referenceVersion": "0.15.1-2",
+    "kind": "module",
+    "reason": "Avahi module"
+  },
+  {
+    "arch": "obs-studio",
+    "referenceVersion": "32.2.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "obs-studio",
+    "group": "applications"
+  },
+  {
+    "arch": "obsidian",
+    "referenceVersion": "1.13.7-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "obsidian",
+    "group": "applications"
+  },
+  {
+    "arch": "oh-my-posh",
+    "referenceVersion": "30.9.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "oh-my-posh",
+    "group": "applications"
+  },
+  {
+    "arch": "omarchy-keyring",
+    "referenceVersion": "20251027-1",
+    "kind": "module",
+    "reason": "Nixpkgs verified package sources"
+  },
+  {
+    "arch": "omarchy-nvim",
+    "referenceVersion": "2026.8.13-1",
+    "kind": "module",
+    "reason": "Locked native editor configuration"
+  },
+  {
+    "arch": "omarchy-walker",
+    "referenceVersion": "1.0.0-2",
+    "kind": "module",
+    "reason": "Pinned Walker/Elephant companions"
+  },
+  {
+    "arch": "openbsd-netcat",
+    "referenceVersion": "1.238_1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "netcat-openbsd",
+    "group": "applications"
+  },
+  {
+    "arch": "opencode",
+    "referenceVersion": "1.18.29-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "opencode",
+    "group": "applications"
+  },
+  {
+    "arch": "openconnect",
+    "referenceVersion": "1:9.21-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "openconnect",
+    "group": "applications"
+  },
+  {
+    "arch": "otf-font-awesome",
+    "referenceVersion": "7.3.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "font-awesome",
+    "group": "applications"
+  },
+  {
+    "arch": "pamixer",
+    "referenceVersion": "1.6-4",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "pamixer",
+    "group": "applications"
+  },
+  {
+    "arch": "pass",
+    "referenceVersion": "1.7.4-7",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "pass",
+    "group": "applications"
+  },
+  {
+    "arch": "pinta",
+    "referenceVersion": "3.1.2-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "pinta",
+    "group": "applications"
+  },
+  {
+    "arch": "pipewire",
+    "referenceVersion": "1:1.6.8-1",
+    "kind": "module",
+    "reason": "Audio module"
+  },
+  {
+    "arch": "pipewire-alsa",
+    "referenceVersion": "1:1.6.8-1",
+    "kind": "module",
+    "reason": "Audio module"
+  },
+  {
+    "arch": "pipewire-jack",
+    "referenceVersion": "1:1.6.8-1",
+    "kind": "module",
+    "reason": "Audio module"
+  },
+  {
+    "arch": "pipewire-pulse",
+    "referenceVersion": "1:1.6.8-1",
+    "kind": "module",
+    "reason": "Audio module"
+  },
+  {
+    "arch": "playerctl",
+    "referenceVersion": "2.4.1-5",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "playerctl",
+    "group": "applications"
+  },
+  {
+    "arch": "plocate",
+    "referenceVersion": "1.1.25-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "plocate",
+    "group": "applications"
+  },
+  {
+    "arch": "plymouth",
+    "referenceVersion": "26.134.222-2",
+    "kind": "module",
+    "reason": "Neutral boot presentation module"
+  },
+  {
+    "arch": "pnpm",
+    "referenceVersion": "11.3.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "pnpm",
+    "group": "applications"
+  },
+  {
+    "arch": "polkit-gnome",
+    "referenceVersion": "0.105-12",
+    "kind": "module",
+    "reason": "Desktop authentication service"
+  },
+  {
+    "arch": "postgresql-libs",
+    "referenceVersion": "18.6-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "postgresql",
+    "group": "applications"
+  },
+  {
+    "arch": "power-profiles-daemon",
+    "referenceVersion": "0.30-1",
+    "kind": "module",
+    "reason": "Host power module"
+  },
+  {
+    "arch": "python-gobject",
+    "referenceVersion": "3.56.3-1",
+    "kind": "module",
+    "reason": "Shared Python environment in Home Manager"
+  },
+  {
+    "arch": "python-matplotlib",
+    "referenceVersion": "3.11.1-1",
+    "kind": "module",
+    "reason": "Shared Python environment in Home Manager"
+  },
+  {
+    "arch": "python-numpy",
+    "referenceVersion": "2.5.3-1",
+    "kind": "module",
+    "reason": "Shared Python environment in Home Manager"
+  },
+  {
+    "arch": "python-pip",
+    "referenceVersion": "26.2.1-1",
+    "kind": "module",
+    "reason": "Shared Python environment in Home Manager"
+  },
+  {
+    "arch": "python-poetry-core",
+    "referenceVersion": "2.4.1-1",
+    "kind": "module",
+    "reason": "Shared Python environment in Home Manager"
+  },
+  {
+    "arch": "python-terminaltexteffects",
+    "referenceVersion": "0.15.0-1",
+    "kind": "module",
+    "reason": "Shared Python environment in Home Manager"
+  },
+  {
+    "arch": "qbittorrent",
+    "referenceVersion": "5.2.3-3",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "qbittorrent",
+    "group": "applications"
+  },
+  {
+    "arch": "qt5-wayland",
+    "referenceVersion": "5.15.19+kde+r55-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "libsForQt5.qt5.qtwayland",
+    "group": "applications"
+  },
+  {
+    "arch": "r",
+    "referenceVersion": "4.6.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "R",
+    "group": "applications"
+  },
+  {
+    "arch": "ripgrep",
+    "referenceVersion": "15.2.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "ripgrep",
+    "group": "applications"
+  },
+  {
+    "arch": "ruby",
+    "referenceVersion": "3.4.10-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "ruby",
+    "group": "applications"
+  },
+  {
+    "arch": "rust",
+    "referenceVersion": "1:1.98.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "rustc",
+    "group": "applications"
+  },
+  {
+    "arch": "satty",
+    "referenceVersion": "0.22.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "satty",
+    "group": "applications"
+  },
+  {
+    "arch": "scc",
+    "referenceVersion": "3.7.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "scc",
+    "group": "applications"
+  },
+  {
+    "arch": "sddm",
+    "referenceVersion": "0.21.0-7",
+    "kind": "module",
+    "reason": "Display manager module"
+  },
+  {
+    "arch": "slack-desktop",
+    "referenceVersion": "4.52.178-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "slack",
+    "group": "applications"
+  },
+  {
+    "arch": "slurp",
+    "referenceVersion": "1.5.0-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "slurp",
+    "group": "applications"
+  },
+  {
+    "arch": "snapper",
+    "referenceVersion": "0.13.1-3",
+    "kind": "module",
+    "reason": "Btrfs data snapshots module"
+  },
+  {
+    "arch": "socat",
+    "referenceVersion": "1.8.1.3-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "socat",
+    "group": "applications"
+  },
+  {
+    "arch": "sof-firmware",
+    "referenceVersion": "2025.12.2-1",
+    "kind": "module",
+    "reason": "Firmware module"
+  },
+  {
+    "arch": "spotify",
+    "referenceVersion": "1:1.3.4.258-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "spotify",
+    "group": "applications"
+  },
+  {
+    "arch": "sshfs",
+    "referenceVersion": "3.7.6-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "sshfs",
+    "group": "applications"
+  },
+  {
+    "arch": "starship",
+    "referenceVersion": "1.26.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "starship",
+    "group": "applications"
+  },
+  {
+    "arch": "steam",
+    "referenceVersion": "1.0.0.87-3",
+    "kind": "module",
+    "reason": "NixOS Steam runtime with 32-bit graphics"
+  },
+  {
+    "arch": "stow",
+    "referenceVersion": "2.4.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "stow",
+    "group": "applications"
+  },
+  {
+    "arch": "stripe-cli",
+    "referenceVersion": "1.42.11-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "stripe-cli",
+    "group": "applications"
+  },
+  {
+    "arch": "sushi",
+    "referenceVersion": "50.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "sushi",
+    "group": "applications"
+  },
+  {
+    "arch": "swaybg",
+    "referenceVersion": "1.2.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "swaybg",
+    "group": "applications"
+  },
+  {
+    "arch": "swayosd",
+    "referenceVersion": "0.3.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "swayosd",
+    "group": "applications"
+  },
+  {
+    "arch": "sweethome3d",
+    "referenceVersion": "7.5-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "sweethome3d.application",
+    "group": "applications"
+  },
+  {
+    "arch": "system-config-printer",
+    "referenceVersion": "1.5.18-7",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "system-config-printer",
+    "group": "applications"
+  },
+  {
+    "arch": "tailscale-git",
+    "referenceVersion": "1.99.84+t4aef02376-1",
+    "kind": "module",
+    "reason": "Tailscale module"
+  },
+  {
+    "arch": "tealdeer",
+    "referenceVersion": "1.9.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "tealdeer",
+    "group": "applications"
+  },
+  {
+    "arch": "tesseract-data-eng",
+    "referenceVersion": "2:4.1.0-5",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "tesseract",
+    "group": "applications"
+  },
+  {
+    "arch": "texlive-basic",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-bibtexextra",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-binextra",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-context",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-fontsextra",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-fontsrecommended",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-fontutils",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-formatsextra",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-games",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-humanities",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-latex",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-latexextra",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-latexrecommended",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-luatex",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-mathscience",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-metapost",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-music",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-pictures",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-plaingeneric",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-pstricks",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-publishers",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "texlive-xetex",
+    "referenceVersion": "2026.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "texlive.combined.scheme-full",
+    "group": "scientific"
+  },
+  {
+    "arch": "tmux",
+    "referenceVersion": "3.7_c-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "tmux",
+    "group": "applications"
+  },
+  {
+    "arch": "tobi-try",
+    "referenceVersion": "1.10.1-3",
+    "kind": "custom",
+    "attribute": "tobi-try",
+    "group": "applications"
+  },
+  {
+    "arch": "tree",
+    "referenceVersion": "2.3.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "tree",
+    "group": "applications"
+  },
+  {
+    "arch": "tree-sitter-cli",
+    "referenceVersion": "0.26.9-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "tree-sitter",
+    "group": "applications"
+  },
+  {
+    "arch": "ttf-cascadia-mono-nerd",
+    "referenceVersion": "3.5.1-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "nerd-fonts.caskaydia-mono",
+    "group": "applications"
+  },
+  {
+    "arch": "ttf-ia-writer",
+    "referenceVersion": "20261002.r63-3",
+    "kind": "module",
+    "reason": "All three iA Writer font families installed by fonts module"
+  },
+  {
+    "arch": "ttf-jetbrains-mono-nerd",
+    "referenceVersion": "3.5.1-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "nerd-fonts.jetbrains-mono",
+    "group": "applications"
+  },
+  {
+    "arch": "ttf-nerd-fonts-symbols",
+    "referenceVersion": "3.5.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "nerd-fonts.symbols-only",
+    "group": "applications"
+  },
+  {
+    "arch": "ttf-nerd-fonts-symbols-mono",
+    "referenceVersion": "3.5.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "nerd-fonts.symbols-only",
+    "group": "applications"
+  },
+  {
+    "arch": "twingate",
+    "referenceVersion": "2026.239.6882-1",
+    "kind": "package",
+    "source": "unstable",
+    "attribute": "twingate",
+    "group": "applications"
+  },
+  {
+    "arch": "tzupdate",
+    "referenceVersion": "3.1.0-2",
+    "kind": "module",
+    "reason": "Declarative Europe/Copenhagen time zone"
+  },
+  {
+    "arch": "ueberzugpp",
+    "referenceVersion": "2.9.10-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "ueberzugpp",
+    "group": "applications"
+  },
+  {
+    "arch": "ufw",
+    "referenceVersion": "0.36.2-7",
+    "kind": "module",
+    "reason": "NixOS firewall module"
+  },
+  {
+    "arch": "ufw-docker",
+    "referenceVersion": "251123-2",
+    "kind": "module",
+    "reason": "NixOS firewall and Docker forwarding"
+  },
+  {
+    "arch": "unimatrix-git",
+    "referenceVersion": "r103.dff519f-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "unimatrix",
+    "group": "applications"
+  },
+  {
+    "arch": "unzip",
+    "referenceVersion": "6.0-23",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "unzip",
+    "group": "applications"
+  },
+  {
+    "arch": "usage",
+    "referenceVersion": "5.1.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "usage",
+    "group": "applications"
+  },
+  {
+    "arch": "uv",
+    "referenceVersion": "0.12.10-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "uv",
+    "group": "applications"
+  },
+  {
+    "arch": "uwsm",
+    "referenceVersion": "0.26.7-1",
+    "kind": "module",
+    "reason": "NixOS compositor session module"
+  },
+  {
+    "arch": "virtualbox",
+    "referenceVersion": "7.2.16-1",
+    "kind": "excluded",
+    "reason": "Excluded: no virtual machines in the migration"
+  },
+  {
+    "arch": "virtualbox-host-dkms",
+    "referenceVersion": "7.2.16-1",
+    "kind": "excluded",
+    "reason": "Excluded: no virtual machines in the migration"
+  },
+  {
+    "arch": "visidata",
+    "referenceVersion": "3.4-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "visidata",
+    "group": "applications"
+  },
+  {
+    "arch": "visual-studio-code-bin",
+    "referenceVersion": "1.142.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "vscode",
+    "group": "applications"
+  },
+  {
+    "arch": "vulkan-headers",
+    "referenceVersion": "1:1.4.357.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "vulkan-headers",
+    "group": "applications"
+  },
+  {
+    "arch": "vulkan-radeon",
+    "referenceVersion": "1:26.2.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "mesa",
+    "group": "applications"
+  },
+  {
+    "arch": "vulkan-tools",
+    "referenceVersion": "1.4.357.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "vulkan-tools",
+    "group": "applications"
+  },
+  {
+    "arch": "w3m",
+    "referenceVersion": "0.5.6-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "w3m",
+    "group": "applications"
+  },
+  {
+    "arch": "waybar",
+    "referenceVersion": "0.15.0-3",
+    "kind": "custom",
+    "attribute": "waybar",
+    "group": "applications"
+  },
+  {
+    "arch": "waypaper",
+    "referenceVersion": "2.8-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "waypaper",
+    "group": "applications"
+  },
+  {
+    "arch": "wev",
+    "referenceVersion": "1.1.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "wev",
+    "group": "applications"
+  },
+  {
+    "arch": "whois",
+    "referenceVersion": "5.6.6-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "whois",
+    "group": "applications"
+  },
+  {
+    "arch": "wireless-regdb",
+    "referenceVersion": "2026.05.30-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "wireless-regdb",
+    "group": "applications"
+  },
+  {
+    "arch": "wiremix",
+    "referenceVersion": "0.11.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "wiremix",
+    "group": "applications"
+  },
+  {
+    "arch": "wireplumber",
+    "referenceVersion": "0.5.17-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "wireplumber",
+    "group": "applications"
+  },
+  {
+    "arch": "wl-clipboard",
+    "referenceVersion": "1:2.3.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "wl-clipboard",
+    "group": "applications"
+  },
+  {
+    "arch": "woff2-font-awesome",
+    "referenceVersion": "7.3.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "font-awesome",
+    "group": "applications"
+  },
+  {
+    "arch": "wtype",
+    "referenceVersion": "0.4-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "wtype",
+    "group": "applications"
+  },
+  {
+    "arch": "xdg-desktop-portal-gtk",
+    "referenceVersion": "1.15.3-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "xdg-desktop-portal-gtk",
+    "group": "applications"
+  },
+  {
+    "arch": "xdg-desktop-portal-hyprland",
+    "referenceVersion": "1.4.1-2",
+    "kind": "module",
+    "reason": "Portal built against the pinned compositor"
+  },
+  {
+    "arch": "xdg-terminal-exec",
+    "referenceVersion": "0.14.3-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "xdg-terminal-exec",
+    "group": "applications"
+  },
+  {
+    "arch": "xmlstarlet",
+    "referenceVersion": "1.6.1-6",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "xmlstarlet",
+    "group": "applications"
+  },
+  {
+    "arch": "xournalpp",
+    "referenceVersion": "1.3.7-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "xournalpp",
+    "group": "applications"
+  },
+  {
+    "arch": "yaru-icon-theme",
+    "referenceVersion": "26.04.5.1ubuntu-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "yaru-theme",
+    "group": "applications"
+  },
+  {
+    "arch": "yay",
+    "referenceVersion": "13.0.1-1",
+    "kind": "module",
+    "reason": "Declarative Nix package management"
+  },
+  {
+    "arch": "ydotool",
+    "referenceVersion": "1.0.4-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "ydotool",
+    "group": "applications"
+  },
+  {
+    "arch": "yq",
+    "referenceVersion": "4.1.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "yq",
+    "group": "applications"
+  },
+  {
+    "arch": "zathura",
+    "referenceVersion": "2026.07.18-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "zathura",
+    "group": "applications"
+  },
+  {
+    "arch": "zathura-pdf-mupdf",
+    "referenceVersion": "2026.07.18-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "zathura",
+    "group": "applications"
+  },
+  {
+    "arch": "zoom",
+    "referenceVersion": "7.1.5-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "zoom",
+    "group": "applications"
+  },
+  {
+    "arch": "zotero",
+    "referenceVersion": "10.0.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "zotero",
+    "group": "applications"
+  },
+  {
+    "arch": "zoxide",
+    "referenceVersion": "0.10.0-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "zoxide",
+    "group": "applications"
+  },
+  {
+    "arch": "zram-generator",
+    "referenceVersion": "1.2.1-1",
+    "kind": "module",
+    "reason": "NixOS zram module"
+  },
+  {
+    "arch": "zsh",
+    "referenceVersion": "5.9.2-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "zsh",
+    "group": "applications"
+  },
+  {
+    "arch": "zsh-autosuggestions",
+    "referenceVersion": "0.7.1-1",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "zsh-autosuggestions",
+    "group": "applications"
+  },
+  {
+    "arch": "zsh-syntax-highlighting",
+    "referenceVersion": "0.8.0-2",
+    "kind": "package",
+    "source": "stable",
+    "attribute": "zsh-syntax-highlighting",
+    "group": "applications"
+  }
+]

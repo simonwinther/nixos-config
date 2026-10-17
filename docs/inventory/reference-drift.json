@@ -1,0 +1,306 @@
+{
+  "observed_at": "2026-10-17T19:59:01.920979+00:00",
+  "reference_host": "lambda",
+  "decision": "User confirmed keeping the inspected snapshot and listing the newer changes separately. Original files remain untouched.",
+  "later_changes": [
+    {
+      "status": " M",
+      "path": "README.md",
+      "sha256": "318ca64680645ea7b137565beb79c39bbdd13226d8e90e8343332efe7dae3e9c"
+    },
+    {
+      "status": " M",
+      "path": "background-grid/.config/background-grid/README.md",
+      "sha256": "dbe22a1de483349292ef1a7f3700130a36c191ee8b86eb143958344b2785c1fe"
+    },
+    {
+      "status": " D",
+      "path": "background-grid/.config/background-grid/picker.py"
+    },
+    {
+      "status": " M",
+      "path": "background-grid/.local/bin/background-grid",
+      "sha256": "fc8637bacc29cc085783c5eda063b5e55a1e25a3261d1a6825c8b20d34219e62"
+    },
+    {
+      "status": " M",
+      "path": "background-grid/.local/bin/background-grid-setup",
+      "sha256": "df8f7cba1b0ac49b40fcfecc9b0e9be98d02b071c3f98601d4b5a1725a15bfce"
+    },
+    {
+      "status": " M",
+      "path": "background-grid/README.md",
+      "sha256": "eaefa9335b4ea38dac6747a61e560d7b7ddb1d28a8fc2fb39db4b3b642c893a5"
+    },
+    {
+      "status": " M",
+      "path": "chrome/.local/bin/chatgpt-dictate-audio-duck-host",
+      "sha256": "dba4a1d0ab4dbfa1cac93d3054445110ae76a13c18ceb120c558f2815131b5cf"
+    },
+    {
+      "status": " M",
+      "path": "chrome/.local/bin/dictation-volume-duck",
+      "sha256": "663bd3bccde3115d3e205a960accb3058cb40afc65923be96d9ccb4ca737ff91"
+    },
+    {
+      "status": " M",
+      "path": "chrome/extensions/chatgpt-dictate/README.md",
+      "sha256": "e81a249f95ab9e81077c02535644131754bdddcdcc81de71eaadca5dbb7a6d5f"
+    },
+    {
+      "status": " M",
+      "path": "hypr/.local/bin/globalsnip",
+      "sha256": "8b7e24c1d75a64e190fbaf108aad13924f298d7e6635727d504aff12d25d5fe5"
+    },
+    {
+      "status": " M",
+      "path": "hypr/.local/bin/macro-picker",
+      "sha256": "3a35cb31621e7c2d3e9be277514eef371011942b4155b65641efce40a08b6186"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/bin/background-grid-build",
+      "sha256": "27ed9e3c9df85fe23f5fb5ef6b2f4a9309221017dac663505ef28cc7849768fe"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/Cargo.toml",
+      "sha256": "8db0d0a9f3ef2334f1f144ac42462342298f16ef354a94e8d2aa66805ffffca3"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/src/catalog.rs",
+      "sha256": "b0a78bd6e02abeb54b250ce7f17b13bd259e900c9184644caa1745fcda557279"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/src/config.rs",
+      "sha256": "fdeb96cbfda553d9ecd1b99a703c4d025ae7f835a5ba8e3098198ee7b9fd1b50"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/src/lib.rs",
+      "sha256": "580dce6580e5a00a500aed86e2d0cdd100b28a617ad2ac6d4a2e59cb9f93dacc"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/src/main.rs",
+      "sha256": "ac0badfed8363e7794fdbb1970cbe14ca964b2bd1d543c2cedf36f38391a50a0"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/src/setup.rs",
+      "sha256": "91c6e2feee6f45678c8cd765000d3ceec76f6d4f8d7c865a8d8e1b353b02227f"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/src/thumbnail.rs",
+      "sha256": "d1a06d78d1d9227ab2a490b7bdb6e858df42e34faa3f96bee3fc3399039e7754"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/src/ui.rs",
+      "sha256": "ea76e9b5f990a0e882438ac2505d20315b4cfd030a2515cfc3523bf6ca3fc69e"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/src/wallpaper.rs",
+      "sha256": "78272dacaea481715a968fd16412945e51545a1d9e1c2317a4031736cb9ade89"
+    },
+    {
+      "status": "??",
+      "path": "background-grid/.local/share/background-grid/tests/commands.rs",
+      "sha256": "8d1284cff7ea036a44dc4cf6bbb6c1ed39f5cdf4b0acb4755235b5d32c020974"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/bin/dictation-volume-duck-build",
+      "sha256": "e9ed101a3824d4dd4cccf053c2983cb1b77ba08233a12befff0c58f4d5e970ce"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/share/dictation-volume-duck/Cargo.toml",
+      "sha256": "7af12b103ae23704a2bf46decc2538ea0f307edfde5421ba96c63eb5ab24e6ac"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/share/dictation-volume-duck/src/audio.rs",
+      "sha256": "51a7456fbda360b5ac8fb37ae275ad445622007fe0980fb51dba7f1a13a48f09"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/share/dictation-volume-duck/src/command.rs",
+      "sha256": "561a8d1673a9d5f67ab824303e21e542dd0bd806d7ae387daad78f44eb0a7aea"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/share/dictation-volume-duck/src/lib.rs",
+      "sha256": "a76a26fe392ff31c7edf7c654027cd531495931998fd231cff38e73b79b7c47c"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/share/dictation-volume-duck/src/main.rs",
+      "sha256": "c7700b62ccb74cea2ecc1b64d17f0f680be03e30873aedf99b7f3f2375581976"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/share/dictation-volume-duck/src/native.rs",
+      "sha256": "4f7025d314d5b99a311370af428e6d57efdaab90d0c3c6ccb60e762ace0ae876"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/share/dictation-volume-duck/src/state.rs",
+      "sha256": "7868cf1e04032929dacf839ee7cef503094eae255efa4e67be8cfb1e495a52e3"
+    },
+    {
+      "status": "??",
+      "path": "chrome/.local/share/dictation-volume-duck/tests/commands.rs",
+      "sha256": "43f0a68fd7da8342f64b8cea6a566ae26bcf99c557dc649f2b60a6173515ebce"
+    },
+    {
+      "status": "??",
+      "path": "chrome/README.md",
+      "sha256": "b5889f724cfbf0cc36eb56bd24d61ed0a9a80df0bf318d8faf45f0d0d10fea7c"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.config/systemd/user/taildrop-receive.service",
+      "sha256": "716e1f9257fdb0140c94ba2eb25de9c9709ef962752d7ee65ab470e18c2fde2d"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/bin/iphone-transfer",
+      "sha256": "a2727565f75b4a353ca139e7b436c1ab02fa299863d09470c0b400a814e99766"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/bin/iphone-transfer-build",
+      "sha256": "7203a9999e742243aadb5d460eedeb4039bb460f02edbba120c53602b8dd1236"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/bin/receive-iphone-files",
+      "sha256": "7e49ea77cb299b4cda74159efb6231a54bc783a2536e7011ba17a2dee37c0df8"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/bin/send-to-iphone",
+      "sha256": "7ff8ec66423539a3920c640fc18a333bc743a876a5117f5b0522751cd5dfd6bb"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/applications/iphone-files.desktop",
+      "sha256": "89d6f3b124c1b84c318711f97e0fa7df02ea2b274865fc95ef493f594e8bbfaf"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/applications/send-to-iphone.desktop",
+      "sha256": "7ba04f79a60771d744511ee8b14e942a462cdaa9c4001e088e28c14301cd9b14"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/iphone-transfer/Cargo.toml",
+      "sha256": "c5b86c69cc781353286a33d7fa071439974dfb5ea2410aea73cfa4fea55fb1ab"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/iphone-transfer/src/api.rs",
+      "sha256": "5c9917464228a5f80cf328a6ad5058f2128a677d964379e229f487162ce31f3a"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/iphone-transfer/src/lib.rs",
+      "sha256": "5ce25fe70283d2e19f02d450142108a8434ff984ed778f530a18efb5ec743951"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/iphone-transfer/src/main.rs",
+      "sha256": "393ea80bc495e4bf21730335b9f21b1b7365967ba9cceef5aa1e576d8eb4eea5"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/iphone-transfer/src/process.rs",
+      "sha256": "d40d597c3cf49d0adb321b47536d6f7e95264d84e1da26be7ddff34dab575510"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/iphone-transfer/src/receive.rs",
+      "sha256": "968fffec40deac91ca22334a7e910d7f3dfe9948a1b0dadbbdb62cf9bf68a654"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/iphone-transfer/src/send.rs",
+      "sha256": "50e398bfb9f49fd2ced06328cc2ba5e7d4c868fa70d4e1429a18bdb1e33f3e52"
+    },
+    {
+      "status": "??",
+      "path": "iphone-transfer/.local/share/nautilus/scripts/Send to iPhone",
+      "sha256": "2e9aa7959c7f67073c75efc5d943430f54e12ce72c6601b6ac4b88f7c987bdad"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.config/text-picker/macros.json",
+      "sha256": "beaec23e41eb98a64109a5f345fa484c5304aab9011b27f407942c8c65e37f2a"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.config/text-picker/snippets.json",
+      "sha256": "d310bf464fbeb4ad68e12bdd701e203d9ede94293f5b4b072577a93b578d8f06"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/bin/text-picker",
+      "sha256": "e0716c2e562e22c22f56109bcd229c3f673f21f26739acd3c865f28141ef7374"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/bin/text-picker-build",
+      "sha256": "3f85de1260cdb48fbccafd60174e3b83cd2d7aa340ea801cf33e45c192636d33"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/share/text-picker/Cargo.toml",
+      "sha256": "3356c76b93dc76ec235ffd8e35bc81a0f1fa36441db69d36d88a8ff8c8b0dfb9"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/share/text-picker/src/config.rs",
+      "sha256": "d5f275bbdfc372119fba41dacb2d62f29d7b6573c5d6a0e885931cc01b32d644"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/share/text-picker/src/handoff.rs",
+      "sha256": "9ef5d2495781e3101738f141c9d5dc8893ce23f9e82d2a942f0e25422506b995"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/share/text-picker/src/hyprland.rs",
+      "sha256": "3053e992197ea1b7afa8c5b16d0c3e26043e6faa5321afe5a89edfff3731ac3c"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/share/text-picker/src/lib.rs",
+      "sha256": "84d30c96fd57836cab83fef04379969ee23736b4fc8ad6c6bc025ce6a141de4e"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/share/text-picker/src/main.rs",
+      "sha256": "73aaaa4c2e3b07c5d16d22ef65bcbdd3e5271ff91ffdc75fc42bbd44eb383bd6"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/share/text-picker/src/paste.rs",
+      "sha256": "50addd741695396661c3579cfdfecc9a217fd096d354c6a800489c3e1ac4c2db"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/.local/share/text-picker/src/picker.rs",
+      "sha256": "e3f1be0c2082d1c3596007557363d3f65329676e699abe354eddd56e467e398b"
+    },
+    {
+      "status": "??",
+      "path": "text-picker/README.md",
+      "sha256": "14169ecfe0053ef5f48e1010a9e2b2d9362f9fe5399046c19d4c3b30029560ff"
+    }
+  ]
+}

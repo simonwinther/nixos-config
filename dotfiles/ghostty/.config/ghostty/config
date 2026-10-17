@@ -1,0 +1,93 @@
+# ~/.config/ghostty/config
+# Ctrl + Shift + ,
+
+# ------------------------------------------------------------
+# Font
+# ------------------------------------------------------------
+
+# Personal font and color settings are kept in this portable package.
+
+font-family = "JetBrainsMono Nerd Font"
+font-style = "Regular"
+font-style-bold = "Bold"
+font-style-italic = "Italic"
+font-style-bold-italic = "Bold Italic"
+font-size = 14
+
+font-feature = "calt"
+font-feature = "liga"
+
+
+# ------------------------------------------------------------
+# Theme
+# ------------------------------------------------------------
+
+# Manual: use SimonDark or SimonLight, then Ctrl+Shift+,.
+# Automatic: light:SimonLight,dark:SimonDark follows system appearance.
+# Keep color values in the theme files so they do not override switching.
+theme = light:SimonLight,dark:SimonDark
+
+# Make Ghostty UI/chrome follow the active appearance too.
+window-theme = auto
+
+
+# ------------------------------------------------------------
+# Window
+# ------------------------------------------------------------
+
+window-padding-x = 6, 6
+window-padding-y = 0, 6
+window-padding-balance = false
+window-padding-color = extend
+
+window-decoration = none
+
+confirm-close-surface = false
+resize-overlay = never
+gtk-toolbar-style = flat
+
+background-opacity = 1
+
+
+# ------------------------------------------------------------
+# Cursor
+# ------------------------------------------------------------
+
+cursor-style = block
+cursor-style-blink = false
+
+# Prevent Ghostty shell integration from changing the cursor.
+shell-integration-features = no-cursor
+
+
+# ------------------------------------------------------------
+# Custom cursor shader
+# ------------------------------------------------------------
+
+# custom-shader = ~/.config/ghostty/shaders/cursor_smear_fade.glsl
+# custom-shader-animation = true
+
+
+# ------------------------------------------------------------
+# Clipboard
+# ------------------------------------------------------------
+
+# btw: If I do this, I can't use V-BLOCK in Neovim
+#
+# # Use Ctrl+V to paste
+# keybind = ctrl+v=paste_from_clipboard
+# keybind = performable:ctrl+c=copy_to_clipboard
+#
+# # Remove the default Ctrl+Shift+C/V bindings
+# keybind = ctrl+shift+c=unbind
+# keybind = ctrl+shift+v=unbind
+
+
+# ------------------------------------------------------------
+# Performance
+# ------------------------------------------------------------
+
+# Fix general slowness on Hyprland:
+# https://github.com/ghostty-org/ghostty/discussions/3224
+
+async-backend = epoll

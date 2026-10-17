@@ -1,0 +1,14 @@
+[package]
+name = "breakd-config"
+version = "0.1.12"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+breakd-coop = { path = "../coop" }
+breakd-core = { path = "../core" }
+nix.workspace = true
+tempfile.workspace = true
+thiserror.workspace = true
+toml.workspace = true

@@ -1,0 +1,8 @@
+{ ... }:
+{
+  workstation = {
+    hardwareReviewed = false;
+    backupsVerified = false;
+    targetDisk = null;
+  };
+}

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Draw
+Comment=Draw
+Exec=desktopctl launch webapp https://draw.wintherne.dk/shared
+Terminal=false
+Type=Application
+Icon=Draw
+StartupNotify=true

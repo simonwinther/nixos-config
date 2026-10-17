@@ -1,0 +1,1873 @@
+{
+  "captured": "2026-10-17",
+  "reference_host": "lambda",
+  "dotfiles_commit": "a67e189b2c20df9eb23117f033e0f2626bc55f81",
+  "modified_reference_files": [
+    " M hypr/.config/hypr/monitors.lua",
+    " M nvim/.config/nvim/lazy-lock.json"
+  ],
+  "source_files": [
+    {
+      "source": "aerc/.config/aerc/accounts.conf",
+      "destination": "dotfiles/aerc/.config/aerc/accounts.conf",
+      "sha256": "ad7ed1deaef356cbaaadff26af3c9e6a496d2c7e5fa1c855d3504e2d15be2869"
+    },
+    {
+      "source": "aerc/.config/aerc/aerc.conf",
+      "destination": "dotfiles/aerc/.config/aerc/aerc.conf",
+      "sha256": "462051edd4b30b7c5e32b0456ff0e3a0e2411a544a56e1f3b1773a438b794576"
+    },
+    {
+      "source": "aerc/.config/aerc/binds.conf",
+      "destination": "dotfiles/aerc/.config/aerc/binds.conf",
+      "sha256": "4288a8ad38585232a47ec369157581b08d6590d6b0ffcd6cddecdd59b4f828d1"
+    },
+    {
+      "source": "background-grid/.config/background-grid/README.md",
+      "destination": "dotfiles/background-grid/.config/background-grid/README.md",
+      "sha256": "abd3934d652943ff8975d13bba0ae5560e990229cc68e7f6b5c4f77a5c6bb9f7"
+    },
+    {
+      "source": "background-grid/.config/background-grid/folders.json",
+      "destination": "dotfiles/background-grid/.config/background-grid/folders.json",
+      "sha256": "79db44ed543620a20ef24d6326ca3b8e58e2faf66b1c64e0c0fbd32e43fae829"
+    },
+    {
+      "source": "background-grid/.config/background-grid/picker.py",
+      "destination": "dotfiles/background-grid/.config/background-grid/picker.py",
+      "sha256": "a01174b2b300cb29296cd4238571bbdbca112e20d52f40f3aad6eac62dfa74b0"
+    },
+    {
+      "source": "background-grid/.config/background-grid/style.css",
+      "destination": "dotfiles/background-grid/.config/background-grid/style.css",
+      "sha256": "bc76109acd0ef7e2cb0ce54f01e36ccef8f5bc998d79300b1827760eb1d3f77c"
+    },
+    {
+      "source": "background-grid/.config/background-grid/transition.json",
+      "destination": "dotfiles/background-grid/.config/background-grid/transition.json",
+      "sha256": "5d8ed3d0f94d1129c9c4d677c30f86fc6b09e15714467ad07a53f956341d1fa0"
+    },
+    {
+      "source": "background-grid/.local/bin/background-grid",
+      "destination": "dotfiles/background-grid/.local/bin/background-grid",
+      "sha256": "1814614708efab9d9ebe2945f9d3e5a123c813f020e11f256f814a06743f3e8e"
+    },
+    {
+      "source": "background-grid/.stow-local-ignore",
+      "destination": "dotfiles/background-grid/.stow-local-ignore",
+      "sha256": "31f7d912be35c4dbf0c759b306d7a2908b3a123f44e1a704342e272278d02e3e"
+    },
+    {
+      "source": "background-grid/README.md",
+      "destination": "dotfiles/background-grid/README.md",
+      "sha256": "d98cdd927aee0c66f8bc7ac4be32d508cb884cbcd0e0319913c569aeb340c63f"
+    },
+    {
+      "source": "chrome/.local/bin/chatgpt-dictate-audio-duck-host",
+      "destination": "dotfiles/chrome/.local/bin/chatgpt-dictate-audio-duck-host",
+      "sha256": "7e2445f4b4c436ec9aab570345c766f141c4fbd6b151d318082bef4842f47966"
+    },
+    {
+      "source": "chrome/.local/bin/dictation-volume-duck",
+      "destination": "dotfiles/chrome/.local/bin/dictation-volume-duck",
+      "sha256": "d76719d746d92b2f54b3f840207b0414f624f3eec9f35e02ca3f7d8201b474d0"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-copy/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-copy/README.md",
+      "sha256": "e4d69c4500dc3ce2c96f90b910b1e54f8dd64cc7197237660d20a5c999869cd9"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-copy/background.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-copy/background.js",
+      "sha256": "9c33c99226e0bd1db71b962f7018c0918aac7a77541587e8fabd710781a73323"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-copy/content.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-copy/content.js",
+      "sha256": "59705f73330693dd8b6479ce839fea62cf32ffc7ed807fd622d88c049a9f3284"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-copy/controls.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-copy/controls.js",
+      "sha256": "576241e04a23a09240751ecd9c7eb7c42d44f2e229b6e4b1413c2b391ebe6111"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-copy/manifest.json",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-copy/manifest.json",
+      "sha256": "1028e4395e3028d34df882fd735c373b741dda830090f22e58e236d90c7c2f35"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-copy/popup.html",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-copy/popup.html",
+      "sha256": "b9249dc947098940873ccae7f0fc66dbefce312afc43754aba7747fb9ad0e959"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-copy/popup.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-copy/popup.js",
+      "sha256": "fe4250938d791f4e16daec93fff775b984eac3ec04770c72baf1fe0848b06ef9"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-dictate/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-dictate/README.md",
+      "sha256": "258c3f72b7a8e61f1772f6dd9f61e612691393ec41447483b8aef372efa332a3"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-dictate/background.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-dictate/background.js",
+      "sha256": "e8ece993a89d74a99d6e219f06ebff27d3410f904005d37bc1bf2e51d946e38b"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-dictate/content.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-dictate/content.js",
+      "sha256": "c1ba808cc02651103112ce7de97f05588f0ba659419297e27d0d1df171d3aaee"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-dictate/manifest.json",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-dictate/manifest.json",
+      "sha256": "2b5b05c6d17e3e11f1716ff46f7d0926a32153a90c8bdf61e4f4f70c3f144d2c"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/README.md",
+      "sha256": "dfa1e56b7a76158468f6fcddb218965fe026fb8752129e22fed594dc289cd1e7"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/background.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/background.js",
+      "sha256": "26843a1cf116b6485615f26f5757b71cb50ee15863dfc5e1a783ba261b0e9b07"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/content.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/content.js",
+      "sha256": "95fd309e1a197de901aa84cdf0056bbcfc5b3aeb8da218901b75bc3d88993862"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/history.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/history.js",
+      "sha256": "aed45d95170d1ee37c6d159539ca10d327e5f03c742c2744fbf59f385f127f78"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/history.test.mjs",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/history.test.mjs",
+      "sha256": "02bc2743111bee5b5ca4a59df6232014bd4d87759a5191c48ed136cf20bc057c"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/lifecycle.browser.mjs",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/lifecycle.browser.mjs",
+      "sha256": "f1c26b1666b2f12b021775f373f34da67b0fc41b6428e972e29b32dc2468a17c"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/manifest.json",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/manifest.json",
+      "sha256": "4016d9814cbe8eee8c5c2ec8577b2704273bb63706b093aebe46277463bdc8c1"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/math.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/math.js",
+      "sha256": "1b91bd53687b0b330638e207ee44927e75f89f62919d56f7db45621f31786219"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/math.test.mjs",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/math.test.mjs",
+      "sha256": "d3835e9a03ba21b1e9ec04df469cde580493e0f75a852d67092639fb42c5a47a"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/shortcuts.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/shortcuts.js",
+      "sha256": "c7d4be5460bfb8269794beae896601db2d141a0a041c4ea76a5407b3af57c981"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/LICENSE",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/LICENSE",
+      "sha256": "12b4e5592a12baaf50637881f2cb9d66667b26b8d51a73cd8f0d6bcefe176ab6"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/README.md",
+      "sha256": "54d050abc3e9bdcfff7397a80ce8b45b14a445bf6205c2006d97497b6dfadf86"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/math.css",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/math.css",
+      "sha256": "61b9396dde8c576efa929f6f25b02afe90d07af34197bc427100a7a81468f7e2"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/package.json",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/package.json",
+      "sha256": "609158e6c5fbc237939fa3ddf7faab80ab690bdc0c8d584414a885130103c4e8"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/Lexer.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/Lexer.js",
+      "sha256": "836ec9e9255c6bc1a01134897aef68e5b2e7e0a9868f88397bd1e9483515f01f"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/MacroExpander.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/MacroExpander.js",
+      "sha256": "5a1eb35ad9c3fd7a5b301b12fbd1e89c7dd076e1f3287b3f886716e3cbee8f9d"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/Namespace.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/Namespace.js",
+      "sha256": "69686cf402cea846bbae9ce753437edc880c4c70a974f2d45327548645898235"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/ParseError.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/ParseError.js",
+      "sha256": "4bda8129b29e424ce21ac264c380562558a415ccfb8e78632dcaa2fb8e9eb070"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/Parser.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/Parser.js",
+      "sha256": "ff9b41a5a2cd6dca89cbbab239e8c9c3026381bcf82c1ab61172c0225dad3c03"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/Settings.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/Settings.js",
+      "sha256": "a253d457760fb2a35bd55a3d8998312181fc7029fcb967cb3c5640e22b436947"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/SourceLocation.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/SourceLocation.js",
+      "sha256": "72131baef27046645f75d6f100fe81893de3bf4760b8ba0c679fb88355c45797"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/Style.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/Style.js",
+      "sha256": "dc3de27b4dbbf18ea19a19adeb5c9adeefabde1f411a28e2ee20acc1b6a61498"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/Token.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/Token.js",
+      "sha256": "5a16ab52126a4948e627ee57869080069c682e4c0c04c65e100fbc9b3ff7da6b"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/asciiFromScript.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/asciiFromScript.js",
+      "sha256": "8acd39ea8f67e8ffeddcde6c416a56f3d44e40c02acaa121db7ab9b0ba4ff4be"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/auto-render.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/auto-render.js",
+      "sha256": "59f260a8d65d758d4db4866e3122d822863eb100ceeed0384133e6d9cd5f3467"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/buildMathML.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/buildMathML.js",
+      "sha256": "affc51aab43c3ca3c0427b5ec317c1cdf0b40a11716dd9e2efb027b27dd9fa6e"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/constants.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/constants.js",
+      "sha256": "b08f85f1ce017f858a008e39f52f6233ed232b7bc2aa62e2df38e056e0efa9b6"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/defineEnvironment.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/defineEnvironment.js",
+      "sha256": "217dba15b49badf9aec89c71855c334ae5268e78d1eee44d3b101ecfdff209e1"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/defineFunction.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/defineFunction.js",
+      "sha256": "f4588510c98ecadd95d5be006f03d3a8ed2bbecd5612edee3eb83b82fa4b8059"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/defineMacro.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/defineMacro.js",
+      "sha256": "56b9c50f363aa27b87fd92168b7c557c79b03c1e9ce165a4cf1605d3d7f21065"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/domTree.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/domTree.js",
+      "sha256": "9f0f161b52a80175fcbe5950db30d14b8f582c631a0480190fd8447b21ecb3c7"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/environments.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/environments.js",
+      "sha256": "803334000a4d8c59f9c5a9847f84bf3386d5511d28ea8414bbbf32c560165ed4"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/environments/array.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/environments/array.js",
+      "sha256": "b9fd83c3f097ef66097b875f98754cd2521fa21ffadfaf862a9fc31ad22de316"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/environments/borderTree.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/environments/borderTree.js",
+      "sha256": "9a3d2dfb71e23bb540fd85b0802a5897f3533c4107c502b1cb75b2bfb02dccf0"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/environments/cd.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/environments/cd.js",
+      "sha256": "f6ccf5d2e1e912a83ae54fc8eaa5fa6a9d8c62abf94efe18eaa727dae8e64ee2"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions.js",
+      "sha256": "0f0498accf196aa5348b0a83f71f6b0945724284fa46cdee6c019d53d57d4484"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/accent.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/accent.js",
+      "sha256": "11c6a0e74fed9a8b89fd8e7b1afa6acd204d2b51b857003190ef67c21541b17f"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/accentunder.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/accentunder.js",
+      "sha256": "70c18e2c6a144293d593105ce934c478b41dc3a1c430f4da90681c517cb86376"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/arrow.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/arrow.js",
+      "sha256": "61aba8a88189ecbe1202fceb3c3d5c82924947b5804a757007b572abac29d500"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/bordermatrix.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/bordermatrix.js",
+      "sha256": "ccadb694a52fa8b1785556bac4e5be714ab3868e42a00e81f5e593a6645c0401"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/cancelto.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/cancelto.js",
+      "sha256": "df7bfef788233a156c028df830f34abc4114f8b5cfded43cc70d9a113aad9036"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/char.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/char.js",
+      "sha256": "dbe251364b746a7052cc938f866d33503bb2d2e655b9bb2beec824a26bea8453"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/color.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/color.js",
+      "sha256": "40e4eb884036eed7913af02e0efaa9f1fdf21c6b14c150cd4131ed5076c97ee1"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/cr.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/cr.js",
+      "sha256": "5ff832478b4c4dc501767c07293f3edfd6efc8dd35d13c9387c41dc213b05c24"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/def.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/def.js",
+      "sha256": "4d182c11723d65d404c2007c5d02d670102e0168f866b4e3eead1a044a52e7ce"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/delimiter.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/delimiter.js",
+      "sha256": "3719649af12373860ce1e118710779f5ccbd2eb59e597f7699e8c3439452a421"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/enclose.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/enclose.js",
+      "sha256": "31fd77066ca4d7d31c7b702fd49d2bf3964b877c81ddc85d26a06b38f6cdf58a"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/envTag.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/envTag.js",
+      "sha256": "30edb7c531370758bfcae38305d0d1dfb2bcdd473ffef984ea82c01338aa43f2"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/environment.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/environment.js",
+      "sha256": "8031da29a7b1a64efea5a995cf8ec9392bdbac5c4761d13940bfbc3055109e27"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/font.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/font.js",
+      "sha256": "35fb0bfbe3cb661ae2f4ddcc1c3680873930ad91d6fbdda32fa050cf1a09b271"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/genfrac.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/genfrac.js",
+      "sha256": "53fbee21faad447192e987d20c01d38e285be15b7bc72d990ef8171c6f219d98"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/hbox.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/hbox.js",
+      "sha256": "d1ddfc740612c1fbcbc568ffcf8851b545d46b6f2dd96a79bcafbee3ff14cd05"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/horizBracket.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/horizBracket.js",
+      "sha256": "af5bd5d82aa635cdfce40baca9d4ce75d57440d4683457146a1eb9295975c89b"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/html.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/html.js",
+      "sha256": "64777397df0f9e25d9bd5f40d65d223e039125469a041862f03bd5bfa3f06225"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/includegraphics.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/includegraphics.js",
+      "sha256": "f95ff0379f7cd700be0d0434e925ccb2c00cc735a714d1743a7ddeb5b80a093f"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/kern.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/kern.js",
+      "sha256": "e76b6343f3713755deace5517b6245e05b8495261d697696704a39e7bd381d24"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/label.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/label.js",
+      "sha256": "bd026afb6198df301a0e361506fd31d60ae1289cb22738fff7e327202b78c921"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/lap.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/lap.js",
+      "sha256": "b242d7cc68c43e3ca43cd4268ffdc448816dcc5988096b3aabe435446534d3ea"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/math.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/math.js",
+      "sha256": "197d1b03e5b9a78f641e98677e8c43adb9ebf2ce476b34e2a6ed566b15a8f2dd"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/mathchoice.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/mathchoice.js",
+      "sha256": "b5bac015eac1edd09ae2931fb32aacbfdf1b22e88738085fe797d2073ead1039"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/mclass.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/mclass.js",
+      "sha256": "3cfacc20659798c2f4669ac224aaa5e5c2dbd9bc21ecb054a9fe907c382507d1"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/multiscript.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/multiscript.js",
+      "sha256": "139a61603f20795ed4312f280a2fa9d922f6ae0df3cc6550694c6d56b0f3569f"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/not.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/not.js",
+      "sha256": "011825248a8b3ddcb11285aaf7b63a6002e0dd8f5d476d76e928006333c0aadd"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/op.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/op.js",
+      "sha256": "065fb7219a6854466c75c0c4ba7bf7f0d66572e37e37cd827f1f7a8941cfbce2"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/operatorname.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/operatorname.js",
+      "sha256": "ec0a6ad72ffb3016955c6e2612e79272e3b440eede7223fe0655c724165bfb01"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/ordgroup.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/ordgroup.js",
+      "sha256": "1f048db664f0655cbc2d3cab4aca25b84bad40130a3a7a10245d01d2047cf840"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/phantom.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/phantom.js",
+      "sha256": "cccd60b5584decd29f9af9ecc16f4da0a5563ce20a65b1b5f489e2a41a390dc3"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/pmb.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/pmb.js",
+      "sha256": "4b69bfc4a09fa319e0b4314e898b11f428769774ba281e2c036155f1438244b2"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/raise.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/raise.js",
+      "sha256": "dd23501cf08f0a4f516c430a46ee29951441ab20816379bb07bdb82675515b6b"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/ref.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/ref.js",
+      "sha256": "dc277afea944cdeef69b83e0548dd73cc7918360c1d75c4010f2fbd4fe3b0a3f"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/reflect.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/reflect.js",
+      "sha256": "5c62c62c040ddd52ab8f737a71de19e857288a873391a5b6fba4e07822f1728f"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/relax.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/relax.js",
+      "sha256": "ea3d3ef1ff89002a65210e4b2c17338f0e9f536734cff117386b45560978f011"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/rule.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/rule.js",
+      "sha256": "42fb084b20f874e6828b76fff65abc1ee8914092bc599713cc69f8a62f617639"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/sfrac.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/sfrac.js",
+      "sha256": "10cd0a4d70744d5f547528cbfe4a1d77cf8d26d2911d01a906051847d6a311b7"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/sizing.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/sizing.js",
+      "sha256": "954bd9c687c6c38ae990b830561e27ab46071220fa87bf6ae073be078935248d"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/smash.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/smash.js",
+      "sha256": "84d5d04550c10b90490b83cc794d283bfc0d08d4c15ae3abb6034b0b6fea6bad"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/sqrt.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/sqrt.js",
+      "sha256": "b01a3deff08a1c4b62744f81d688a21d1bb9f18cabbf24d8271a9c4507a9a64a"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/styling.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/styling.js",
+      "sha256": "4cdbc3eeafbd982041b5a4a61544a517f01758361f69c83651a84c3b104a307d"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/supsub.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/supsub.js",
+      "sha256": "49edcea2702fa7c9139e2b3eb172cf1cb236c73db3abc9deb7971fc0e406db21"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/symbolsOp.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/symbolsOp.js",
+      "sha256": "fdf767735214014c7a14d4b9e6dd35b3ffa393dad2f9c1ad832b6522f43ec9a6"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/symbolsOrd.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/symbolsOrd.js",
+      "sha256": "35bca08f0f0405fb45d0c823319bc50e5b6c09a41fa775101fa77471665240c8"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/symbolsSpacing.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/symbolsSpacing.js",
+      "sha256": "5570acadeacacaa4f60212148c6d95cf04e615f8f5dea24bb4cbc3ae31e65682"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/tag.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/tag.js",
+      "sha256": "e69e145820001b49dfb72cd459cee2160b5aa040f061de5e899cfcd2a2544129"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/text.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/text.js",
+      "sha256": "8da557191ce9609712c2cadf591354ec6742f4866803fa7f6a4ae37f9b85213f"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/tip.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/tip.js",
+      "sha256": "e548e1e50583f89a46f09f95832c68e498e72ef82dece6195308c0a21838972e"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/toggle.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/toggle.js",
+      "sha256": "3b10e89e3879e7c08893c97cfa9a24ae47ce3d463850f4b65c859d6e977de6da"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/vcenter.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/vcenter.js",
+      "sha256": "9d29af13c1062e4dbe62d3c02dc6fb52b000e6d0ca8fc95f251e4e27d0d2ba6e"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/functions/verb.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/functions/verb.js",
+      "sha256": "6b94d328089d89cadd7a5ca101150defade8537d6e2dfcb571dc0deae961ac31"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/linebreaking.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/linebreaking.js",
+      "sha256": "17cadeadbf06840510c90c52b61e96d341c73b2aceeeaebf13ae220075511eaa"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/macros.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/macros.js",
+      "sha256": "3027b66ccf72cfc2965cc2c786c22b7e7fe0fffe252611e0c94d52485efd66fa"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/mathMLTree.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/mathMLTree.js",
+      "sha256": "f3150b09e0296431b6c0486015bea0ce7ec90c2a6799aec3d4f517adfd9362e4"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/parseNode.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/parseNode.js",
+      "sha256": "fec4a42248c2fefe7fbf0bc10c56d2c99cb8ccb648c4b77223f9c1a2f1236db0"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/parseTree.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/parseTree.js",
+      "sha256": "5d1ff5f9765b3cb7128bc741f592d7da7dff76e64fc755f14e68e026db3a153e"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/postProcess.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/postProcess.js",
+      "sha256": "ec514592b08552613398e0965b128edcbda1c1881b46b8bd7caab4b854775f39"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/replace.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/replace.js",
+      "sha256": "07f143e32fbd330c07c7f1b7ce5be9bde0cd6bfa73a1e37dacef3fe7a8127d23"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/stretchy.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/stretchy.js",
+      "sha256": "64b72aac5ccecc6c85eae4339202ddb3c5c86474183b0b23ec1153205e610bee"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/symbols.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/symbols.js",
+      "sha256": "3f8b5780d7e0c95fb532c2a4ae7f65e3b138026ba566ad5327ac74d8aa8ea51e"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/tree.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/tree.js",
+      "sha256": "ebf72ffb14d55843bb0ff3c2f4881d65d1006addc5a556c41425556391a88594"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/unicodeAccents.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/unicodeAccents.js",
+      "sha256": "d17a465157ee718607b6a13bcbd88ee8a0dec422cbd75497826bf55a85f2face"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/unicodeSupOrSub.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/unicodeSupOrSub.js",
+      "sha256": "3a219c64d6490bda6f0fa607c59ca9d63c9fae70a6218e2f6449fe8235846c03"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/unicodeSymbolBuilder.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/unicodeSymbolBuilder.js",
+      "sha256": "2731bb4624790b430ddfb2734b8a3e3cb2d2c634decd02bda3c16659b5cd832c"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/unicodeSymbols.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/unicodeSymbols.js",
+      "sha256": "1aa6ac8103a494cf4ac84aab1329d82904c0bf1c7582607ab6b120a5a62a4c47"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/units.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/units.js",
+      "sha256": "d9d2af467cb8e8ad55408e6c72cc0c9859a1860c3b4e5b058ca349697b5b4d30"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/utils.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/utils.js",
+      "sha256": "4f321667846ef1e098942ef5c12f57bb72db672f892675d1bc7329901118f2b1"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/src/variant.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/src/variant.js",
+      "sha256": "f4e93a9a0d97631148793539d459477c866fb192313471875989882b0e656d28"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/temml.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/temml.js",
+      "sha256": "ea76a2d24ff69d809c7e7a5be819366666b042abca7e8d5f7e264903e72aaa20"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/README.md",
+      "sha256": "abd42c1d3c7df774ffa4c9c4ac7e2079e482c5b7cea84499c0405c9be07ba8c7"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/background.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/background.js",
+      "sha256": "0c41bab7bf67292d88d64cbc278001d3e6e2da645a40ebd4445b64e87bdff8a9"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/content.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/content.js",
+      "sha256": "63b9e6e38997680ba8287b29628963d57e17e03ab409821c849375f10b1ede38"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/keybinds-page.css",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/keybinds-page.css",
+      "sha256": "5be64b825e01ae14e2e645cc2147d90c386a5d84e964dc658b540882aac6b5c9"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/keybinds-page.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/keybinds-page.js",
+      "sha256": "86a791be01b1a1c02e8c3000655c6c74dd2e802d12725f6b7bdd7493a2de9a1b"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/keybinds.html",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/keybinds.html",
+      "sha256": "f9412bec50608320b5c195360ee76e40c23207643d2e7f5f4436dd70bf83d30a"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/keybinds.js",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/keybinds.js",
+      "sha256": "903fe1cdd38b823e8822c2909e3bd7ae16ef1f42598f1cd3ecdc224a8df1b379"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/manifest.json",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/manifest.json",
+      "sha256": "671b894f6bee58c56e4e7cc077fa228df85cb88a6858a7350e81d46f636ee9fd"
+    },
+    {
+      "source": "cluster/.local/bin/cluster",
+      "destination": "dotfiles/cluster/.local/bin/cluster",
+      "sha256": "e5208f594ebd3917f02bc8164ade183ad0696359b40ab0c6860ab801e9a40453"
+    },
+    {
+      "source": "cluster/.local/bin/cluster-setup",
+      "destination": "dotfiles/cluster/.local/bin/cluster-setup",
+      "sha256": "fa9e96d2a9f2913be902ad5ec7b219d3655a73a9e8f6403131c0a435438192b9"
+    },
+    {
+      "source": "cluster/.stow-local-ignore",
+      "destination": "dotfiles/cluster/.stow-local-ignore",
+      "sha256": "446b48574d082bdf8ded199fb108fb0d402d9c3ea803285f0c06d060cf94c18c"
+    },
+    {
+      "source": "cluster/README.md",
+      "destination": "dotfiles/cluster/README.md",
+      "sha256": "acf9a19e196be82c0eacaf69dd91eee5e6e189f5b3d91e460bead08dbc5b790d"
+    },
+    {
+      "source": "cluster/tests/test_jobs.py",
+      "destination": "dotfiles/cluster/tests/test_jobs.py",
+      "sha256": "9332669d629378092274ee6db645f77e77229eb89605f0612db94a81de0fe787"
+    },
+    {
+      "source": "cluster/tests/test_setup.py",
+      "destination": "dotfiles/cluster/tests/test_setup.py",
+      "sha256": "36ec23603ad2919650fe3b5eb6aba33e5f6f766b444c61ced2ef09d95136a8ae"
+    },
+    {
+      "source": "dictate/.config/dictate/config.env",
+      "destination": "dotfiles/dictate/.config/dictate/config.env",
+      "sha256": "267c1b651e2d7bebd1d46bacaa43a755e7a3b8aaed267786ac6ea05c3615522e"
+    },
+    {
+      "source": "dictate/.config/dictate/dictionary.toml",
+      "destination": "dotfiles/dictate/.config/dictate/dictionary.toml",
+      "sha256": "08539f4da1c286143fb4643ef4e884937ccf174c2472f6212998fded69c2b166"
+    },
+    {
+      "source": "dictate/.local/bin/dictate",
+      "destination": "dotfiles/dictate/.local/bin/dictate",
+      "sha256": "eb4fa016862676f1c2a841e5ec4882d28af3d90a9572a821813c0508886bc26c"
+    },
+    {
+      "source": "dictate/.local/bin/dictate-build",
+      "destination": "dotfiles/dictate/.local/bin/dictate-build",
+      "sha256": "5c75b7cf1e265872cd0e91c26fe361c39fb34917912a9853d6ff2d008b9310a4"
+    },
+    {
+      "source": "dictate/.local/share/dictate/Cargo.toml",
+      "destination": "dotfiles/dictate/.local/share/dictate/Cargo.toml",
+      "sha256": "ced206c3afbd7d45d84406b4a0cb27855d5057d138f137a44019cbc8ef4e1320"
+    },
+    {
+      "source": "dictate/.local/share/dictate/dictionary.example.toml",
+      "destination": "dotfiles/dictate/.local/share/dictate/dictionary.example.toml",
+      "sha256": "08539f4da1c286143fb4643ef4e884937ccf174c2472f6212998fded69c2b166"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/audio.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/audio.rs",
+      "sha256": "8002c78d52ab611aab61c92cc14fef9b13274d3e1ffb45e26daaa9796aeb02b9"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/config.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/config.rs",
+      "sha256": "d47a6c23b0be5ebd7fb538a72f1f9d1162580cbc4fbe630dc4cc125fa0140d39"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/desktop.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/desktop.rs",
+      "sha256": "111b589613cad6d9cd86835c846ee105d676123a1247b7f204805de30b9510bc"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/evaluation.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/evaluation.rs",
+      "sha256": "ab2e09a6e27c147788f4edd8857622ced548442bb4bc1f27e5de84212cd4570e"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/lib.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/lib.rs",
+      "sha256": "82c608d33d48bef0777d61938f79bfa88c468ea111f6fb979487841314041316"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/main.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/main.rs",
+      "sha256": "c800870b03f751ee4064d30d9017c2eb7784dfbd9a3dcd9e379e21c26883ff51"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/network.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/network.rs",
+      "sha256": "78ad4663a78633f403411a572f1988b2a9a8e919bde5a8953d3b8ae79ced4279"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/overlay.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/overlay.rs",
+      "sha256": "d60f2ec0e559aa1367d9b3bf6274b09b2e7cad327fb8316c8bb7f89b7d14ca52"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/session.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/session.rs",
+      "sha256": "69a80b1a7531958c3ae0d10f0c789b0e23865b9ae7bd5b5a63b9fdd31d325f1a"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/storage.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/storage.rs",
+      "sha256": "e77399ea0dcf09384a49660b75e16f14f584bf48118d4aa149f0f39ff1e06edd"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/text.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/text.rs",
+      "sha256": "1e4b5f01be2c4588794db37537cc03b38ca13a482fd7867b094e9d490d511a8d"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/ui.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/ui.rs",
+      "sha256": "721d94801fb97e852586ac2b77ac1ec753b20ee4e82efa7417321cb8b22ecb7e"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/volume.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/volume.rs",
+      "sha256": "8aa463c499586fe267400bd8664d0a2389a4f1370b3a5bcc46a93b7be0d72e4b"
+    },
+    {
+      "source": "dictate/.local/share/dictate/tests/protocol.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/tests/protocol.rs",
+      "sha256": "1b6254fa85815f1d8101f98bb18ad8a0a233d55615bebab86a4b9503d766fcc2"
+    },
+    {
+      "source": "dictate/.local/share/dictate/tests/sessions.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/tests/sessions.rs",
+      "sha256": "ecf0636830a09a4a4cd86d00e11a78f42bf32c3318164d3261b30b3a1f913dd3"
+    },
+    {
+      "source": "dictate/README.md",
+      "destination": "dotfiles/dictate/README.md",
+      "sha256": "d802dddd7bafa22eb8b7b14d970d8a05647e69cdff7163c752e3f00f89d33674"
+    },
+    {
+      "source": "elephant/.config/elephant/menus/notifications.lua",
+      "destination": "dotfiles/elephant/.config/elephant/menus/notifications.lua",
+      "sha256": "27db109d32925e6a79629f09e9142b67dbee6d6b56699559a6d5a1288df031a7"
+    },
+    {
+      "source": "elephant/.config/elephant/menus/repositories.lua",
+      "destination": "dotfiles/elephant/.config/elephant/menus/repositories.lua",
+      "sha256": "6027e0ed326340e9476e85b613d0ec465290f5e9197e4f302e1894617e62be47"
+    },
+    {
+      "source": "file-picker/.config/file-picker/style.css",
+      "destination": "dotfiles/file-picker/.config/file-picker/style.css",
+      "sha256": "da677462a184b4f291437194ca864ab194ffe54c66a0e9bf039aa61eef1da5d5"
+    },
+    {
+      "source": "file-picker/.local/bin/file-picker",
+      "destination": "dotfiles/file-picker/.local/bin/file-picker",
+      "sha256": "41fa1193d5ca952c83e7423dbae2d0ecc7e780e0b6c862d83dded0a7076e1faa"
+    },
+    {
+      "source": "file-picker/.local/bin/file-picker-build",
+      "destination": "dotfiles/file-picker/.local/bin/file-picker-build",
+      "sha256": "6822d5f89edb3eba3482dbbd8d281fd6ad76cc373a24ff5f58686f62bc44b69d"
+    },
+    {
+      "source": "file-picker/.local/share/file-picker/Cargo.toml",
+      "destination": "dotfiles/file-picker/.local/share/file-picker/Cargo.toml",
+      "sha256": "ec47aac7777d80afcce6f78289315894c6b5b48ee5ddda21a1ab0896d7c7d51e"
+    },
+    {
+      "source": "file-picker/.local/share/file-picker/src/drag.rs",
+      "destination": "dotfiles/file-picker/.local/share/file-picker/src/drag.rs",
+      "sha256": "f30ec5c2194cb8c010fa2e4c191ec2a17f88774f21ef9254e46f07deb17217f3"
+    },
+    {
+      "source": "file-picker/.local/share/file-picker/src/lib.rs",
+      "destination": "dotfiles/file-picker/.local/share/file-picker/src/lib.rs",
+      "sha256": "bae101069419707811abb921b4bb8f34a8931a5217f9d0672b4452f2c119ae2a"
+    },
+    {
+      "source": "file-picker/.local/share/file-picker/src/main.rs",
+      "destination": "dotfiles/file-picker/.local/share/file-picker/src/main.rs",
+      "sha256": "aba5c2b33cfb5ade8c9f9ea488ccd54ee3a764f9f136da2bb9824f1ce91d5523"
+    },
+    {
+      "source": "file-picker/README.md",
+      "destination": "dotfiles/file-picker/README.md",
+      "sha256": "8c9f31025ffa5190da4a860b02fa2d62518c1da3df06f44ef42a4c013bec7bb3"
+    },
+    {
+      "source": "ghostty/.config/ghostty/config",
+      "destination": "dotfiles/ghostty/.config/ghostty/config",
+      "sha256": "8b139d004bb1ff108049ec0feaa10b7c7ee303fefd05809564399518650ee7eb"
+    },
+    {
+      "source": "ghostty/.config/ghostty/shaders/cursor_blaze_flashbang.glsl",
+      "destination": "dotfiles/ghostty/.config/ghostty/shaders/cursor_blaze_flashbang.glsl",
+      "sha256": "21271767f0c762e4715a0f2c5e2e8eb54c517804b779ab252bc7cf37cab1d565"
+    },
+    {
+      "source": "ghostty/.config/ghostty/shaders/cursor_smear_fade.glsl",
+      "destination": "dotfiles/ghostty/.config/ghostty/shaders/cursor_smear_fade.glsl",
+      "sha256": "c8f47c1fa5191428c7c5ff74a62ad3c9b6c0ab835ec047c7a651f416fa4d827e"
+    },
+    {
+      "source": "ghostty/.config/ghostty/themes/SimonDark",
+      "destination": "dotfiles/ghostty/.config/ghostty/themes/SimonDark",
+      "sha256": "4e9bbc41c329918f98ac8e4a0ea2e15bf70b9aa9b28f6b5d6794061ed7bd14f4"
+    },
+    {
+      "source": "ghostty/.config/ghostty/themes/SimonLight",
+      "destination": "dotfiles/ghostty/.config/ghostty/themes/SimonLight",
+      "sha256": "8713279132fa35511efecb61c1ae5d35976ef8c5945394531e28668955558a42"
+    },
+    {
+      "source": "git/.config/git/config",
+      "destination": "dotfiles/git/.config/git/config",
+      "sha256": "b7524922ce5962662776e503addad86507f32cfcb1fba168e22e2ba7cca94383"
+    },
+    {
+      "source": "git/.config/git/ignore",
+      "destination": "dotfiles/git/.config/git/ignore",
+      "sha256": "1a377e8e10315d1e8b44caf5bfe181da8320a024e4f3316b1cf1d91f9db274b3"
+    },
+    {
+      "source": "hypr/.config/hypr/actions.lua",
+      "destination": "dotfiles/hypr/.config/hypr/actions.lua",
+      "sha256": "60b7a0b4480e3263a6f7f9ab12a70a91ec2ead7f545fb42a10ed7d4313bfd726"
+    },
+    {
+      "source": "hypr/.config/hypr/autostart.lua",
+      "destination": "dotfiles/hypr/.config/hypr/autostart.lua",
+      "sha256": "e0c90a2466f6ffd64dcf6ee2f285042db308832daed3e80c96c44d93ce07a8d0"
+    },
+    {
+      "source": "hypr/.config/hypr/background-grid.lua",
+      "destination": "dotfiles/hypr/.config/hypr/background-grid.lua",
+      "sha256": "e089e5bbf6fafe7cc43ec8ea208b82a554ceb7a47e56642e32ec6044858a264e"
+    },
+    {
+      "source": "hypr/.config/hypr/bindings.lua",
+      "destination": "dotfiles/hypr/.config/hypr/bindings.lua",
+      "sha256": "20878bf1741b33d514fe5172af62d0c9bf901dd041f4a505046b654d3f449fc6"
+    },
+    {
+      "source": "hypr/.config/hypr/config-data.lua",
+      "destination": "dotfiles/hypr/.config/hypr/config-data.lua",
+      "sha256": "e80a079b483c83f22a55654b69f3a9d71e288d6d2a32010035e6c14b1155fc3d"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/autostart.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/autostart.lua",
+      "sha256": "b9c3fb3d2bf5b211cb9401cff2afb2bdb96d9be6cd9cd9f6a9535dd2beeb57f0"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/bindings/clipboard.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/bindings/clipboard.lua",
+      "sha256": "842c62cb3b7bf44319a46a4c9a046245d550e531bad8f339c196ed8767bc76fe"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/bindings/media.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/bindings/media.lua",
+      "sha256": "6f162e22adc545ea25fc09208c9425931214ae018230f3c4c4b78402715dfe79"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/bindings/tiling-v2.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/bindings/tiling-v2.lua",
+      "sha256": "8749202f983822f0ef854862f31aeea92d9e84536ae891f1417cbd90173e0f7a"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/bindings/utilities.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/bindings/utilities.lua",
+      "sha256": "11472ac4153f5e6df85753f501d0ee638965c748c60a6d49c0d020599543477a"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/envs.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/envs.lua",
+      "sha256": "0d7036e177dc0866e261541a04ccb56a74c25920ea0e8fa9c40daaef34f40841"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/input.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/input.lua",
+      "sha256": "02270c8b25fc06038a21c7d5eb6800150fd836ef7dfda8d2ce7e35636b73b31b"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/looknfeel.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/looknfeel.lua",
+      "sha256": "a57d2d1efcf62b2075e50d5caa56b18edc38008dcd7e8da8436023082e78089c"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/windows.lua",
+      "destination": "dotfiles/hypr/.config/hypr/defaults/windows.lua",
+      "sha256": "fe52f36c73ab62bb07d63136b8350ee76a81e4402b4c7acf0603464a0e791062"
+    },
+    {
+      "source": "hypr/.config/hypr/envs.lua",
+      "destination": "dotfiles/hypr/.config/hypr/envs.lua",
+      "sha256": "714c61b076be2c21bf5289230fc048772636b2b0b708b7619ad80de1c90993a2"
+    },
+    {
+      "source": "hypr/.config/hypr/file-picker.lua",
+      "destination": "dotfiles/hypr/.config/hypr/file-picker.lua",
+      "sha256": "2c588cb8ccfb893740a4740a15a2b234ca770cfc15f9eedb7bf435b13b7f898d"
+    },
+    {
+      "source": "hypr/.config/hypr/hypridle.conf",
+      "destination": "dotfiles/hypr/.config/hypr/hypridle.conf",
+      "sha256": "e7d3b8dd983523e4defbfbacfd7ed73fc55407e175766bf44542e5708307de41"
+    },
+    {
+      "source": "hypr/.config/hypr/hyprland.lua",
+      "destination": "dotfiles/hypr/.config/hypr/hyprland.lua",
+      "sha256": "0877dc1d6a0bfde3da15676cf9d0d7815462b62223d39c2ee105b71774e4df69"
+    },
+    {
+      "source": "hypr/.config/hypr/hyprlock.conf",
+      "destination": "dotfiles/hypr/.config/hypr/hyprlock.conf",
+      "sha256": "b8d173dcff5582873a448652e9f77273d447a4709dd40e4cf9268f0827968fc1"
+    },
+    {
+      "source": "hypr/.config/hypr/hyprspace.lua",
+      "destination": "dotfiles/hypr/.config/hypr/hyprspace.lua",
+      "sha256": "17a4501fec34dcd2445c5e27cd6eab1a0708465fb78befc0b117ca29eac8fc43"
+    },
+    {
+      "source": "hypr/.config/hypr/hyprsunset.conf",
+      "destination": "dotfiles/hypr/.config/hypr/hyprsunset.conf",
+      "sha256": "3042e4a923030239f4edf7b1943f41f4ed57107550177130c96f3b215b226e22"
+    },
+    {
+      "source": "hypr/.config/hypr/input.lua",
+      "destination": "dotfiles/hypr/.config/hypr/input.lua",
+      "sha256": "3041e4890acda4ec8922cadac12440faac4127677bb6d5a9a48e034a94edb864"
+    },
+    {
+      "source": "hypr/.config/hypr/looknfeel.lua",
+      "destination": "dotfiles/hypr/.config/hypr/looknfeel.lua",
+      "sha256": "4c5225d6613d7cb061c1b8891b6c729461bdbd7048adc6c9b76d9e8ea10c48bd"
+    },
+    {
+      "source": "hypr/.config/hypr/monitors.lua",
+      "destination": "dotfiles/hypr/.config/hypr/monitors.lua",
+      "sha256": "a03ced8fb3a04e47899fb5a6e28f771e083f6b1a486be67ddc6dae35b4df85f1"
+    },
+    {
+      "source": "hypr/.config/hypr/scripts/launch-or-focus",
+      "destination": "dotfiles/hypr/.config/hypr/scripts/launch-or-focus",
+      "sha256": "092338859ff5b3773acd68d3abb7139ffb69193d03b9bbb19a6c39217bb5fa5f"
+    },
+    {
+      "source": "hypr/.config/hypr/scripts/toggle-transparency",
+      "destination": "dotfiles/hypr/.config/hypr/scripts/toggle-transparency",
+      "sha256": "49125db69cbd4f2c3f9025ad704614fd093900723f87e4604f2f2e72f162d4de"
+    },
+    {
+      "source": "hypr/.config/hypr/windows.lua",
+      "destination": "dotfiles/hypr/.config/hypr/windows.lua",
+      "sha256": "8afe8845a58e6fcc42a6d0a9e79324f584121b1707b36055d9904b812a92cd6b"
+    },
+    {
+      "source": "hypr/.config/hypr/xdph.conf",
+      "destination": "dotfiles/hypr/.config/hypr/xdph.conf",
+      "sha256": "2fded88a27b89f33cbc2b64a1258117df74b591f39a84c78ec3504a7d3b09136"
+    },
+    {
+      "source": "hypr/.local/bin/globalsnip",
+      "destination": "dotfiles/hypr/.local/bin/globalsnip",
+      "sha256": "1ec3ffc93fb08869792bd51c5cf9424b21378b5892241ad6a1bd81e1101d775e"
+    },
+    {
+      "source": "hypr/.local/bin/macro-picker",
+      "destination": "dotfiles/hypr/.local/bin/macro-picker",
+      "sha256": "6a32a21e8a156be8f9ef2e6cf4e3bd49503544e56fbdc0acf9471b079e2aa113"
+    },
+    {
+      "source": "hypr/.local/bin/pdf-picker",
+      "destination": "dotfiles/hypr/.local/bin/pdf-picker",
+      "sha256": "b9f03466629a9e1c90399fa8e5dbabe43e3cd487562ca7a0382a310feab8676e"
+    },
+    {
+      "source": "lazygit/.config/lazygit/config.yml",
+      "destination": "dotfiles/lazygit/.config/lazygit/config.yml",
+      "sha256": "8233d78f970fdb1997d5723db78249ec43e43321027b86e17cf5e7861296e649"
+    },
+    {
+      "source": "lazygit/.config/lazygit/delta-pager",
+      "destination": "dotfiles/lazygit/.config/lazygit/delta-pager",
+      "sha256": "5ad523bcd38a98fce62ff89ceca8feadb3074ff4cf71973eaa0ac91f9d23b45b"
+    },
+    {
+      "source": "lazygit/.config/lazygit/delta.gitconfig",
+      "destination": "dotfiles/lazygit/.config/lazygit/delta.gitconfig",
+      "sha256": "ec619640d7e5a5dfb370559e3599b8a416f8246b3d0f20fd63d44e67c5eaca3c"
+    },
+    {
+      "source": "mako/.config/mako/config",
+      "destination": "dotfiles/mako/.config/mako/config",
+      "sha256": "2b4aca54975997466aa9e127923b5005b56dcb444d83eae0798343e39364ff7d"
+    },
+    {
+      "source": "nvim/.config/nvim/.gitignore",
+      "destination": "dotfiles/nvim/.config/nvim/.gitignore",
+      "sha256": "8a8c4c931c93ffd8d38db4b7be9284e5cb8a443d75f20a23806157e6829a3109"
+    },
+    {
+      "source": "nvim/.config/nvim/.luarc.json",
+      "destination": "dotfiles/nvim/.config/nvim/.luarc.json",
+      "sha256": "17f8d772bfc7e87ffc0f17c96b447f8da7b532728a317f6377bf300bdc3e430b"
+    },
+    {
+      "source": "nvim/.config/nvim/.neoconf.json",
+      "destination": "dotfiles/nvim/.config/nvim/.neoconf.json",
+      "sha256": "1819a5b64b71521f214b374bdb3b4dd7531a2b91b881c0803e0029811da7f3e4"
+    },
+    {
+      "source": "nvim/.config/nvim/LICENSE",
+      "destination": "dotfiles/nvim/.config/nvim/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "source": "nvim/.config/nvim/after/ftplugin/c.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/ftplugin/c.lua",
+      "sha256": "55c00ae7efccd5e4ea4455dacd284e6390025044e0783eed1b79c2a4a973d39c"
+    },
+    {
+      "source": "nvim/.config/nvim/after/ftplugin/cpp.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/ftplugin/cpp.lua",
+      "sha256": "36829392d9a10fab8d1e157b8c164259992f9d3a9f9cb494f294a333b504ad75"
+    },
+    {
+      "source": "nvim/.config/nvim/after/ftplugin/haskell.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/ftplugin/haskell.lua",
+      "sha256": "7b5ebf7e41b5ec83b6ec4188ad2e3c4c2de7a15333d3889d5ea4c381854587d5"
+    },
+    {
+      "source": "nvim/.config/nvim/after/ftplugin/java.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/ftplugin/java.lua",
+      "sha256": "93b60a48debe071a627421e112d7a60bc08668fbd860caa652a8e666b216b644"
+    },
+    {
+      "source": "nvim/.config/nvim/after/ftplugin/markdown.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/ftplugin/markdown.lua",
+      "sha256": "368d2d1049e4074325d6aa728a02b6b5164700927cc0c7b86dd5baafe369abc7"
+    },
+    {
+      "source": "nvim/.config/nvim/after/ftplugin/python.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/ftplugin/python.lua",
+      "sha256": "1513b18f6aa916cd5d6fe3796ce70d71f9c17be61daa373a7610256d92635011"
+    },
+    {
+      "source": "nvim/.config/nvim/after/ftplugin/sh.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/ftplugin/sh.lua",
+      "sha256": "50078cceec8eb97b73eff8d0b7c3702326f3f88221a8f612fb28428bbdc96629"
+    },
+    {
+      "source": "nvim/.config/nvim/after/ftplugin/tex.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/ftplugin/tex.lua",
+      "sha256": "7a7ec08ebfd37df8292ccbef24ecaba4e3d279e38f27c1df6db574609798a4d7"
+    },
+    {
+      "source": "nvim/.config/nvim/after/plugin/theme.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/plugin/theme.lua",
+      "sha256": "79984ea4b919ad5743f4e93fe7d0c0d50cea988ac5913ebe92750e7d87af5de4"
+    },
+    {
+      "source": "nvim/.config/nvim/after/plugin/transparency.lua",
+      "destination": "dotfiles/nvim/.config/nvim/after/plugin/transparency.lua",
+      "sha256": "fe1aacebd502946c35a0bbd8d12bdefd7cb0fb82574d8ee32ecbd661f92ee4fd"
+    },
+    {
+      "source": "nvim/.config/nvim/init.lua",
+      "destination": "dotfiles/nvim/.config/nvim/init.lua",
+      "sha256": "3b2d6e9976a515b7c8df08ed7c7f61a5751e9c08a6ff5579d621b87312c9e2c6"
+    },
+    {
+      "source": "nvim/.config/nvim/lazy-lock.json",
+      "destination": "dotfiles/nvim/.config/nvim/lazy-lock.json",
+      "sha256": "2acebe04b924f05ccc7d497833920bc536228345af40447879244851d89b3ca2"
+    },
+    {
+      "source": "nvim/.config/nvim/lazyvim.json",
+      "destination": "dotfiles/nvim/.config/nvim/lazyvim.json",
+      "sha256": "a1f54e1ed457fd08c9e55b2f4e2f8f91c72d728f3a82ff7c646a09ec3490d062"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/config/autocmds.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/config/autocmds.lua",
+      "sha256": "ccb2b3a99fe03698bdacaf41b98a48126c70fa38eaa1970e14e7309c876a9635"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/config/keymaps.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/config/keymaps.lua",
+      "sha256": "6cca95e055a654065c70253f4c1136c5bb0766c91492da99f5c885797f81e40e"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/config/lazy.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/config/lazy.lua",
+      "sha256": "4fd90446cb19774fc68e82804dcba7cfa2bcdf0ab5e23243486f69c8cf072af2"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/config/options.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/config/options.lua",
+      "sha256": "96e51284b7f735afee4850dccf26685a7e8ba048f93108b585e9998721b658b0"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/config/picker_ignore.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/config/picker_ignore.lua",
+      "sha256": "28a25b8fb1cdc304447e1a56cdfa024e428258a1e502ded9d5469ec23250e949"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/basedpyright.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/basedpyright.lua",
+      "sha256": "36e9a98f584723cd0f3a0a208c638e4a8a96ae681c8df75e190eef487962498f"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/blink.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/blink.lua",
+      "sha256": "36b074bf21514443d67004355639b8951e0585704abfe48756634c613497df49"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/competitest.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/competitest.lua",
+      "sha256": "a5677ad24dd420342789ce0fffc34f4383c106367a95e9bc713db0bb549e635a"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/conform.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/conform.lua",
+      "sha256": "d1ec3911141cabf97eff3dc76e173328d10b915f12dda995873d45b206290925"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/copilot.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/copilot.lua",
+      "sha256": "14b187a1cbe328af05a6ae7c39f556bff76dbaa20d179b6b47320a800bb3336e"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/cppman.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/cppman.lua",
+      "sha256": "03882cc3e90fc63e7e7f83962df52377f1a2356e1aa3d6839c267c74610d8f98"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/diffview.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/diffview.lua",
+      "sha256": "9d21a26448358e254f4cec856adbd04a68320244e364f67bd6f5c9546a129aad"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/flash.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/flash.lua",
+      "sha256": "fc6d2caf3ba63a5e24af2edbc1b16266d953d9f3bb8c94b72d22875c2009babd"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/flutter-tools.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/flutter-tools.lua",
+      "sha256": "010e1c6bcda7503420a18b01377712b6184e52ead0f2765d20292ae5db30d43d"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/fzf.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/fzf.lua",
+      "sha256": "09653a9df5820ff45dfd14433f958f077c8b912d99b16d19454b4e0a7f562a12"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/gitsigns.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/gitsigns.lua",
+      "sha256": "b52237a74f3c54071f4f8055b30155148922111f3dee76d483d83f234d370b4d"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/hardtime.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/hardtime.lua",
+      "sha256": "6624eff09249cc9e49f9f6a66369b4e0b43cb6eb4940468f91aeaeff98139677"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/haskell.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/haskell.lua",
+      "sha256": "cafd0fa5590cca83818c22a06309e3df33bd45d315fe892e182668589e56c232"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/img-clip.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/img-clip.lua",
+      "sha256": "c864111a481e8e76e8e2d0f4fb96ec8a5d274fc541522846c8d5047f7723169a"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/lualine.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/lualine.lua",
+      "sha256": "adf9c7666b50b762644ba34f403ab2b5cdeba6d43d3a2e593e3f3950c08cdfc4"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/luasnip.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/luasnip.lua",
+      "sha256": "be398921de6fc4f9652663a884b8e7f0b9c6674279c19539bef1e0f227252d59"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/markdown.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/markdown.lua",
+      "sha256": "46019b9eb05677150cba9c2657da438cf47a19325e9f73436bf9c711b55f2ca5"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/mini.pairs.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/mini.pairs.lua",
+      "sha256": "aab5565d5c03594ec5c5e9df5365136b542b4018fc517525a82d480e42219131"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/noice.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/noice.lua",
+      "sha256": "0345adce001e8b1fbfe04a4c30c93a2c688b941d9d073af031f062450d1d6383"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/nvim-surround.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/nvim-surround.lua",
+      "sha256": "c24a8dc3bd4beabceaf29103f9d094a9bd9c0804de34334a637a7a1abed88a7b"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/nvim-treesitter.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/nvim-treesitter.lua",
+      "sha256": "996f3d5fce922b320998b403564ef4583d6530b0f8e261e10f1b348cc4ea5878"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/oil.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/oil.lua",
+      "sha256": "d584555789a2274b67560f7f600bc5e88a8232bb47ac3991f93b5c041c493023"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/open-url.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/open-url.lua",
+      "sha256": "c3b28ea48b2d19f2897979daf8987e119ccca12f83ea7592562ee0eb0a958f71"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/presence.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/presence.lua",
+      "sha256": "ace440434fee3ac20a09688f0aea521ff0c2a68e6f7177b6b72c9e4de1da21ae"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/screenkey.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/screenkey.lua",
+      "sha256": "97532d8df460458bf60dfda779892da094b7b4b483ced34dc2db8b04e1eb3738"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/snacks.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/snacks.lua",
+      "sha256": "77e786e42e942ae922eeda200f0e19137284ef6be1bb8010fafe7a2313665d86"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/switch.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/switch.lua",
+      "sha256": "2a396b46dbd661f05e51e29c23b0475240aff57968ca50f0f5f8b34abc7cea79"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/theme.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/theme.lua",
+      "sha256": "e27ea8626ffc95c14759ab2b044d5a37b01bfaa1654d804f9bd2157e06dfa860"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/tmux-navigator.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/tmux-navigator.lua",
+      "sha256": "8439a9924329833e766e4e22818cc7f376ca7a4fdf561ef45c4143f5a1eabdc3"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/todo-comments.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/todo-comments.lua",
+      "sha256": "e5f56a5cb19206136209dd26367f2361616ea905b32821bead4b8177afbf3d61"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/vimtex.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/vimtex.lua",
+      "sha256": "5ad94a0d2431b8dee22530bda01d9d76dedcb5dc4c7471be6d5a5fe4a912f9b8"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/whichkey.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/whichkey.lua",
+      "sha256": "aca0cd449fdc956cb8f2c123029917b14156ea408b673cf47f17453d678a5e7f"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/plugins/yanky.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/plugins/yanky.lua",
+      "sha256": "fa98a82924437447897ea36516afd4f9a50c5e8edd0d2954bdc065a7a4b342e6"
+    },
+    {
+      "source": "nvim/.config/nvim/lua/utils/core.lua",
+      "destination": "dotfiles/nvim/.config/nvim/lua/utils/core.lua",
+      "sha256": "56acc39556af290a4c40b06799a49b64bd13495f226a489806ee00f650504416"
+    },
+    {
+      "source": "nvim/.config/nvim/picker-ignore",
+      "destination": "dotfiles/nvim/.config/nvim/picker-ignore",
+      "sha256": "fb1ec71727f9a7a49c8225f5a5da04132578e93a1cf588d12179c87d11d09772"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/cpp.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/cpp.lua",
+      "sha256": "ee1f95d01b513f8f32a95d540cd6e7b4ac0927587440cdf97103b6302def56d1"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/markdown.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/markdown.lua",
+      "sha256": "aea20bf5ec6e0703c4175292470998f77473c607e54aa93ff19fef01363e439d"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex.lua",
+      "sha256": "bf8ce76bfdc27598007d5413234ead26a5e531421a220200fdbda9b393759d4e"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/conditions.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/conditions.lua",
+      "sha256": "b73329820b12ace2e87a9a98216f95c8d14ccfe2aa6beeea6bfd2dfe127cb2f2"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/delimiters.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/delimiters.lua",
+      "sha256": "cbce70121e30e679f5e0e0ee7bfbb1d3b7e942af2713f96aa9b81469511660a3"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/environments.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/environments.lua",
+      "sha256": "4bc2090bc813dc30c0ba31e3e8dd6c1d0a1e1a7d6f4a6c2e76363b33ebb46400"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/fonts.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/fonts.lua",
+      "sha256": "edee624adaa7b12ecc617d135690a5b0aec4ce83bcb44b0efe516910b46b65d1"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/helpers.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/helpers.lua",
+      "sha256": "c992e2e51b920b3b7daa305d51ce9ef364e52dadab439a30e9874f334fdb82f4"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/letters.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/letters.lua",
+      "sha256": "24f1d61ab310d7db662d200f41e523981d3e4e3343c297afcafa8d34c9767129"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/lists.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/lists.lua",
+      "sha256": "ea319cfd48b4c8acb7ced192a88789ca87ecc33672d793392e05ce6ac737cde1"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/operators.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/operators.lua",
+      "sha256": "b32bdb5b3347c40c8d3579906e0dd3aead04d83dba956506dd1e03adc29a1334"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/preamble.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/preamble.lua",
+      "sha256": "1c5446aa98cfd67dc54fd9c52f0ebfa4db42c728c0ad6a318ea97d1786ecc267"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/scripts.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/scripts.lua",
+      "sha256": "5eaa035baff850d5595ef9977848fff1637d1e417583e39effbdd2c2543bcf43"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/sections.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/sections.lua",
+      "sha256": "5fdcd845a3ca9ef5da50d60be67b686416ed3c6a42ceb18e1112dd1988edf7b3"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/spacing.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/spacing.lua",
+      "sha256": "b9fd864033d04c0ad5248b2bcf814d743d12fb2db0afce2527266609383cd827"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/tex/templates.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/tex/templates.lua",
+      "sha256": "42c04987a6dc63074baf0d4b2b87f0a1adc7a4bc719f6daf16df869440a59c7e"
+    },
+    {
+      "source": "nvim/.config/nvim/snippets/typst.lua",
+      "destination": "dotfiles/nvim/.config/nvim/snippets/typst.lua",
+      "sha256": "4ce69cbd0a857c648b6d5d16b4f1ad611e0adc2e78fe2dec82d18b4bfc5e4485"
+    },
+    {
+      "source": "nvim/.config/nvim/stylua.toml",
+      "destination": "dotfiles/nvim/.config/nvim/stylua.toml",
+      "sha256": "b45819d91dbd677859da156bd6c2856ab61d5aac944a4b56f3e75fb35e2eb476"
+    },
+    {
+      "source": "oh-my-posh/.config/oh-my-posh/custom-respects-waybar.omp.json",
+      "destination": "dotfiles/oh-my-posh/.config/oh-my-posh/custom-respects-waybar.omp.json",
+      "sha256": "c6fed8bb6113dd2381192a832862cd0e16ba6d889952fb2fa3af048e829a05e8"
+    },
+    {
+      "source": "oh-my-posh/.config/oh-my-posh/custom.omp.json",
+      "destination": "dotfiles/oh-my-posh/.config/oh-my-posh/custom.omp.json",
+      "sha256": "a63f5688c1130ee9e303cca1e636209a6099d7cd959cabc712d54d16871148a8"
+    },
+    {
+      "source": "tmux/.tmux.conf",
+      "destination": "dotfiles/tmux/.tmux.conf",
+      "sha256": "847c1f20562402c6273cb6cf73f0bdc4d83723066d3c3c63fcb74d7c0bcffb48"
+    },
+    {
+      "source": "tmux/.tmux.conf.custom",
+      "destination": "dotfiles/tmux/.tmux.conf.custom",
+      "sha256": "7b97ccd1f03f59ac6cf3dc30e856a4d89cba5d83c577dd32e084f4fe8f3d57d4"
+    },
+    {
+      "source": "walker/.config/walker/config.toml",
+      "destination": "dotfiles/walker/.config/walker/config.toml",
+      "sha256": "8772387acc40323595981a5a4ba3e52b18ba8479b6584f99546895891c12636a"
+    },
+    {
+      "source": "walker/.config/walker/themes/omarchy-rounded/item_menus-notifications.xml",
+      "destination": "dotfiles/walker/.config/walker/themes/omarchy-rounded/item_menus-notifications.xml",
+      "sha256": "742d7ca299440b6753aea73ed50686604212d62387c3deefc3bda7b380e9754f"
+    },
+    {
+      "source": "walker/.config/walker/themes/omarchy-rounded/layout.xml",
+      "destination": "dotfiles/walker/.config/walker/themes/omarchy-rounded/layout.xml",
+      "sha256": "dbb6bbbe74be894a0f545c91a08e5ee007b3bc8f72a3f07af3fe309bf49e0261"
+    },
+    {
+      "source": "walker/.config/walker/themes/omarchy-rounded/style.css",
+      "destination": "dotfiles/walker/.config/walker/themes/omarchy-rounded/style.css",
+      "sha256": "b4e8929ed5615fb24f4b510b1b63216fdcf3fc7dc1a715a0f6b18d767f86ae21"
+    },
+    {
+      "source": "walker/.local/bin/notification-menu",
+      "destination": "dotfiles/walker/.local/bin/notification-menu",
+      "sha256": "ee0ab2ad9d3ee6a77d4f102ecff028b930cbf5b6ca9aae4d6b08f49ee1dc826d"
+    },
+    {
+      "source": "waybar/.config/systemd/user/workspaces-slider.service",
+      "destination": "dotfiles/waybar/.config/systemd/user/workspaces-slider.service",
+      "sha256": "70a84b2cb61bd7717f567ae53859f9ba1bcff383327e9138860045c75a78b083"
+    },
+    {
+      "source": "waybar/.config/waybar/config-minimal.jsonc",
+      "destination": "dotfiles/waybar/.config/waybar/config-minimal.jsonc",
+      "sha256": "d3b6a44b5dfe777cbb194be1e2faddf4427d4ad9be32e42d9f192090ecb82c11"
+    },
+    {
+      "source": "waybar/.config/waybar/config.jsonc",
+      "destination": "dotfiles/waybar/.config/waybar/config.jsonc",
+      "sha256": "c88b006ae2cdee3f2c4511c7c920c31b870e4da1d6326564e5001d6b5e47e1e0"
+    },
+    {
+      "source": "waybar/.config/waybar/style-light.css",
+      "destination": "dotfiles/waybar/.config/waybar/style-light.css",
+      "sha256": "bfd4a8d6c969c676487e9ea7751eac285a5c44ccf36aea6d3fd35347cc09df01"
+    },
+    {
+      "source": "waybar/.config/waybar/style-minimal-light.css",
+      "destination": "dotfiles/waybar/.config/waybar/style-minimal-light.css",
+      "sha256": "52ed33a3ad2affb4d6c2109e4ed9b1eee21f18a8d947dc33830fee6ce75dbfba"
+    },
+    {
+      "source": "waybar/.config/waybar/style-minimal.css",
+      "destination": "dotfiles/waybar/.config/waybar/style-minimal.css",
+      "sha256": "b6e3660b2900a61c78627df077b4203e4aa601406cebd7800b19a639b45bc672"
+    },
+    {
+      "source": "waybar/.config/waybar/style.css",
+      "destination": "dotfiles/waybar/.config/waybar/style.css",
+      "sha256": "6031d9eeed9ef0795ea915ba286bbece601561e32d3b13297bf06d61d48b9898"
+    },
+    {
+      "source": "waybar/.config/waybar/tray-fix/README.md",
+      "destination": "dotfiles/waybar/.config/waybar/tray-fix/README.md",
+      "sha256": "775900fa7babf123809962ec0dda31cc17e0ac5df775e87673f598de478cd392"
+    },
+    {
+      "source": "waybar/.config/waybar/tray-fix/electron-properties.patch",
+      "destination": "dotfiles/waybar/.config/waybar/tray-fix/electron-properties.patch",
+      "sha256": "f3ddf99131817b7acebd892015baa6added6b93e7c79cbb79722c5c7163e388d"
+    },
+    {
+      "source": "waybar/.config/waybar/weather.sh",
+      "destination": "dotfiles/waybar/.config/waybar/weather.sh",
+      "sha256": "a7856e3c020f63eecf546aa13ec0ffa91a3a3504b42dec42476a158e528933ee"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/.gitignore",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/.gitignore",
+      "sha256": "44c92e3a70ad3307b7056871c2bdb096d8bfa9373f5bf06a79bb6324a20ff2fb"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/Cargo.lock",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/Cargo.lock",
+      "sha256": "c667cc5ca14907d23dc1f99f6ebe7e9e7d7b096677f6c8571cbc5c18520ddc6d"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/Cargo.toml",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/Cargo.toml",
+      "sha256": "70d02d846fb37b35d885ba5e1749b89312c7c6e0927016cf2a329a3ef8cc2518"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/README.md",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/README.md",
+      "sha256": "e57b7834031918e0bac9d9f6179e4141835cbd2e457f33dc97cadaf5c60a4a7c"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/src/hypr.rs",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/src/hypr.rs",
+      "sha256": "8a5cfecf3ef45db980899cc722f177710d462122caa5fcffe61abe6eee96e104"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/src/main.rs",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/src/main.rs",
+      "sha256": "e656ef0400d13ed185288893c5a8eef4104350c2cb3b2e64b8f69e8d065c54fa"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/src/render.rs",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/src/render.rs",
+      "sha256": "100de335d760dc342799819ba8ec6a7a222f9896656c64609fa3ad7cdb8dfd61"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/src/supervisor.rs",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/src/supervisor.rs",
+      "sha256": "a6152988c8e32c47cc893e352d8767dd8572e6bffbc550c2862e40e2285086b5"
+    },
+    {
+      "source": "waybar/.config/waybar/workspaces-slider-rs/src/termination.rs",
+      "destination": "dotfiles/waybar/.config/waybar/workspaces-slider-rs/src/termination.rs",
+      "sha256": "6cbdaee94eb259ac3f0dea0b4960f7bbc0798294167bf87d7f8e12dc23395dac"
+    },
+    {
+      "source": "waybar/.local/bin/waybar",
+      "destination": "dotfiles/waybar/.local/bin/waybar",
+      "sha256": "26e9e781a17b8a32857d5a51e118796717a353c6d1a66164bd125bc479a2a7f8"
+    },
+    {
+      "source": "waybar/.local/bin/workspaces-slider-launch",
+      "destination": "dotfiles/waybar/.local/bin/workspaces-slider-launch",
+      "sha256": "198e58d75995afe4f60d2c21a287f070a8275d1f0528917ed77b27cc54d68073"
+    },
+    {
+      "source": "zathura/.config/zathura/zathurarc",
+      "destination": "dotfiles/zathura/.config/zathura/zathurarc",
+      "sha256": "c43eab21e8b15a4ffa64be4204d5f5d04cc7d06e3e62f1d1f33dc4eb724414f2"
+    },
+    {
+      "source": "zsh/.config/zsh/.gitignore",
+      "destination": "dotfiles/zsh/.config/zsh/.gitignore",
+      "sha256": "6aaa3d0892bbe52f6aab51c482d5bbd9cb14803198dbaed65ed112908d4c942e"
+    },
+    {
+      "source": "zsh/.config/zsh/aliases.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/aliases.zsh",
+      "sha256": "01ca5ce2fc1dea3f2936c92597afee8c5ae4055e8037a5ebaf82f69b449e4d9e"
+    },
+    {
+      "source": "zsh/.config/zsh/core.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/core.zsh",
+      "sha256": "781e39284a82ebc7562a338c299392f36f8291a1c600cc2ed4f2e12a32600551"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/cc",
+      "destination": "dotfiles/zsh/.config/zsh/functions/cc",
+      "sha256": "c8e365b1eebc05ee46ffc0a797a6cf09fb534739b11225d22b6eab031e0b7da4"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/cra",
+      "destination": "dotfiles/zsh/.config/zsh/functions/cra",
+      "sha256": "f3d96173d55fb05061b0cc7702f5a4cb2c4f3a4d692cda9493ce13e3397315f7"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/cx",
+      "destination": "dotfiles/zsh/.config/zsh/functions/cx",
+      "sha256": "93d5d843e0f8d557c1fb71cd061fbe7adc47b31ddb1f6ccc2a9280c898e5bcd8"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/ez",
+      "destination": "dotfiles/zsh/.config/zsh/functions/ez",
+      "sha256": "caea34c56cef5aa01d6128321c74daf1575353524f2f52a4b3d3761803a3e374"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/ga",
+      "destination": "dotfiles/zsh/.config/zsh/functions/ga",
+      "sha256": "e217d5bc2bd487c117271ca5af3ad439d8a351fe6b0632ae351b527fc0896e2b"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gacp",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gacp",
+      "sha256": "68e8a7df50b0744abcc8377654e4972f83dc5480970ed85c802e901f53c90edd"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gai",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gai",
+      "sha256": "256f9097257f8f0adac6afeb382aefc715dd236a9c69adea4518a104e3cc8dcf"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gcd",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gcd",
+      "sha256": "801d0c785e1963c81cabbdca3e4002ed965659454559996cdde869d2e4ab5388"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gco",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gco",
+      "sha256": "95c4df0c04326270e411a681a68cc6c09066491fe61f92fb549f42b42e510fbf"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gfo",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gfo",
+      "sha256": "1f1184c6d65f3dd1614dce2cf0811981a2991643340a5f6985223b4502e11fa0"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gp",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gp",
+      "sha256": "44b0afb28d0b0b8bd94be97e037cfd97ce444764ba9d093d5152f86e85e29fe5"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gpl",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gpl",
+      "sha256": "5216895e372fecd5b67f4375f13fc99d4661d0754c6a01069e8a6bbdcd2c9136"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gpp",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gpp",
+      "sha256": "d828fcce7effc580ea440e1623e27f1aad7ad43328fee57c04dfc1fb26b6bd2d"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/gwa",
+      "destination": "dotfiles/zsh/.config/zsh/functions/gwa",
+      "sha256": "c564cdb850f8d9b0db7dca44f7255d7f5c4343c4e3dfb40b6aea9b3f1cd9fe44"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/init.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/functions/init.zsh",
+      "sha256": "288fae799dc2ad7005df1c3d4e07b497e9f642b440940ab59277664a5c514fd4"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/rcd",
+      "destination": "dotfiles/zsh/.config/zsh/functions/rcd",
+      "sha256": "b8bdcead041e3d672bdd0bdebcbf5c5eb0a4ca8353b5ecf41c9862fdbd030722"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/screenrecord",
+      "destination": "dotfiles/zsh/.config/zsh/functions/screenrecord",
+      "sha256": "92aa95367a6b6e4194b1787d706b479815a147bc5711803e92e7cd6b785062fb"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/tdl",
+      "destination": "dotfiles/zsh/.config/zsh/functions/tdl",
+      "sha256": "d36b865857686a4e6596bb3f6daa73b07989af7b3befb9f3babf65b772ac534d"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/tdlm",
+      "destination": "dotfiles/zsh/.config/zsh/functions/tdlm",
+      "sha256": "b79b1402f0f16b22e45312b57ac3094e8803b729d46d7c838aeed217a050620d"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/tldrf",
+      "destination": "dotfiles/zsh/.config/zsh/functions/tldrf",
+      "sha256": "4ea948d861bd821b0057b8c223b0cb71dc82ad6a3e2301d198e5bfbb9536eee1"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/tsl",
+      "destination": "dotfiles/zsh/.config/zsh/functions/tsl",
+      "sha256": "7aaab83a268fb178c3bf6dee09aacdadb1fdf10f32354f998bebef961b763c0a"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/tsw",
+      "destination": "dotfiles/zsh/.config/zsh/functions/tsw",
+      "sha256": "825814513b70a648cd16542a3b3b027a16a9f59ab4c4255b1fd311433fed3eeb"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/tswc",
+      "destination": "dotfiles/zsh/.config/zsh/functions/tswc",
+      "sha256": "47bd9d823fe1b08b3946eac0675cd5f014c2f2d15e9187122a0f413f51377e1d"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/v",
+      "destination": "dotfiles/zsh/.config/zsh/functions/v",
+      "sha256": "99ea4a0c8b22803e45bf3f2498ea0dd08cce70a1c80b2bcda9917f68d72fd7d6"
+    },
+    {
+      "source": "zsh/.config/zsh/functions/vf",
+      "destination": "dotfiles/zsh/.config/zsh/functions/vf",
+      "sha256": "9b97d80a88bec66f4168745b4d6617db7c34c85d1a6342e3116b4d84e17a4931"
+    },
+    {
+      "source": "zsh/.config/zsh/keybinds/expand.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/keybinds/expand.zsh",
+      "sha256": "5c8ae3dafc1c04832e4c786126a16d8bf0b42fd3071a926546b6f3e2616698ec"
+    },
+    {
+      "source": "zsh/.config/zsh/keybinds/history_runner.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/keybinds/history_runner.zsh",
+      "sha256": "a11e939fb9a34fd1b24b2ca5012daabf3a229ba1cf051d66f65b68a6486b5426"
+    },
+    {
+      "source": "zsh/.config/zsh/keybinds/init.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/keybinds/init.zsh",
+      "sha256": "7a57b065cf586edae655f114ea591927e5449971edf0abe88976aa503497d9c0"
+    },
+    {
+      "source": "zsh/.config/zsh/keybinds/reload_zsh.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/keybinds/reload_zsh.zsh",
+      "sha256": "90f71567b36aaeb41289423d57f4c39de04577eb42727d22cc10f783bb90d6af"
+    },
+    {
+      "source": "zsh/.config/zsh/keybinds/zathura-pdf.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/keybinds/zathura-pdf.zsh",
+      "sha256": "54b4a0470b37a3f4756e31c9f5a532e98f43e9487319e0c43753a86c9e09008e"
+    },
+    {
+      "source": "zsh/.config/zsh/vi-mode.zsh",
+      "destination": "dotfiles/zsh/.config/zsh/vi-mode.zsh",
+      "sha256": "362af5ed8cef0e6650ced6b0290f5730240871fea7fb7394b4c0c13df2744ca9"
+    },
+    {
+      "source": "zsh/.zshenv",
+      "destination": "dotfiles/zsh/.zshenv",
+      "sha256": "dc77877d0eec3f89719b33130051067450a0c6d8cb043925d0137b8a46599652"
+    },
+    {
+      "source": "zsh/.zshrc",
+      "destination": "dotfiles/zsh/.zshrc",
+      "sha256": "25dc7e21acef15f072074ec51a4c41f5b7cdf68e234ab1d6e88c2382fe981c34"
+    }
+  ],
+  "additional_preferences": [
+    {
+      "source": "/home/simon/.config/Code/User/settings.json",
+      "destination": "dotfiles/code/.config/Code/User/settings.json",
+      "sha256": "1a5a09d8a9d3f0980ca8e04e59f266a4c53f1c61a248f874f6adbea61c5027d8"
+    },
+    {
+      "source": "/home/simon/.config/Code/User/keybindings.json",
+      "destination": "dotfiles/code/.config/Code/User/keybindings.json",
+      "sha256": "5bb7f9b49d7a30d14f9ff32e8d8a0d7a04aeb2a97782a840f2545b630aa19392"
+    },
+    {
+      "source": "/home/simon/.config/Cursor/User/settings.json",
+      "destination": "dotfiles/code/.config/Cursor/User/settings.json",
+      "sha256": "c4fd3b0bbde4f5120cb5bf6b594368e5916c0ab5950a747f813b658c1aecf944"
+    },
+    {
+      "source": "/home/simon/.config/Cursor/User/keybindings.json",
+      "destination": "dotfiles/code/.config/Cursor/User/keybindings.json",
+      "sha256": "9573cfe4b485ce9b5be53fb872e33abb053317bd64de29a07980973a401eafb0"
+    },
+    {
+      "source": "/home/simon/.config/breakd/config.toml",
+      "destination": "dotfiles/breakd/.config/breakd/default.toml",
+      "redacted": [
+        "room_token"
+      ]
+    },
+    {
+      "source": "/home/simon/.config/btop/btop.conf",
+      "destination": "dotfiles/appearance/.config/btop/btop.conf",
+      "source_sha256": "1f6d356e90f3688196e6c7ff8e83e2f66f5dc16855585c6e7759b969b5ce147d",
+      "adapted": true
+    },
+    {
+      "source": "/home/simon/.config/fastfetch/config.jsonc",
+      "destination": "dotfiles/appearance/.config/fastfetch/config.jsonc",
+      "source_sha256": "c827c3a24f64c418d309244a8a967def0c522d824addf65d8ee0741afbc970bd",
+      "adapted": true
+    },
+    {
+      "source": "/home/simon/.XCompose",
+      "destination": "dotfiles/desktop-settings/.XCompose",
+      "source_sha256": "5b24416b6ea9f713a7ae10dd181f95f603f6e4e985fc6d0aa1aa04fb2076252b",
+      "adapted": true
+    }
+  ],
+  "post_capture_changes_ported": [
+    {
+      "source": "hypr/.config/hypr/hyprspace.lua",
+      "sha256": "70354b56e3ac35f81618e7d12012dbe3057ca2f060d274956fb48d289181d134"
+    },
+    {
+      "source": "tmux/.tmux.conf",
+      "sha256": "1c569ea31ce3bd9c90e235f8a7058f4c757caec5b689c22f86e246f2f776c7e9"
+    }
+  ],
+  "excluded_branded_assets": {
+    "count": 20,
+    "reason": "Copied logo wallpapers were excluded from the independent desktop; personal active wallpapers were retained.",
+    "unused_preview_unlock_images": 59
+  }
+}

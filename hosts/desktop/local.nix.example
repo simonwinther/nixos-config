@@ -1,0 +1,12 @@
+{ ... }:
+{
+  # Copy to local.nix only after the desktop's own inventory and backups are reviewed.
+  # This example deliberately cannot authorize an installation.
+  workstation = {
+    hardwareReviewed = false;
+    backupsVerified = false;
+    targetDisk = null; # /dev/disk/by-id/<reviewed WHOLE disk>
+    gpu = "unreviewed"; # amd, intel, or nvidia
+    nvidiaOpen = false; # choose from the actual NVIDIA model, if applicable
+  };
+}
