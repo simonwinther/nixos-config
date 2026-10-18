@@ -1,0 +1,428 @@
+#include "DesktopDb.hpp"
+
+#include <algorithm>
+#include <charconv>
+#include <cctype>
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <limits>
+#include <sstream>
+#include <string_view>
+#include <tuple>
+
+namespace fs = std::filesystem;
+
+namespace hyprspace {
+
+    static std::string trim(const std::string& s) {
+        const auto b = s.find_first_not_of(" \t\r\n");
+        if (b == std::string::npos)
+            return "";
+        const auto e = s.find_last_not_of(" \t\r\n");
+        return s.substr(b, e - b + 1);
+    }
+
+    static std::string toLower(std::string s) {
+        std::ranges::transform(s, s.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        return s;
+    }
+
+    std::string normaliseClass(const std::string& cls) {
+        auto s = toLower(trim(cls));
+        // Some toolkits report "org.gnome.Nautilus", others "nautilus". Keep both
+        // forms available by indexing the full string; callers also try the tail.
+        return s;
+    }
+
+    static std::string classTail(const std::string& normalised) {
+        const auto dot = normalised.find_last_of('.');
+        if (dot == std::string::npos || dot + 1 >= normalised.size())
+            return "";
+        return normalised.substr(dot + 1);
+    }
+
+    std::vector<std::string> classCandidates(const std::string& cls) {
+        std::vector<std::string> out;
+
+        auto push = [&out](const std::string& s) {
+            if (!s.empty() && std::ranges::find(out, s) == out.end())
+                out.push_back(s);
+        };
+
+        const auto base = normaliseClass(cls);
+        if (base.empty())
+            return out;
+
+        push(base);
+
+        // Chromium-family web apps: "chrome-<host><path>-<profile>".
+        for (const auto* prefix : {"chrome-", "chromium-", "msedge-", "brave-"}) {
+            if (!base.starts_with(prefix))
+                continue;
+
+            auto rest = base.substr(std::string_view(prefix).size());
+
+            // Drop the trailing "-<profile>" segment ("-default", "-profile 1"...).
+            if (const auto dash = rest.find_last_of('-'); dash != std::string::npos && dash > 0)
+                rest = rest.substr(0, dash);
+
+            // The path part is encoded with underscores; strip it.
+            while (!rest.empty() && rest.back() == '_')
+                rest.pop_back();
+            if (const auto us = rest.find('_'); us != std::string::npos)
+                rest = rest.substr(0, us);
+
+            // The host, with and without a "www." that no .desktop is named
+            // after: "chrome-www.youtube.com__-Default" has to reach
+            // YouTube.desktop, and it is the subdomain that stops it.
+            auto pushHost = [&](const std::string& host) {
+                if (host.empty())
+                    return;
+
+                push(host); // e.g. "chatgpt.com"
+
+                // ...and without the TLD, which is how such entries are named.
+                if (const auto dot = host.find_last_of('.'); dot != std::string::npos && dot > 0)
+                    push(host.substr(0, dot)); // e.g. "chatgpt"
+            };
+
+            pushHost(rest);
+
+            if (rest.starts_with("www."))
+                pushHost(rest.substr(4)); // "www.youtube.com" -> "youtube.com" -> "youtube"
+
+            break;
+        }
+
+        // Reverse-DNS ids: "org.gnome.Nautilus" -> "nautilus".
+        push(classTail(base));
+
+        return out;
+    }
+
+    SDesktopEntry parseDesktopEntry(const std::string& contents, const std::string& id) {
+        SDesktopEntry out;
+        out.id = id;
+
+        std::istringstream in(contents);
+        std::string        line;
+        bool               inGroup = false;
+
+        while (std::getline(in, line)) {
+            const auto t = trim(line);
+            if (t.empty() || t[0] == '#')
+                continue;
+
+            if (t.front() == '[' && t.back() == ']') {
+                inGroup = (t == "[Desktop Entry]");
+                continue;
+            }
+
+            if (!inGroup)
+                continue;
+
+            const auto eq = t.find('=');
+            if (eq == std::string::npos)
+                continue;
+
+            const auto key = trim(t.substr(0, eq));
+            const auto val = trim(t.substr(eq + 1));
+
+            // Ignore localised variants such as Name[de].
+            if (key == "Name")
+                out.name = val;
+            else if (key == "Icon")
+                out.icon = val;
+            else if (key == "StartupWMClass")
+                out.wmClass = val;
+            else if (key == "NoDisplay")
+                out.noDisplay = (toLower(val) == "true");
+            else if (key == "Hidden")
+                out.hidden = (toLower(val) == "true");
+        }
+
+        return out;
+    }
+
+    std::vector<std::string> xdgDataDirs() {
+        std::vector<std::string> dirs;
+
+        if (const char* home = std::getenv("XDG_DATA_HOME"); home && *home)
+            dirs.emplace_back(home);
+        else if (const char* h = std::getenv("HOME"); h && *h)
+            dirs.emplace_back(std::string(h) + "/.local/share");
+
+        std::string sys = "/usr/local/share:/usr/share";
+        if (const char* d = std::getenv("XDG_DATA_DIRS"); d && *d)
+            sys = d;
+
+        std::stringstream ss(sys);
+        std::string       part;
+        while (std::getline(ss, part, ':')) {
+            if (!part.empty())
+                dirs.push_back(part);
+        }
+
+        return dirs;
+    }
+
+    void CDesktopDb::addEntry(const SDesktopEntry& e, size_t directoryPriority) {
+        if (!e.id.empty() && !m_canonicalIds.insert(e.id).second)
+            return;
+        if (e.hidden || e.icon.empty())
+            return;
+
+        m_entries.push_back(e);
+        const size_t idx = m_entries.size() - 1;
+
+        auto index = [&](const std::string& raw, EAliasStrength strength) {
+            if (raw.empty())
+                return;
+            const auto k = normaliseClass(raw);
+            if (k.empty())
+                return;
+            const SAlias alias{idx, directoryPriority, strength};
+            const auto [it, inserted] = m_byClass.try_emplace(k, alias);
+            if (inserted)
+                return;
+            const auto& old = m_entries[it->second.entry];
+            if (strength > it->second.strength ||
+                (strength == it->second.strength && std::tie(directoryPriority, e.id, e.name, e.icon) < std::tie(it->second.directory, old.id, old.name, old.icon)))
+                it->second = alias;
+        };
+
+        // The resolver uses explicit WM class, desktop ID, then human/filename
+        // guesses. Exec is not parsed. Query candidate order (including web-app
+        // host/profile fallbacks) remains independent of these alias strengths.
+        index(e.name, EAliasStrength::GUESS);
+        index(e.fileStem, EAliasStrength::GUESS);
+        index(e.id, EAliasStrength::DESKTOP_ID);
+        index(e.wmClass, EAliasStrength::WM_CLASS);
+    }
+
+    void CDesktopDb::scan() {
+        m_entries.clear();
+        m_canonicalIds.clear();
+        m_byClass.clear();
+        m_iconCache.clear();
+        m_iconRoots.clear();
+        m_iconIndex.clear();
+        m_iconIndexReady = false;
+
+        std::error_code ec;
+
+        const auto dirs = xdgDataDirs();
+        for (size_t directoryPriority = 0; directoryPriority < dirs.size(); ++directoryPriority) {
+            const auto&    base = dirs[directoryPriority];
+            const fs::path apps = fs::path(base) / "applications";
+            if (fs::is_directory(apps, ec)) {
+                std::vector<fs::path> files;
+                for (auto it = fs::recursive_directory_iterator(apps, fs::directory_options::skip_permission_denied, ec); it != fs::recursive_directory_iterator();
+                     it.increment(ec)) {
+                    if (ec)
+                        break;
+                    if (!it->is_regular_file(ec))
+                        continue;
+                    if (it->path().extension() != ".desktop")
+                        continue;
+                    files.push_back(it->path());
+                }
+                // XDG leaves foo-bar.desktop vs foo/bar.desktop unspecified;
+                // a lexical path tie-break makes even that collision repeatable.
+                std::ranges::sort(files);
+                for (const auto& path : files) {
+                    std::ifstream f(path);
+                    if (!f)
+                        continue;
+
+                    std::stringstream buf;
+                    buf << f.rdbuf();
+
+                    auto id = path.lexically_relative(apps).replace_extension().generic_string();
+                    std::ranges::replace(id, '/', '-');
+                    auto entry     = parseDesktopEntry(buf.str(), id);
+                    entry.fileStem = path.stem().string();
+                    addEntry(entry, directoryPriority);
+                }
+            }
+
+            const fs::path icons = fs::path(base) / "icons";
+            if (fs::is_directory(icons, ec))
+                m_iconRoots.push_back(icons.string());
+        }
+
+        if (fs::is_directory("/usr/share/pixmaps", ec))
+            m_iconRoots.emplace_back("/usr/share/pixmaps");
+
+        // Build one filename index while this work is running off the compositor
+        // thread. The old resolver walked every icon-theme directory once per
+        // requested icon, which is exactly the cold-start pause users felt on
+        // their first Alt+Tab.
+        indexIcons();
+    }
+
+    std::string CDesktopDb::iconNameForClass(const std::string& cls) const {
+        for (const auto& key : classCandidates(cls)) {
+            if (auto it = m_byClass.find(key); it != m_byClass.end())
+                return m_entries[it->second.entry].icon;
+        }
+        return "";
+    }
+
+    std::string CDesktopDb::appNameForClass(const std::string& cls) const {
+        for (const auto& key : classCandidates(cls)) {
+            if (auto it = m_byClass.find(key); it != m_byClass.end())
+                return m_entries[it->second.entry].name;
+        }
+        return "";
+    }
+
+    const SDesktopEntry* CDesktopDb::entryForClass(const std::string& cls) const {
+        for (const auto& key : classCandidates(cls))
+            if (auto it = m_byClass.find(key); it != m_byClass.end())
+                return &m_entries[it->second.entry];
+        return nullptr;
+    }
+
+    // Pull a physical pixel size out of an icon theme path segment, including
+    // scaled directories such as "48x48@2" and "48x48@2x". Scalable sorts as
+    // "perfect at any size".
+    static int sizeFromPath(const fs::path& p, bool& scalable) {
+        const auto positiveInt = [](std::string_view text) {
+            int        value  = 0;
+            const auto result = std::from_chars(text.data(), text.data() + text.size(), value);
+            return result.ec == std::errc{} && result.ptr == text.data() + text.size() && value > 0 ? value : 0;
+        };
+
+        scalable = false;
+        for (const auto& part : p) {
+            const auto s = part.string();
+            if (s == "scalable" || s == "symbolic") {
+                scalable = true;
+                return 0;
+            }
+            const auto x = s.find('x');
+            if (x == std::string::npos || x == 0)
+                continue;
+
+            const std::string_view segment = s;
+            const auto             at      = segment.find('@', x + 1);
+            const int              width   = positiveInt(segment.substr(0, x));
+            const int              height  = positiveInt(segment.substr(x + 1, at == std::string_view::npos ? at : at - x - 1));
+            if (!width || !height)
+                continue;
+
+            int scale = 1;
+            if (at != std::string_view::npos) {
+                auto suffix = segment.substr(at + 1);
+                if (suffix.ends_with('x'))
+                    suffix.remove_suffix(1);
+                scale = positiveInt(suffix);
+            }
+            if (!scale || width > std::numeric_limits<int>::max() / scale)
+                continue;
+
+            return width * scale;
+        }
+        return 0;
+    }
+
+    void CDesktopDb::indexIcons() const {
+        m_iconIndex.clear();
+
+        static const std::vector<std::string> EXTS = {".svg", ".svgz", ".png", ".xpm"};
+
+        for (size_t rootIndex = 0; rootIndex < m_iconRoots.size(); ++rootIndex) {
+            const auto&     root = m_iconRoots[rootIndex];
+            std::error_code ec;
+            if (!fs::is_directory(root, ec))
+                continue;
+
+            for (auto it = fs::recursive_directory_iterator(root, fs::directory_options::skip_permission_denied, ec); it != fs::recursive_directory_iterator();
+                 it.increment(ec)) {
+                if (ec)
+                    break;
+                if (!it->is_regular_file(ec))
+                    continue;
+
+                const auto& p   = it->path();
+                const auto  ext = p.extension().string();
+                if (std::ranges::find(EXTS, ext) == EXTS.end())
+                    continue;
+
+                bool      scalable = false;
+                const int size     = sizeFromPath(p, scalable);
+
+                m_iconIndex[p.stem().string()].push_back(SIconFile{
+                    .path     = p.string(),
+                    .root     = rootIndex,
+                    .size     = size,
+                    .scalable = scalable,
+                    .svg      = ext == ".svg" || ext == ".svgz",
+                });
+            }
+        }
+
+        m_iconIndexReady = true;
+    }
+
+    std::optional<std::string> CDesktopDb::resolveIconPath(const std::string& iconName, int preferredSize) const {
+        if (iconName.empty())
+            return std::nullopt;
+
+        std::error_code ec;
+
+        // Absolute path in Icon= is legal and common for Steam/Flatpak entries.
+        if (iconName.front() == '/') {
+            if (fs::is_regular_file(iconName, ec))
+                return iconName;
+            return std::nullopt;
+        }
+
+        const std::string cacheKey = iconName + "@" + std::to_string(preferredSize);
+        if (auto it = m_iconCache.find(cacheKey); it != m_iconCache.end()) {
+            it->second.used = ++m_iconSequence;
+            return it->second.path.empty() ? std::nullopt : std::optional<std::string>(it->second.path);
+        }
+
+        if (!m_iconIndexReady)
+            indexIcons();
+
+        std::string bestPath;
+        long        bestScore = -1;
+        size_t      bestRoot  = std::numeric_limits<size_t>::max();
+
+        if (const auto found = m_iconIndex.find(iconName); found != m_iconIndex.end()) {
+            for (const auto& icon : found->second) {
+                // Scoring: scalable/svg wins, then closest size at or above the
+                // requested one, then anything else.
+                long score = 0;
+                if (icon.scalable || icon.svg)
+                    score = 10'000;
+                else if (icon.size >= preferredSize)
+                    score = 5'000 - (icon.size - preferredSize);
+                else
+                    score = 1'000 + icon.size;
+
+                // A hit in a higher-priority XDG root wins outright, just as it
+                // did when roots were searched one after another.
+                if (icon.root < bestRoot || (icon.root == bestRoot && score > bestScore)) {
+                    bestRoot  = icon.root;
+                    bestScore = score;
+                    bestPath  = icon.path;
+                }
+            }
+        }
+
+        if (cacheKey.size() <= 4096) {
+            if (m_iconCache.size() >= MAX_ICON_LOOKUPS)
+                m_iconCache.erase(std::ranges::min_element(m_iconCache, {}, [](const auto& entry) { return entry.second.used; }));
+            m_iconCache.emplace(cacheKey, SIconLookup{bestPath, ++m_iconSequence});
+        }
+        if (bestPath.empty())
+            return std::nullopt;
+        return bestPath;
+    }
+
+} // namespace hyprspace

@@ -1,63 +1,65 @@
 # Validation record
 
-Validation uses a dedicated Docker container and Nix store. No NixOS profile has been activated, no host package has been installed, no active desktop component has been reloaded, and no disk/partition/service configuration has been changed on the reference laptop. The original dotfiles remain the reference; the later changes listed in [reference-drift.json](inventory/reference-drift.json) are excluded by the user's snapshot choice.
+Current reference: **2026-10-18**, including the newer Rust tools and dirty Hyprspace/Breakd working trees approved by Simon. Source provenance is in [current-reference.json](inventory/current-reference.json). The previous snapshot-only decision is superseded.
 
-Source checks, Nix evaluation, package builds, complete environment/system builds, and real-hardware acceptance are separate gates. Passing one does not establish the next. Build logs and JSON output records are retained under the ignored `.work/` directory; they contain local build paths and are not independent backups.
+All work runs in an isolated checkout and Docker Nix store. No Home Manager activation, NixOS activation, desktop reload, host package installation, media writing or disk operation has been performed on the reference Arch laptop. The current phase permits package/environment builds and checks only. The earlier ISO is historical, stale output; it has not been rebuilt in this phase. Media and installation require Simon's explicit later approval.
 
-## Verified in isolation
+## Current-source results
 
 | Check | Result and scope |
 | --- | --- |
-| Package coverage | All 260 explicit Arch packages have an installation, service, replacement, or exclusion decision; 1,367 total packages and 46 foreign packages were inventoried. |
-| Stow ownership and source syntax | Unique home targets, shell/Lua/Python syntax, required executable sources, and inventory/editor pin consistency passed. GNU Stow also created 694 valid links in a disposable home. |
-| Desktop behavior | Nine tests cover the 21 retained theme palettes, image-derived Matugen colors, atomic state links, light-mode state, cancelled captures, monitor safeguards, and duplicate locks. |
-| Hyprland and Hyprspace | The pinned compositor and matching plugin built; `Hyprland --verify-config` reported `config ok` with both the base configuration and the plugin enabled. This is a parser check without a running display server. |
-| Ghostty | Packaged Ghostty's `+validate-config` passed. Rendering, scaling and keyboard input still require the physical session. |
-| Neovim | All 62 locked plugin sources and 37 locked parsers built. The repeatable startup check passed LuaSnip and completion setup, loaded the native fuzzy library, discovered all parsers, and parsed Lua/Python/C/LaTeX/Typst samples. No plugin/Mason installation ran. |
-| Tmux | The pinned navigator/resurrect/continuum sources built. A private server passed startup, navigation binding, modified-key, session-save and pane-capture checks; no existing tmux server was contacted. |
-| Native helpers | Dictation passed 26 Rust tests; file picker passed six; workspace slider passed three with the packaged font. Patched Waybar built and reported its version. |
-| Launcher and break reminders | Patched Walker passed two tests. Breakd passed 96 tests with one upstream test ignored; the socket fixture uses a short temporary directory under Nix. |
-| Desktop runtime dependencies | The packaged tools discover the GNOME interface settings schema outside GNOME. Chromium MIME defaults include both Arch's and NixOS's desktop-entry names. |
-| Merged application profile | GCC supplies `cc`/`c++`; named Clang and Fortran commands remain available. A C++ program compiled and ran from the merged profile, and the PulseAudio client command reported its version. Compiler wrapper priorities and a redundant PulseAudio library entry were corrected after complete builds exposed conflicts. |
-| NixOS integration | Unset home variables are filtered before exporting the systemd environment. The explicit UWSM session uses the NixOS compositor wrapper. NordVPN's newer documentation chapter is excluded from the 26.05 manual's redirect index while its pinned runtime module and option documentation are retained. |
-| Installed session launcher | The generated desktop entry passes `desktop-file-validate`. Its lock helper is one executable argument with packaged locker/compositor tools on PATH; the helper passes Bash syntax validation. The selected NixOS compositor exactly matches the plugin's compositor. The live session has no lock command. |
-| Proprietary artifacts | Boosteroid's retained Debian archive built with patched interpreter/libraries and corrected launcher path. Its historical archive and the NordVPN TUI archive require the separate retention procedure in [VENDOR-SOURCES.md](VENDOR-SOURCES.md). |
-| Installation guards | Live configuration has no failed assertions. Installed desktop/recovery profiles intentionally reject missing hardware review, backup verification, disk selection, GPU selection and root filesystem; the laptop also remains guarded. Supplying only a disk path yields no Disko disk definitions. The live profile forces private SOPS provisioning off even if host settings request it. |
+| Reference inventory | All 260 explicit package names and versions still match the recorded inventory. Every package has an installation, service, replacement or exclusion decision. |
+| Source coverage | The read-only audit accounts for all 119 top-level `.config` entries, 21 root dotfiles, 55 home commands and 67 development manifests in its documented search roots. No unresolved home commands, unreviewed additional source paths, or unexplained imported-source drift were found. New files are checked as well as previously recorded hashes; remaining reference paths have explicit private-state, backup, replacement or exclusion decisions. Coverage decisions do not prove state transfer or runtime acceptance. |
+| Portable source | Shell/Lua/Python syntax, unique Stow targets, plugin locks and all 145 editor extension source pins pass. Additional mutable preferences are seeded only when absent. |
+| Desktop behavior | All 15 isolated tests pass, including all 21 theme palettes, Matugen generation, wallpaper state, preference seeding (including existing dconf settings), bar persistence, screenshot cancellation/freezing and copy/save behavior. The transcode check creates an image, preserves its input, verifies the output/clipboard URI with fake tools, and rejects replacement of an existing output. No real display or clipboard is contacted. |
+| Hyprland / Hyprspace | The exact pinned Hyprland 0.56.2 and current plugin build. The repeatable parser check reports `config ok` using the plugin and portable Lua configuration, without a display server. Current Rust launch helper tests pass. |
+| Neovim | All 62 locked plugin sources and 37 parsers build. The startup check loads completion, LuaSnip and the native fuzzy library, discovers every parser, and parses Lua/Python/C/LaTeX/Typst samples. The 62 reference plugin worktrees match their locked commits with no tracked modifications. Rust-specific Neovim configuration/parsers were not enabled in the reference and have not been invented here. |
+| Tmux | Pinned navigator/resurrect/continuum sources build. A private server passes startup, navigation binding, modified-key, session-save and pane-capture checks. Existing servers are untouched. |
+| Current Rust helpers | Dictation: 48 tests; audio ducking: 16; wallpaper grid: 19; text picker: 9; formula plotter: 30; iPhone transfer: 19; static cluster agent: 9. All pass. File picker and workspace slider retain their previously built/tested sources. |
+| Break reminders | The current Breakd working source builds with 169 passed tests and two upstream tests ignored. |
+| VS Code / Cursor | All 145 recorded VSIX entries build (142 VS Code, three Cursor). Bundled native libraries are patched for NixOS. Home Manager declares their original version/platform directory names; application state and extension-internal downloads are separate. |
+| User tools | Current native launchers and seven added Cargo locks are preserved. `uipro-cli` 2.2.3 builds from a committed npm dependency lock. Primary Zsh and independent Bash settings are portable Stow source. |
 
-## Complete builds
+All five flake checks passed: `desktop-behavior`, `hyprland-config`, `portable-syntax`, `neovim-startup`, and `tmux-startup`. All 25 custom package outputs passed the aggregate build. These checks cover the captured current code; they do not establish physical-session or private-account acceptance.
 
-| Output | Status |
-| --- | --- |
-| Custom native packages | Passed: all 18 outputs, including the compositor plugin, launcher/provider patches, editor and tmux sources, desktop helpers, and retained vendor applications. |
-| Complete installed Home Manager environment | Passed, including the full application collection and TeX formats; no activation performed. |
-| Live system and ISO | Passed. Exported `.work/iso/hyprland-desktop-live.iso` (5.04 GiB), with `SHA256SUMS` and `build.json` alongside it. Host/store SHA-256 values match. The image reports BIOS and UEFI boot entries and the `DESKTOP_LIVE` volume ID. No USB boot performed. |
-| Installed desktop and console recovery systems | Await the desktop's actual hardware, disk selection and verified backup. The guards remain enabled. |
+## Complete environment and workflow checks
 
-## Repeatable checks
+The static Rust cluster agent passes all 58 fake SSH/Slurm workflow tests under ordinary user permissions, including mirror safety, submission, logs, protocol path checks, remote cache reuse, and the newly captured fetch command. Downloads preserve local-only files and remote originals; dry runs preserve the destination. Fixture executable paths were adapted only in the disposable test copy. No real cluster connection or job submission occurred.
+
+The complete current Home Manager environment built successfully, including the full application collection, SDKs and TeX. It was not activated. Compiler link priorities keep GCC as the default; Playwright has lower profile-link priority for SDK-root metadata shared with Flutter, while its command retains its own package contents.
+
+A disposable home with **1,015 managed links** passed Bash completion/FZF startup, primary Zsh autosuggestion/highlighting and vi keymap startup, Python **3.14.7** imports (PyGObject, Pillow, NumPy, Matplotlib, Poetry core and TerminalTextEffects), Rust **1.98.1** / Cargo **1.98.0** compilation and execution of an offline sample, and C++ compilation/execution. `uipro` reports 2.2.3 and Ghostty's configuration validator passes. VS Code lists exactly the recorded 142 extension IDs/versions; Cursor lists its three. No editor account was restored or used for these tests.
+
+The `rust-desktop` development shell passes toolchain and pkg-config discovery for GTK4, layer-shell, Wayland, PipeWire, ALSA, Fontconfig and FreeType, and finds the declared workspace-slider font. The packaged desktop tools discover both GNOME interface and Nautilus settings schemas outside GNOME. An additional SOPS runtime-file declaration evaluates to owner `simon`, mode `0600`, and the expected shell-secrets path using a public placeholder source; no decryption, private file provisioning or SOPS activation occurred.
+
+Evidence is retained under `.work/`: `current-final-components.{json,log}`, `current-home-manager-v2.{json,log}`, `current-home-profile-smoke-v2.log`, `current-cluster-workflow-final.log`, `current-rust-devshell-v2.log`, `current-gsettings-schemas.log`, `current-sops-declaration.json`, and the final parity audit. These are local records, not backups.
+
+Historical integration checks established the compiler wrapper priorities, PulseAudio client availability, GNOME settings schema discovery, MIME defaults, generated session launcher syntax, coherent compositor/plugin selection, private SOPS exclusion from live profiles, and installation guards. They remain relevant but are not substitutes for current package builds or physical-session testing.
+
+## Reproducing configuration checks
 
 From this checkout on an x86_64 Nix-capable Linux system:
 
 ```sh
 nix build .#checks.x86_64-linux.desktop-behavior \
+  .#checks.x86_64-linux.hyprland-config \
   .#checks.x86_64-linux.portable-syntax \
   .#checks.x86_64-linux.neovim-startup \
   .#checks.x86_64-linux.tmux-startup
 nix build .#nixosConfigurations.desktop.config.home-manager.users.simon.home.activationPackage
-nix build .#desktop-iso
 ```
 
-The Home Manager command builds its activation package without running it. Keep the historical vendor archives available before reproducing the complete installed application environment. After completing the actual host review, build the installed workstation and recovery `system.build.toplevel` outputs as described in [MIGRATION.md](MIGRATION.md). A full `nix flake check` intentionally encounters the installed-profile guards until that review is complete.
+Building an activation package does not run it. Do not run its activation script during this phase. Installed NixOS system outputs remain guarded until the desktop's actual hardware, disk and backups are reviewed. Do not use a broad build of every flake package: the reserved image output belongs to a later phase.
 
-On a memory-constrained builder, release Nix's evaluation memory before ISO packaging:
+The builder uses the pinned Nix Docker image, two CPUs and 4 GiB RAM, with `/src` read-only, `.work/` writable, and the separate `nixos-config-store` volume. Large builds run sequentially at reduced scheduling priority. Evaluate the Home Manager derivation path first and build that derivation separately to release evaluation memory. Logs and output JSON under `.work/` are local evidence, not independent backups.
 
-```sh
-desktop_iso_drv=$(nix eval --raw .#desktop-iso.drvPath)
-nix build "$desktop_iso_drv^out"
-```
+## Compatibility and state still requiring acceptance
 
-The container uses `nixos/nix@sha256:377d4887aca98f0dfa12971c1ea6d6a625a435d8b610d4c95a436843da6fbfd1`, two CPUs and 4 GiB RAM, with the repository mounted read-only and only `.work/` writable. Run large builds sequentially at that limit: overlapping Home Manager evaluation and Rust compilation exceeded it. The default ISO compressor also exceeded it; this profile uses Zstd level 15 with a 512 MiB compression cache and the separate evaluation/build steps above. Its isolated Nix sandbox setting does not alter the installed system's Nix policy. The build cache is the dedicated `nixos-config-store` Docker volume.
-
-The ISO contains the core desktop package set and personal configuration. The complete application collection, SDKs, TeX, and NordVPN/Twingate/Tailscale services belong to the installed profile. Private account state is restored or created separately. Complete application-specific acceptance follows the installed-profile build and selective restoration.
+- Nixpkgs application versions can differ from Arch; test real projects and copied databases before relying on compatibility. Rust 1.98.1 and Python 3.14.7 match the current reference toolchains.
+- CppTools' external-console debugger mode retains upstream/Nixpkgs limitations around hard-coded terminal paths. Test the actual project `launch.json` and terminal selection. The bundled old F# runtime also needs a real language-server session; passing native dependency checks does not establish functional compatibility.
+- Retain unavailable vendor sources and the 15 cached VSIX archives using [VENDOR-SOURCES.md](VENDOR-SOURCES.md). Marketplace availability, extra extension downloads, Flatpak commits and remote services are outside a local package build.
+- Secrets, SSH/GPG identities, browser/keyring/VPN authentication, histories, databases, projects and container volumes are recorded for deliberate encrypted transfer or fresh login. They have not been copied into Git or the Nix store. Optional SOPS declarations provide private runtime file destinations, without collecting values.
+- Recreate Python virtual environments and native project outputs from project locks. The development shell supplies common Rust desktop dependencies; it does not turn all personal projects into Nix derivations or rewrite Python source into Rust.
 
 ## Real-hardware acceptance (pending stationary desktop inventory)
 

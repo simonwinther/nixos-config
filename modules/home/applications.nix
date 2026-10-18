@@ -8,13 +8,23 @@
 }:
 let
   inventory = builtins.fromJSON (builtins.readFile ../../docs/inventory/flatpak.json);
+  interface = builtins.fromJSON (
+    builtins.readFile ../../dotfiles/desktop-settings/.config/desktop/interface.json
+  );
+  applications = builtins.fromJSON (
+    builtins.readFile ../../dotfiles/desktop-settings/.config/desktop/applications.json
+  );
 in
 {
   imports = [ inputs.nix-flatpak.homeManagerModules.nix-flatpak ];
-  dconf.settings."org/gnome/desktop/interface" = {
-    font-name = "Liberation Sans 11";
-    monospace-font-name = "JetBrainsMono Nerd Font 11";
-  };
+  dconf.settings =
+    lib.mapAttrs' (schema: values: {
+      name = lib.replaceStrings [ "." ] [ "/" ] schema;
+      value = values;
+    }) applications
+    // {
+      "org/gnome/desktop/interface" = interface;
+    };
   services.flatpak = lib.mkIf config.desktop.fullApplications {
     enable = true;
     uninstallUnmanaged = false;

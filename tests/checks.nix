@@ -4,12 +4,44 @@
   self,
 }:
 {
+  hyprland-config =
+    pkgs.runCommand "hyprland-config"
+      {
+        nativeBuildInputs = [
+          pkgs.bash
+          pkgs.stow
+          pkgs.gnugrep
+          packages.desktop-tools
+          packages.hyprspace.compositor
+        ];
+      }
+      ''
+        mkdir -p "$TMPDIR/home"
+        bash ${../.}/scripts/stow-portable "$TMPDIR/home" --apply > "$TMPDIR/stow.log" 2>&1
+        export HOME="$TMPDIR/home"
+        export XDG_CONFIG_HOME="$HOME/.config" XDG_STATE_HOME="$HOME/.local/state"
+        export XDG_DATA_HOME="$HOME/.local/share" XDG_RUNTIME_DIR="$TMPDIR/runtime"
+        export HYPRSPACE_PLUGIN=${packages.hyprspace}/lib/libhyprspace.so
+        unset HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY DISPLAY
+        mkdir -p "$XDG_RUNTIME_DIR"
+        desktopctl theme init
+        if ! Hyprland --verify-config --config "$HOME/.config/hypr/hyprland.lua" > "$TMPDIR/hyprland.log" 2>&1; then
+          cat "$TMPDIR/hyprland.log"
+          exit 1
+        fi
+        cat "$TMPDIR/hyprland.log"
+        grep -F 'config ok' "$TMPDIR/hyprland.log"
+        touch "$out"
+      '';
   desktop-behavior =
     pkgs.runCommand "desktop-behavior"
       {
         nativeBuildInputs = [
           pkgs.python3
           pkgs.matugen
+          pkgs.bash
+          pkgs.imagemagick
+          pkgs.file
         ];
       }
       ''
@@ -19,6 +51,28 @@
         export HOME="$TMPDIR/home" PYTHONDONTWRITEBYTECODE=1
         mkdir -p "$HOME"
         python -m unittest discover -s tests -v
+        mkdir -p "$TMPDIR/tools" "$TMPDIR/media"
+        export TRANSCODE_TEST_CLIPBOARD="$TMPDIR/clipboard"
+        cat > "$TMPDIR/tools/wl-copy" <<'SH'
+        #!/usr/bin/env bash
+        cat > "$TRANSCODE_TEST_CLIPBOARD"
+        SH
+        cat > "$TMPDIR/tools/notify-send" <<'SH'
+        #!/usr/bin/env bash
+        exit 0
+        SH
+        chmod +x "$TMPDIR/tools/"*
+        export PATH="$TMPDIR/tools:$PATH"
+        magick -size 12x12 xc:blue "$TMPDIR/media/input file.png"
+        before=$(sha256sum "$TMPDIR/media/input file.png")
+        bash dotfiles/desktop-tools/.local/share/desktop-tools/transcode.sh "$TMPDIR/media/input file.png" jpg low
+        test -s "$TMPDIR/media/input file-low.jpg"
+        test "$before" = "$(sha256sum "$TMPDIR/media/input file.png")"
+        test "$(cat "$TRANSCODE_TEST_CLIPBOARD")" = "file://$TMPDIR/media/input file-low.jpg"
+        if bash dotfiles/desktop-tools/.local/share/desktop-tools/transcode.sh "$TMPDIR/media/input file.png" jpg low; then
+          echo 'Transcode must not replace an existing output' >&2
+          exit 1
+        fi
         touch "$out"
       '';
   neovim-startup =

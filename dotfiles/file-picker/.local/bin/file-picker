@@ -1,5 +1,9 @@
 #!/bin/sh
 set -eu
+if native_binary=$(command -v file-picker-native); then
+    export FILE_PICKER_EXECUTABLE="$native_binary"
+    exec "$native_binary" "$@"
+fi
 if command -v desktopctl >/dev/null 2>&1; then
   if native_binary=$(desktopctl path file-picker-native 2>/dev/null); then
     export FILE_PICKER_EXECUTABLE="$native_binary"

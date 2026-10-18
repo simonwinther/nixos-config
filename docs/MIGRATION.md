@@ -1,5 +1,7 @@
 # Desktop-first migration procedure
 
+Current phase: complete and review the Nix configuration against the reference Arch experience, including private-state restoration requirements. Package and Home Manager builds may run without activation. The later media/testing and installation phases require Simon's explicit approval; do not build another ISO or live system, write a USB, or install while configuration parity is still being prepared. The steps below describe the eventual workflow rather than authorization to execute every phase.
+
 ## 1. Establish the target and preserve the reference
 
 The inspected machine is `lambda`, a ThinkPad L14 Gen 1 with Ryzen 5 PRO 4650U/Renoir graphics, AX200 wireless, approximately 16 GB RAM, and Arch/Omarchy. It supplies the desired user experience; its disk layout is not the desktop's layout. No installation command in this document should be run on that laptop during the desktop migration.
@@ -32,11 +34,17 @@ Nix store executables do not use `/usr/bin` paths. The portable wrappers, Hendri
 
 Neovim's 62 plugin sources and the 37 installed parser sources are hash-pinned. On NixOS, plugin downloads/builds and Mason installs are disabled; language servers/formatters and the native completion library are packaged. On other distributions the same config uses its normal Lazy workflow. Validate every active language project, especially Java, Haskell, Flutter, TeX, and Typst. Container evaluation cannot verify their interactive behavior.
 
+VS Code and Cursor retain all 142 and three recorded extension entries respectively through hash-pinned VSIX sources and Nix-compatible native libraries. Headless discovery matches the recorded IDs and versions; interactive debugger/language-server behavior still needs the real projects. Retain the cached extension archives listed in [VENDOR-SOURCES.md](VENDOR-SOURCES.md); extension-managed downloads and private databases are restored separately.
+
 Sign in to browsers, 1Password, mail, Spotify, Slack, Canvas, NordVPN, Twingate, Tailscale, and other services separately on the desktop. Browser profile import is optional and should be tested against a private copy because keyring-bound cookies/passwords may not transfer. Load unpacked extensions from `~/.local/share/browser-extensions`; extensions without a fixed manifest key can acquire new IDs. The dictation native host is generated for the target home directory. Provision private credentials as described in `../secrets/README.md`.
 
 ## 4. Build and review before installing
 
-The prepared image is `.work/iso/hyprland-desktop-live.iso`, approximately 5.04 GiB. From its directory, run `sha256sum -c SHA256SUMS` before use. Select an 8 GB or larger USB by its model, serial and size; back up its existing contents and unmount its partitions. Write the ISO as a whole-device image with verification enabled in the imaging tool, then safely eject it. Record the selected USB separately from the installation target and backup devices. No USB has been selected or written during preparation.
+First finish the configuration/state coverage audit, resolve unaccounted custom tools and dependencies, and review the documented remaining runtime checks with Simon. Build individual packages and the complete Home Manager environment without activation. Do not equate a successful build with complete transfer of the reference home directory, credentials, or project environments.
+
+Stop before building a live system or ISO until Simon explicitly approves media preparation. An earlier, premature image exists at `.work/iso/hyprland-desktop-live.iso`; it is historical output, may be stale, and is not an accepted installation candidate. No USB has been selected or written.
+
+After approval, build the reviewed live configuration and export a fresh checksum record. From its directory, run `sha256sum -c SHA256SUMS` before use. Select an 8 GB or larger USB by its model, serial and size; back up its existing contents and unmount its partitions. Write the ISO as a whole-device image with verification enabled in the imaging tool, then safely eject it. Record the selected USB separately from the installation target and backup devices.
 
 Review all inventory decisions, run the checks listed in `VALIDATION.md`, and build the live system. Boot the custom USB directly on the stationary desktop without mounting or modifying its system disk. Check both TTY and graphical login, actual Hyprland config errors, monitor scales/refresh rates, GPU acceleration, input, Wi-Fi/Ethernet, Bluetooth, sound/mic, portal screen sharing, suspend/resume, and the personal desktop acceptance checklist. Capture screenshots and compare them to the laptop at matching scale and theme. Correct host settings and rebuild the USB as needed.
 
@@ -48,7 +56,7 @@ Now build both `.#nixosConfigurations.desktop.config.system.build.toplevel` and 
 
 ## 5. Install on the stationary desktop
 
-Proceed only after the complete preceding review, restored backups, live USB acceptance, final desktop-specific configuration, and explicit selection of the destructive target. Boot UEFI mode from NixOS installation media. Check the hostname/context and disk serial/size again. Keep the laptop and backup media separate. The following commands are the eventual manual installation workflow, not commands to run on the current laptop:
+Proceed only after Simon explicitly approves installation, the complete preceding review, restored backups, live USB acceptance, final desktop-specific configuration, and explicit selection of the destructive target. Boot UEFI mode from NixOS installation media. Check the hostname/context and disk serial/size again. Keep the laptop and backup media separate. The following commands are the eventual manual installation workflow, not commands to run on the current laptop:
 
 ```sh
 # From the reviewed repository on the stationary desktop's live system:

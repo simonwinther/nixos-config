@@ -984,7 +984,7 @@
     "arch": "opencode",
     "referenceVersion": "1.18.29-1",
     "kind": "package",
-    "source": "stable",
+    "source": "unstable",
     "attribute": "opencode",
     "group": "applications"
   },
@@ -1182,7 +1182,7 @@
     "arch": "rust",
     "referenceVersion": "1:1.98.1-1",
     "kind": "package",
-    "source": "stable",
+    "source": "unstable",
     "attribute": "rustc",
     "group": "applications"
   },

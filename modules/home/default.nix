@@ -4,6 +4,7 @@
   pkgs,
   host,
   profile,
+  packages,
   ...
 }:
 {
@@ -41,6 +42,7 @@
     xdg.enable = true;
     home.sessionPath = [ "$HOME/.local/bin" ];
     home.sessionVariables = {
+      DESKTOP_DICTATE_BIN = "${packages.dictate}/bin/dictate";
       DOTFILES =
         if profile == "live" then
           "${../../dotfiles}"
@@ -63,6 +65,9 @@
     };
     home.activation.desktopStateDirectories = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       run mkdir -p "$HOME/.local/state/desktop" "$HOME/Pictures" "$HOME/Videos" "$HOME/From iPhone"
+    '';
+    home.activation.desktopSeedPreferences = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      run ${packages.desktop-tools}/bin/desktopctl seed-preferences
     '';
   };
 }

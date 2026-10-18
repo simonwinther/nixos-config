@@ -1,0 +1,1247 @@
+{
+  "referenceHost": "lambda",
+  "coverage": "Every top-level reference .config entry observed by the metadata audit. These are restoration decisions, not successful transfer or runtime acceptance results.",
+  "entries": [
+    {
+      "reference": ".config/.copilot",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/1Password",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Android Open Source Project",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Boosteroid Games S.R.L.",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/BraveSoftware",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Code",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/Code/User/keybindings.json",
+        ".config/Code/User/settings.json"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Codex",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Cursor",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/Cursor/User/keybindings.json",
+        ".config/Cursor/User/settings.json"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Electron",
+      "disposition": "empty_reference_directory",
+      "detail": "No files to import at the audit time.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Pinta",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/Pinta/palette.txt",
+        "dotfiles/application-state/.local/share/desktop-defaults/config/Pinta/settings.xml"
+      ]
+    },
+    {
+      "reference": ".config/QtProject.conf",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Signal",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Slack",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/Typora",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/VirtualBox",
+      "disposition": "excluded_legacy_infrastructure",
+      "detail": "Retain in the old-system backup for recovery; omit from the NixOS restoration.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/aerc",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/aerc/accounts.conf",
+        ".config/aerc/aerc.conf",
+        ".config/aerc/binds.conf"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/aether",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/alacritty",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/alacritty/alacritty.toml"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/autostart",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/autostart/com.onepassword.OnePassword.desktop",
+        ".config/autostart/org.fcitx.Fcitx5.desktop"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/background-grid",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/background-grid/README.md",
+        ".config/background-grid/folders.json",
+        ".config/background-grid/style.css",
+        ".config/background-grid/transition.json"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/brave-flags.conf",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/brave-origin-beta-flags.conf",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/breakd",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/breakd/default.toml"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/btop",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/btop/btop.conf"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/chromium",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/chromium-flags.conf",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/chromium-flags.conf"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/cliamp",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/cliamp/config.toml"
+      ]
+    },
+    {
+      "reference": ".config/configstore",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/cppman",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/cppman/cppman.cfg"
+      ]
+    },
+    {
+      "reference": ".config/dconf",
+      "disposition": "declarative_services_or_desktop_defaults",
+      "detail": "Compare existing settings with NixOS/Home Manager services and the desktop defaults. Do not restore old service links or distribution environment scripts.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/dictate",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/dictate/config.env",
+        ".config/dictate/dictionary.toml"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/discord",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/elephant",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/elephant/calc.toml",
+        ".config/elephant/desktopapplications.toml",
+        ".config/elephant/menus/notifications.lua",
+        ".config/elephant/menus/repositories.lua",
+        ".config/elephant/symbols.toml"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/environment.d",
+      "disposition": "declarative_services_or_desktop_defaults",
+      "detail": "Compare existing settings with NixOS/Home Manager services and the desktop defaults. Do not restore old service links or distribution environment scripts.",
+      "managedTargets": [
+        ".config/environment.d/fcitx.conf"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/fastfetch",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/fastfetch/config.jsonc"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/fcitx",
+      "disposition": "runtime_cache_or_history",
+      "detail": "Preserve any wanted history in the encrypted home backup; regenerate sockets, process IDs, device state, and caches.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/fcitx5",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/fcitx5/conf/clipboard.conf",
+        "dotfiles/application-state/.local/share/desktop-defaults/config/fcitx5/conf/notifications.conf",
+        "dotfiles/application-state/.local/share/desktop-defaults/config/fcitx5/conf/xcb.conf",
+        "dotfiles/application-state/.local/share/desktop-defaults/config/fcitx5/profile"
+      ]
+    },
+    {
+      "reference": ".config/file-picker",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/file-picker/style.css"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/fono",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/fontconfig",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/fontconfig/fonts.conf"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/gh",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/gh/config.yml"
+      ]
+    },
+    {
+      "reference": ".config/ghc",
+      "disposition": "runtime_cache_or_history",
+      "detail": "Preserve any wanted history in the encrypted home backup; regenerate sockets, process IDs, device state, and caches.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/ghostty",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/ghostty/config",
+        ".config/ghostty/shaders/cursor_blaze_flashbang.glsl",
+        ".config/ghostty/shaders/cursor_smear_fade.glsl",
+        ".config/ghostty/themes/SimonDark",
+        ".config/ghostty/themes/SimonLight"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/git",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/git/config",
+        ".config/git/ignore"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/github-copilot",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/gnuplot",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/gnuplot/qtterminal.conf"
+      ]
+    },
+    {
+      "reference": ".config/go",
+      "disposition": "runtime_cache_or_history",
+      "detail": "Preserve any wanted history in the encrypted home backup; regenerate sockets, process IDs, device state, and caches.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/google-chrome",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/google-chrome-beta",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/google-chrome-for-testing",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/google-chrome-unstable",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/gpu-screen-recorder",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/gtk-3.0",
+      "disposition": "empty_reference_directory",
+      "detail": "No files to import at the audit time.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/gtk-4.0",
+      "disposition": "empty_reference_directory",
+      "detail": "No files to import at the audit time.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/hendrix",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/htop",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/htop/htoprc"
+      ]
+    },
+    {
+      "reference": ".config/hypr",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/hypr/actions.lua",
+        ".config/hypr/autostart.lua",
+        ".config/hypr/background-grid.lua",
+        ".config/hypr/bindings.lua",
+        ".config/hypr/config-data.lua",
+        ".config/hypr/defaults/bindings/clipboard.lua",
+        ".config/hypr/defaults/bindings/media.lua",
+        ".config/hypr/defaults/bindings/tiling-v2.lua",
+        ".config/hypr/defaults/bindings/utilities.lua",
+        ".config/hypr/defaults/envs.lua",
+        ".config/hypr/defaults/input.lua",
+        ".config/hypr/defaults/looknfeel.lua",
+        ".config/hypr/defaults/windows.lua",
+        ".config/hypr/file-picker.lua",
+        ".config/hypr/hypridle.conf",
+        ".config/hypr/hyprland.lua",
+        ".config/hypr/hyprlock.conf",
+        ".config/hypr/hyprspace.lua",
+        ".config/hypr/hyprsunset.conf",
+        ".config/hypr/input.lua",
+        ".config/hypr/looknfeel.lua",
+        ".config/hypr/scripts/launch-or-focus",
+        ".config/hypr/scripts/toggle-transparency",
+        ".config/hypr/windows.lua",
+        ".config/hypr/xdph.conf"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/hyprland-preview-share-picker",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/hyprland-preview-share-picker/config.yaml"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/hyprwhspr",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/ibus",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/imv",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/imv/config"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/kaggle",
+      "disposition": "empty_reference_directory",
+      "detail": "No files to import at the audit time.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/kdenlive-layoutsrc",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/kdenlive-layoutsrc"
+      ]
+    },
+    {
+      "reference": ".config/kdenliverc",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/kdenliverc"
+      ]
+    },
+    {
+      "reference": ".config/kitty",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/kitty/kitty.conf"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/lazydocker",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/lazydocker/config.yml"
+      ]
+    },
+    {
+      "reference": ".config/lazygit",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/lazygit/config.yml",
+        ".config/lazygit/delta-pager",
+        ".config/lazygit/delta.gitconfig"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/libaccounts-glib",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/libreoffice",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/mako",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/mako/config"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/matplotlib",
+      "disposition": "empty_reference_directory",
+      "detail": "No files to import at the audit time.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/microsoft-edge-dev",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/mimeapps.list",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/mimeapps.list"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/mise",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/mise/config.toml"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/mozilla",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/mpv",
+      "disposition": "empty_reference_directory",
+      "detail": "No files to import at the audit time.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/nautilus",
+      "disposition": "empty_reference_directory",
+      "detail": "No files to import at the audit time.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/nextjs-nodejs",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/nordvpn",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/nvim",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/nvim/.gitignore",
+        ".config/nvim/.luarc.json",
+        ".config/nvim/.neoconf.json",
+        ".config/nvim/LICENSE",
+        ".config/nvim/after/ftplugin/c.lua",
+        ".config/nvim/after/ftplugin/cpp.lua",
+        ".config/nvim/after/ftplugin/haskell.lua",
+        ".config/nvim/after/ftplugin/java.lua",
+        ".config/nvim/after/ftplugin/markdown.lua",
+        ".config/nvim/after/ftplugin/python.lua",
+        ".config/nvim/after/ftplugin/sh.lua",
+        ".config/nvim/after/ftplugin/tex.lua",
+        ".config/nvim/after/plugin/theme.lua",
+        ".config/nvim/after/plugin/transparency.lua",
+        ".config/nvim/init.lua",
+        ".config/nvim/lazy-lock.json",
+        ".config/nvim/lazyvim.json",
+        ".config/nvim/lua/config/autocmds.lua",
+        ".config/nvim/lua/config/keymaps.lua",
+        ".config/nvim/lua/config/lazy.lua",
+        ".config/nvim/lua/config/options.lua",
+        ".config/nvim/lua/config/picker_ignore.lua",
+        ".config/nvim/lua/plugins/basedpyright.lua",
+        ".config/nvim/lua/plugins/blink.lua",
+        ".config/nvim/lua/plugins/competitest.lua",
+        ".config/nvim/lua/plugins/conform.lua",
+        ".config/nvim/lua/plugins/copilot.lua",
+        ".config/nvim/lua/plugins/cppman.lua",
+        ".config/nvim/lua/plugins/diffview.lua",
+        ".config/nvim/lua/plugins/flash.lua",
+        ".config/nvim/lua/plugins/flutter-tools.lua",
+        ".config/nvim/lua/plugins/fzf.lua",
+        ".config/nvim/lua/plugins/gitsigns.lua",
+        ".config/nvim/lua/plugins/hardtime.lua",
+        ".config/nvim/lua/plugins/haskell.lua",
+        ".config/nvim/lua/plugins/img-clip.lua",
+        ".config/nvim/lua/plugins/lualine.lua",
+        ".config/nvim/lua/plugins/luasnip.lua",
+        ".config/nvim/lua/plugins/markdown.lua",
+        ".config/nvim/lua/plugins/mini.pairs.lua",
+        ".config/nvim/lua/plugins/noice.lua",
+        ".config/nvim/lua/plugins/nvim-surround.lua",
+        ".config/nvim/lua/plugins/nvim-treesitter.lua",
+        ".config/nvim/lua/plugins/oil.lua",
+        ".config/nvim/lua/plugins/open-url.lua",
+        ".config/nvim/lua/plugins/presence.lua",
+        ".config/nvim/lua/plugins/screenkey.lua",
+        ".config/nvim/lua/plugins/snacks.lua",
+        ".config/nvim/lua/plugins/switch.lua",
+        ".config/nvim/lua/plugins/theme.lua",
+        ".config/nvim/lua/plugins/tmux-navigator.lua",
+        ".config/nvim/lua/plugins/todo-comments.lua",
+        ".config/nvim/lua/plugins/vimtex.lua",
+        ".config/nvim/lua/plugins/whichkey.lua",
+        ".config/nvim/lua/plugins/yanky.lua",
+        ".config/nvim/lua/utils/core.lua",
+        ".config/nvim/picker-ignore",
+        ".config/nvim/snippets/cpp.lua",
+        ".config/nvim/snippets/markdown.lua",
+        ".config/nvim/snippets/tex.lua",
+        ".config/nvim/snippets/tex/conditions.lua",
+        ".config/nvim/snippets/tex/delimiters.lua",
+        ".config/nvim/snippets/tex/environments.lua",
+        ".config/nvim/snippets/tex/fonts.lua",
+        ".config/nvim/snippets/tex/helpers.lua",
+        ".config/nvim/snippets/tex/letters.lua",
+        ".config/nvim/snippets/tex/lists.lua",
+        ".config/nvim/snippets/tex/operators.lua",
+        ".config/nvim/snippets/tex/preamble.lua",
+        ".config/nvim/snippets/tex/scripts.lua",
+        ".config/nvim/snippets/tex/sections.lua",
+        ".config/nvim/snippets/tex/spacing.lua",
+        ".config/nvim/snippets/tex/templates.lua",
+        ".config/nvim/snippets/typst.lua",
+        ".config/nvim/stylua.toml"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/obs-studio",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/obsidian",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/oh-my-posh",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/oh-my-posh/custom-respects-waybar.omp.json",
+        ".config/oh-my-posh/custom.omp.json"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/omarchy",
+      "disposition": "excluded_legacy_infrastructure",
+      "detail": "Retain in the old-system backup for recovery; omit from the NixOS restoration.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/omarchy.ttf",
+      "disposition": "excluded_legacy_infrastructure",
+      "detail": "Retain in the old-system backup for recovery; omit from the NixOS restoration.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/opencode",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/procps",
+      "disposition": "empty_reference_directory",
+      "detail": "No files to import at the audit time.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/pulse",
+      "disposition": "runtime_cache_or_history",
+      "detail": "Preserve any wanted history in the encrypted home backup; regenerate sockets, process IDs, device state, and caches.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/qBittorrent",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/qalculate",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/qalculate/qalc.cfg"
+      ]
+    },
+    {
+      "reference": ".config/spotify",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/starship.toml",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/starship.toml"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/stripe",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/swayosd",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/swayosd/config.toml",
+        ".config/swayosd/style.css"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/systemd",
+      "disposition": "declarative_services_or_desktop_defaults",
+      "detail": "Compare existing settings with NixOS/Home Manager services and the desktop defaults. Do not restore old service links or distribution environment scripts.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/taildrop",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/taildrop/iphone.json"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/text-picker",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/text-picker/macros.json",
+        ".config/text-picker/snippets.json"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/tmux",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/tool_state",
+      "disposition": "runtime_cache_or_history",
+      "detail": "Preserve any wanted history in the encrypted home backup; regenerate sockets, process IDs, device state, and caches.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/user-dirs.dirs",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/user-dirs.dirs"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/user-dirs.locale",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/user-dirs.locale"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/uwsm",
+      "disposition": "declarative_services_or_desktop_defaults",
+      "detail": "Compare existing settings with NixOS/Home Manager services and the desktop defaults. Do not restore old service links or distribution environment scripts.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/vercel-plugin",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/vibeyard",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/vivaldi",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/vivaldi-snapshot",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/walker",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/walker/config.toml",
+        ".config/walker/templates/rounded/item_menus-notifications.xml",
+        ".config/walker/templates/rounded/layout.xml",
+        ".config/walker/templates/rounded/style.css"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/waybar",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/waybar/config-minimal.jsonc",
+        ".config/waybar/config.jsonc",
+        ".config/waybar/style-light.css",
+        ".config/waybar/style-minimal-light.css",
+        ".config/waybar/style-minimal.css",
+        ".config/waybar/style.css",
+        ".config/waybar/tray-fix/README.md",
+        ".config/waybar/tray-fix/electron-properties.patch",
+        ".config/waybar/weather.sh",
+        ".config/waybar/workspaces-slider-rs/.gitignore",
+        ".config/waybar/workspaces-slider-rs/Cargo.lock",
+        ".config/waybar/workspaces-slider-rs/Cargo.toml",
+        ".config/waybar/workspaces-slider-rs/README.md",
+        ".config/waybar/workspaces-slider-rs/src/hypr.rs",
+        ".config/waybar/workspaces-slider-rs/src/main.rs",
+        ".config/waybar/workspaces-slider-rs/src/render.rs",
+        ".config/waybar/workspaces-slider-rs/src/supervisor.rs",
+        ".config/waybar/workspaces-slider-rs/src/termination.rs"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/waypaper",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/wiremix",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/wiremix/wiremix.toml"
+      ]
+    },
+    {
+      "reference": ".config/wireplumber",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/wireplumber/wireplumber.conf.d/bluetooth-a2dp-autoconnect.conf"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/xdg-terminals.list",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/xdg-terminals.list"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/xournalpp",
+      "disposition": "seeded_mutable_preferences",
+      "detail": "Initial public preferences are copied only when absent. Restore remaining private or mutable state separately; existing preferences are never overwritten.",
+      "managedTargets": [],
+      "seedSources": [
+        "dotfiles/application-state/.local/share/desktop-defaults/config/xournalpp/settings.xml"
+      ]
+    },
+    {
+      "reference": ".config/yay",
+      "disposition": "excluded_legacy_infrastructure",
+      "detail": "Retain in the old-system backup for recovery; omit from the NixOS restoration.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/zathura",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/zathura/zathurarc"
+      ],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/zoom",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/zoom.conf",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/zoomus.conf",
+      "disposition": "private_or_mutable_application_state",
+      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "managedTargets": [],
+      "seedSources": []
+    },
+    {
+      "reference": ".config/zsh",
+      "disposition": "managed_configuration_and_separate_state",
+      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "managedTargets": [
+        ".config/zsh/.gitignore",
+        ".config/zsh/aliases.zsh",
+        ".config/zsh/core.zsh",
+        ".config/zsh/functions/cc",
+        ".config/zsh/functions/cra",
+        ".config/zsh/functions/cx",
+        ".config/zsh/functions/ez",
+        ".config/zsh/functions/ga",
+        ".config/zsh/functions/gacp",
+        ".config/zsh/functions/gai",
+        ".config/zsh/functions/gcd",
+        ".config/zsh/functions/gco",
+        ".config/zsh/functions/gfo",
+        ".config/zsh/functions/gp",
+        ".config/zsh/functions/gpl",
+        ".config/zsh/functions/gpp",
+        ".config/zsh/functions/gwa",
+        ".config/zsh/functions/init.zsh",
+        ".config/zsh/functions/rcd",
+        ".config/zsh/functions/screenrecord",
+        ".config/zsh/functions/tdl",
+        ".config/zsh/functions/tdlm",
+        ".config/zsh/functions/tldrf",
+        ".config/zsh/functions/tsl",
+        ".config/zsh/functions/tsw",
+        ".config/zsh/functions/tswc",
+        ".config/zsh/functions/v",
+        ".config/zsh/functions/vf",
+        ".config/zsh/keybinds/expand.zsh",
+        ".config/zsh/keybinds/history_runner.zsh",
+        ".config/zsh/keybinds/init.zsh",
+        ".config/zsh/keybinds/reload_zsh.zsh",
+        ".config/zsh/keybinds/zathura-pdf.zsh",
+        ".config/zsh/vi-mode.zsh"
+      ],
+      "seedSources": []
+    }
+  ],
+  "projectManifestCount": 67,
+  "projectDisposition": "Project files and Git metadata belong in the encrypted full-home backup. Recreate project environments from their locks; the migration flake does not embed private project trees or old virtual environments.",
+  "rootDotfiles": [
+    {
+      "path": ".XCompose",
+      "managedSources": [
+        "dotfiles/desktop-settings/.XCompose"
+      ],
+      "disposition": "managed_configuration"
+    },
+    {
+      "path": ".bash_history",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".bash_logout",
+      "managedSources": [
+        "dotfiles/bash/.bash_logout"
+      ],
+      "disposition": "managed_configuration"
+    },
+    {
+      "path": ".bash_profile",
+      "managedSources": [
+        "dotfiles/bash/.bash_profile"
+      ],
+      "disposition": "managed_configuration"
+    },
+    {
+      "path": ".bashrc",
+      "managedSources": [
+        "dotfiles/bash/.bashrc"
+      ],
+      "disposition": "managed_configuration"
+    },
+    {
+      "path": ".claude.json",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".emulator_console_auth_token",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".flutter",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".gemini",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".git-credentials",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".netrc",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".owm-key",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".pulse-cookie",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".steampath",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".steampid",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".tmux.conf",
+      "managedSources": [
+        "dotfiles/tmux/.tmux.conf"
+      ],
+      "disposition": "managed_configuration"
+    },
+    {
+      "path": ".tmux.conf.custom",
+      "managedSources": [
+        "dotfiles/tmux/.tmux.conf.custom"
+      ],
+      "disposition": "managed_configuration"
+    },
+    {
+      "path": ".zcompdump",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".zhistory",
+      "managedSources": [],
+      "disposition": "private_state_history_or_runtime_metadata_for_selective_restoration"
+    },
+    {
+      "path": ".zshenv",
+      "managedSources": [
+        "dotfiles/zsh/.zshenv"
+      ],
+      "disposition": "managed_configuration"
+    },
+    {
+      "path": ".zshrc",
+      "managedSources": [
+        "dotfiles/zsh/.zshrc"
+      ],
+      "disposition": "managed_configuration"
+    }
+  ],
+  "auditRecordedAtUTC": "2026-10-17T23:26:18.047938+00:00"
+}

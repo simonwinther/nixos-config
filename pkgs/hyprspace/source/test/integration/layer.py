@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+"""Foreground layer fixture with native keyboard and pointer handling."""
+
+import os
+from pathlib import Path
+import sys
+import gi
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("GtkLayerShell", "0.1")
+from gi.repository import Gdk, Gtk, GtkLayerShell
+
+window = Gtk.Window()
+GtkLayerShell.init_for_window(window)
+GtkLayerShell.set_namespace(
+    window, sys.argv[2] if len(sys.argv) > 2 else "hs-foreground"
+)
+display = Gdk.Display.get_default()
+monitor = display.get_monitor(0)
+if len(sys.argv) > 4:
+    x, y = map(int, sys.argv[4].split(","))
+    monitor = next(display.get_monitor(i) for i in range(display.get_n_monitors())
+                   if (display.get_monitor(i).get_geometry().x, display.get_monitor(i).get_geometry().y) == (x, y))
+GtkLayerShell.set_monitor(window, monitor)
+GtkLayerShell.set_layer(window, GtkLayerShell.Layer.OVERLAY)
+GtkLayerShell.set_keyboard_mode(window, GtkLayerShell.KeyboardMode.EXCLUSIVE)
+GtkLayerShell.set_anchor(window, GtkLayerShell.Edge.TOP, True)
+GtkLayerShell.set_anchor(window, GtkLayerShell.Edge.LEFT, True)
+GtkLayerShell.set_margin(window, GtkLayerShell.Edge.TOP, 30)
+GtkLayerShell.set_margin(window, GtkLayerShell.Edge.LEFT, 30)
+window.set_default_size(260, 160)
+css = Gtk.CssProvider()
+css.load_from_data(b"window { background: #e04080; }")
+window.get_style_context().add_provider(css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+entry = Gtk.Entry()
+entry.set_margin_top(45)
+entry.set_margin_bottom(45)
+entry.set_margin_start(15)
+entry.set_margin_end(15)
+entry.connect("changed", lambda widget: Path(sys.argv[1]).write_text(widget.get_text()))
+window.add(entry)
+entry.connect(
+    "button-press-event",
+    lambda widget, event: Path(sys.argv[1] + ".click").write_text("clicked") and False,
+)
+
+
+def popup(widget, menu):
+    for child in menu.get_children():
+        menu.remove(child)
+    action = Gtk.MenuItem(label="Panel action")
+    action.connect(
+        "activate", lambda item: Path(sys.argv[1] + ".action").write_text("activated")
+    )
+    menu.append(action)
+    menu.show_all()
+    Path(sys.argv[1] + ".popup").write_text("opened")
+
+
+entry.connect("populate-popup", popup)
+if len(sys.argv) > 3 and sys.argv[3] == "bottom":
+    GtkLayerShell.set_layer(window, GtkLayerShell.Layer.BOTTOM)
+    GtkLayerShell.set_keyboard_mode(window, GtkLayerShell.KeyboardMode.NONE)
+    GtkLayerShell.set_anchor(window, GtkLayerShell.Edge.RIGHT, True)
+    GtkLayerShell.auto_exclusive_zone_enable(window)
+elif len(sys.argv) > 3 and sys.argv[3] == "pointer":
+    # Pointer-only overlays occupy usable output space without reserving it or
+    # taking keyboard ownership away from an in-progress overview gesture.
+    GtkLayerShell.set_keyboard_mode(window, GtkLayerShell.KeyboardMode.NONE)
+elif len(sys.argv) > 3 and sys.argv[3] == "panel":
+    GtkLayerShell.set_layer(window, GtkLayerShell.Layer.TOP)
+    GtkLayerShell.set_keyboard_mode(window, GtkLayerShell.KeyboardMode.NONE)
+    GtkLayerShell.set_anchor(window, GtkLayerShell.Edge.RIGHT, True)
+    GtkLayerShell.set_margin(window, GtkLayerShell.Edge.TOP, 0)
+    GtkLayerShell.set_margin(window, GtkLayerShell.Edge.LEFT, 0)
+    entry.set_margin_top(10)
+    entry.set_margin_bottom(10)
+    window.set_default_size(1, 112)
+    window.set_size_request(1, 112)
+    GtkLayerShell.auto_exclusive_zone_enable(window)
+
+
+def key(widget, event):
+    if event.keyval == Gdk.KEY_Escape:
+        Gtk.main_quit()
+        return True
+    return False
+
+
+window.connect("key-press-event", key)
+window.connect("destroy", lambda widget: Gtk.main_quit())
+window.show_all()
+entry.grab_focus()
+Gtk.main()

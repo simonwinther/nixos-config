@@ -182,7 +182,6 @@ max_delay = "10m"
 
 [startup]
 start_paused = false
-recover_state = true
 
 [hyprland]
 enabled = true

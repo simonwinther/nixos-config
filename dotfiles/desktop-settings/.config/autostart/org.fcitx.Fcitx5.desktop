@@ -1,5 +1,2 @@
 [Desktop Entry]
-Type=Application
-Name=Input method
-Exec=fcitx5 --disable notificationitem
-Terminal=false
+Hidden=true

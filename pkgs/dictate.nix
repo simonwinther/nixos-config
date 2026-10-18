@@ -42,6 +42,22 @@ let
     ];
     buildFeatures = [ "overlay" ];
     cargoTestFlags = [ "--all-targets" ];
+    preCheck = ''
+      # Session fixtures otherwise exceed Linux's Unix-domain socket path limit.
+      export TMPDIR=/tmp
+    '';
+    postPatch = ''
+      substituteInPlace tests/sessions.rs \
+        --replace-fail '/usr/bin:/bin' '${
+          lib.makeBinPath [
+            bash
+            coreutils
+            procps
+            util-linux
+            ffmpeg
+          ]
+        }'
+    '';
     meta = {
       description = "Streaming dictation with a native Wayland overlay";
       mainProgram = "dictate";
@@ -72,5 +88,6 @@ symlinkJoin {
           hyprland
         ]
       }
+    ln -s dictate "$out/bin/dictate-native"
   '';
 }

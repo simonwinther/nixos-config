@@ -38,7 +38,7 @@ let
           ]
         ) inventory
       );
-  python = pkgs.python3.withPackages (
+  python = unstable.python3.withPackages (
     p: with p; [
       pygobject3
       pillow
@@ -54,6 +54,7 @@ in
   home.packages = lib.unique (
     (with pkgs; [
       ghostty
+      starship
       neovim
       chromium
       nautilus
@@ -122,13 +123,19 @@ in
       workspaces-slider
       dictate
       file-picker
+      dictation-volume-duck
+      text-picker
+      formula-plot
+      cluster-tools
+      iphone-transfer
     ])
     ++ lib.optionals config.desktop.fullApplications applications
+    ++ lib.optionals config.desktop.fullApplications [ packages.uipro ]
     ++ lib.optionals config.desktop.fullApplications (
       with pkgs;
       [
-        cargo
-        rustfmt
+        alacritty
+        kitty
         nodejs
         jdk
         maven
@@ -153,7 +160,6 @@ in
         nixfmt
         texlab
         haskell-language-server
-        rust-analyzer
         marksman
         yaml-language-server
         cmake-language-server
@@ -165,6 +171,27 @@ in
         age
         restic
         rclone
+      ]
+    )
+    ++ lib.optionals config.desktop.fullApplications (
+      with unstable;
+      [
+        codex
+        antigravity-cli
+        cargo
+        rustfmt
+        clippy
+        rust-analyzer
+        claude-code
+        github-copilot-cli
+        gemini-cli
+        ghui
+        pi-coding-agent
+        kaggle
+        dotenv-linter
+        # Preserve Flutter's SDK-root documentation in the merged profile;
+        # Playwright's executable uses its own immutable package contents.
+        (lib.lowPrio playwright)
       ]
     )
     ++ lib.optionals (profile != "live" && profile != "recovery") (

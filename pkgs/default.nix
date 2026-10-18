@@ -7,22 +7,32 @@ let
   inherit (pkgs) lib;
   dots = ../dotfiles;
   tools = pkgs.callPackage ./desktop-tools.nix { };
-  companions = import ./hyprspace-companions { inherit inputs pkgs unstable; };
+  hyprspace = import ./hyprspace { inherit inputs; };
+  companions = import ./hyprspace-companions {
+    inherit inputs pkgs unstable;
+    source = ./hyprspace/source;
+  };
+  compositor = hyprspace.compositor;
 in
 (import ./extra-apps.nix { inherit pkgs unstable; })
+// (import ./rust-desktop-tools.nix {
+  inherit pkgs;
+  hyprland = compositor;
+})
 // {
   desktop-tools = tools;
-  background-grid = pkgs.callPackage ./background-grid.nix { };
+  uipro = pkgs.callPackage ./uipro { };
+  background-grid = pkgs.callPackage ./background-grid.nix { hyprland = compositor; };
   dictate = pkgs.callPackage ./dictate.nix {
-    hyprland = inputs.hyprspace.packages.${pkgs.stdenv.hostPlatform.system}.hyprspace.compositor;
+    hyprland = compositor;
   };
   file-picker = pkgs.callPackage ./file-picker.nix {
-    hyprland = inputs.hyprspace.packages.${pkgs.stdenv.hostPlatform.system}.hyprspace.compositor;
+    hyprland = compositor;
   };
   workspaces-slider = pkgs.callPackage ./workspaces-slider.nix { };
   walker = companions.walker;
   elephant = companions.elephant;
-  hyprspace = inputs.hyprspace.packages.${pkgs.stdenv.hostPlatform.system}.hyprspace;
+  inherit hyprspace;
   waybar = pkgs.waybar.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
       (dots + "/waybar/.config/waybar/tray-fix/electron-properties.patch")
@@ -87,5 +97,9 @@ in
         done
       '';
   neovim-plugins = pkgs.callPackage ./neovim { };
+  editor-extensions = import ./editor-extensions {
+    inherit lib;
+    pkgs = unstable;
+  };
   tmux-plugins = pkgs.callPackage ./tmux { };
 }

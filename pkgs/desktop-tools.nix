@@ -12,7 +12,14 @@
   libnotify,
   fontconfig,
   glib,
+  dconf,
+  nautilus,
   gsettings-desktop-schemas,
+  ffmpeg,
+  imagemagick,
+  file,
+  wl-clipboard,
+  fd,
 }:
 stdenvNoCC.mkDerivation {
   pname = "desktop-tools";
@@ -22,11 +29,27 @@ stdenvNoCC.mkDerivation {
   dontBuild = true;
   installPhase = ''
     mkdir -p "$out/share/desktop-tools" "$out/bin"
-    cp desktopctl.py "$out/share/desktop-tools/"
+    cp desktopctl.py transcode.sh "$out/share/desktop-tools/"
+    makeWrapper ${bash}/bin/bash "$out/bin/desktop-transcode" \
+      --add-flags "$out/share/desktop-tools/transcode.sh" \
+      --prefix PATH : ${
+        lib.makeBinPath [
+          bash
+          coreutils
+          findutils
+          ffmpeg
+          imagemagick
+          file
+          wl-clipboard
+          libnotify
+          fd
+        ]
+      }:"$out/bin"
     makeWrapper ${python3}/bin/python3 "$out/bin/desktopctl" \
       --add-flags "$out/share/desktop-tools/desktopctl.py" \
       --set-default XDG_DATA_DIRS /usr/local/share:/usr/share \
       --prefix XDG_DATA_DIRS : "${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}" \
+      --prefix XDG_DATA_DIRS : "${nautilus}/share/gsettings-schemas/${nautilus.name}" \
       --prefix PATH : ${
         lib.makeBinPath [
           bash
@@ -38,6 +61,7 @@ stdenvNoCC.mkDerivation {
           libnotify
           fontconfig
           glib
+          dconf
         ]
       }
   '';

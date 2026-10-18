@@ -56,6 +56,25 @@ in
       type = types.nullOr types.path;
       default = null;
     };
+    secrets.additionalFiles = mkOption {
+      default = { };
+      description = "Additional named SOPS entries to provision as private runtime files.";
+      type = types.attrsOf (
+        types.submodule {
+          options = {
+            path = mkOption { type = types.str; };
+            owner = mkOption {
+              type = types.str;
+              default = "simon";
+            };
+            mode = mkOption {
+              type = types.str;
+              default = "0600";
+            };
+          };
+        }
+      );
+    };
     backup.repository = mkOption {
       type = types.nullOr types.str;
       default = null;

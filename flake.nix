@@ -102,18 +102,64 @@
       };
       checks.${system} = import ./tests/checks.nix { inherit pkgs packages self; };
       formatter.${system} = pkgs.nixfmt;
-      devShells.${system}.default = pkgs.mkShell {
-        packages = with pkgs; [
-          nixfmt
-          statix
-          deadnix
-          shellcheck
-          python3
-          stow
-          lua
-          luajit
-          git
-        ];
+      devShells.${system} = {
+        default = pkgs.mkShell {
+          packages = with pkgs; [
+            nixfmt
+            statix
+            deadnix
+            shellcheck
+            python3
+            stow
+            lua
+            luajit
+            git
+          ];
+        };
+        rust-desktop = pkgs.mkShell {
+          nativeBuildInputs = with pkgs; [
+            unstable.rustc
+            unstable.cargo
+            unstable.clippy
+            unstable.rustfmt
+            pkg-config
+            cmake
+            ninja
+            python3
+            git
+          ];
+          buildInputs = with pkgs; [
+            gtk4
+            gtk4-layer-shell
+            libcanberra
+            wayland
+            pipewire
+            alsa-lib
+            openssl
+            libxkbcommon
+            fontconfig
+            freetype
+          ];
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (
+            with pkgs;
+            [
+              gtk4
+              gtk4-layer-shell
+              libcanberra
+              wayland
+              pipewire
+              alsa-lib
+              libxkbcommon
+              fontconfig
+              freetype
+              libGL
+              vulkan-loader
+            ]
+          );
+          shellHook = ''
+            export WORKSPACES_SLIDER_FONT="$(${pkgs.findutils}/bin/find ${pkgs.nerd-fonts.jetbrains-mono}/share/fonts -name JetBrainsMonoNerdFont-Bold.ttf -print -quit)"
+          '';
+        };
       };
     };
 }

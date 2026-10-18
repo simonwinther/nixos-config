@@ -55,6 +55,16 @@ def atomic_write(path: Path, content: str | bytes, mode=0o600):
             os.unlink(name)
 
 
+def atomic_link(path: Path, target: Path):
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if path.exists() and not path.is_symlink():
+        raise ValueError(f"Refusing to replace a file with a link: {path}")
+    with tempfile.TemporaryDirectory(prefix=f".{path.name}.", dir=path.parent) as directory:
+        link = Path(directory) / "link"
+        link.symlink_to(target)
+        os.replace(link, path)
+
+
 @contextlib.contextmanager
 def state_lock(name="state", *, wait=True):
     STATE.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -276,11 +286,13 @@ def theme(args):
 
 
 def apply_appearance(source, light):
-    for key, value in [
+    values = dict([
         ("color-scheme", "prefer-light" if light else "prefer-dark"),
         ("gtk-theme", "Adwaita" if light else "Adwaita-dark"),
         ("icon-theme", (source / "icons.theme").read_text().strip() if (source / "icons.theme").exists() else "Yaru-magenta"),
-    ]:
+    ])
+    values.update(read_json(CONFIG / "desktop/interface.json"))
+    for key, value in values.items():
         run(["gsettings", "set", "org.gnome.desktop.interface", key, value], check=False)
 
 
@@ -328,7 +340,7 @@ def wallpaper(args):
         value = state(); value["wallpaper"] = str(image)
         value.setdefault("wallpapers", {})[output or "*"] = str(image)
         save_state(value)
-        atomic_write(STATE / "background", image.read_bytes())
+        atomic_link(STATE / "background", image.resolve())
     if action == "restore":
         for monitor, saved in value.get("wallpapers", {}).items():
             if monitor != "*" and expand(saved).is_file():
@@ -471,6 +483,13 @@ def toggle(args):
         services[feature] = selected_units(services[feature])
         service = services[feature][0] + ".service"
         active = run(["systemctl", "--user", "is-active", "--quiet", service], check=False).returncode == 0
+        if feature == "bar":
+            with state_lock():
+                disabled = STATE / "toggles/waybar-off"
+                if active:
+                    atomic_write(disabled, "")
+                else:
+                    disabled.unlink(missing_ok=True)
         run(["systemctl", "--user", "stop" if active else "start", *[x + ".service" for x in services[feature]]])
         return
     if feature == "notifications":
@@ -641,6 +660,33 @@ def screenshot_geometry(mode):
     return geometry
 
 
+@contextlib.contextmanager
+def frozen_display(enabled):
+    if not enabled:
+        yield
+        return
+    freezer = background(["hyprpicker", "-r", "-z"])
+    try:
+        # Match the reference capture's render allowance before area selection.
+        time.sleep(.1)
+        yield
+    finally:
+        if freezer.poll() is None:
+            freezer.terminate()
+            try:
+                freezer.wait(timeout=1)
+            except subprocess.TimeoutExpired:
+                freezer.kill()
+                freezer.wait()
+
+
+def edit_screenshot(path, editor="satty"):
+    if editor == "satty":
+        run(["satty", "--filename", path, "--output-filename", path, "--actions-on-enter", "save-to-clipboard", "--save-after-copy", "--copy-command", "wl-copy"])
+    else:
+        run([*shlex.split(editor), path])
+
+
 def capture(args):
     action = args[0] if args else "screenshot"
     if action == "record":
@@ -679,30 +725,48 @@ def capture(args):
         atomic_write(pidfile, json.dumps({"pid": child.pid, "output": str(output)}))
         notify("Recording started", str(output)); return
     if action == "edit-latest":
-        files = sorted((HOME / settings().get("screenshots", "Pictures")).glob("Screenshot_*.png"))
+        directory = HOME / settings().get("screenshots", "Pictures")
+        files = sorted([*directory.glob("screenshot-*.png"), *directory.glob("Screenshot_*.png")], key=lambda path: path.stat().st_mtime_ns)
         if not files:
             raise ValueError("No saved screenshot is available")
-        run(["satty", "--filename", files[-1], "--output-filename", files[-1], "--save-after-copy", "--copy-command", "wl-copy"])
+        edit_screenshot(files[-1])
         return
-    mode = args[1] if len(args) > 1 else ("region" if action == "ocr" else "smart")
+    if action == "notify" and len(args) >= 2:
+        output = expand(args[1])
+        response = run(["notify-send", "Screenshot saved to clipboard and file", "Edit with Super + Alt + , (or click this)", "-t", "10000", "-i", output, "-A", "default=edit"], capture=True, check=False)
+        if response.stdout.strip() == "default" and output.is_file():
+            edit_screenshot(output, args[2] if len(args) > 2 else "satty")
+        return
+    editor = next((value.split("=", 1)[1] for value in args if value.startswith("--editor=")), "satty")
+    positional = [value for value in args[1:] if not value.startswith("--")]
+    mode = positional[0] if positional else ("region" if action == "ocr" else "smart")
     if mode not in ("smart", "region", "windows", "fullscreen"):
         raise ValueError("Screenshot mode: smart, region, windows, or fullscreen")
-    geometry = screenshot_geometry(mode)
-    if not geometry:
-        return
-    image = subprocess.run(["grim", "-g", geometry, "-"], check=True, capture_output=True).stdout
+    processing = positional[1] if len(positional) > 1 else "slurp"
+    if processing not in ("slurp", "copy", "save"):
+        raise ValueError("Screenshot processing: slurp, copy, or save")
+    with frozen_display(mode != "fullscreen"):
+        geometry = screenshot_geometry(mode)
+        if not geometry:
+            return
+        image = subprocess.run(["grim", "-g", geometry, "-"], check=True, capture_output=True).stdout
     if action == "ocr":
         result = subprocess.run(["tesseract", "stdin", "stdout", "--oem", "1", "--psm", "6", "-l", "eng", "--dpi", "300"], input=image, check=True, capture_output=True)
         copy_text(result.stdout.decode()); notify("Text copied from selection")
     else:
+        if processing == "copy":
+            copy_data(image, "image/png")
+            return
         directory = HOME / settings().get("screenshots", "Pictures"); directory.mkdir(parents=True, exist_ok=True)
-        output = directory / time.strftime("Screenshot_%Y-%m-%d_%H-%M-%S.png")
+        output = directory / time.strftime("screenshot-%Y-%m-%d_%H-%M-%S.png")
         output.write_bytes(image)
         if "--edit" in args:
-            run(["satty", "--filename", output, "--output-filename", output, "--actions-on-enter", "save-to-clipboard", "--save-after-copy", "--copy-command", "wl-copy"])
-        else:
+            edit_screenshot(output, editor)
+        elif processing == "slurp":
             copy_data(image, "image/png")
-            notify("Screenshot saved and copied", str(output))
+            background(["desktopctl", "capture", "notify", output, editor])
+        if processing == "save":
+            print(output)
 
 
 def reminder(args):
@@ -756,23 +820,12 @@ def menu(args):
 
 
 def transcode(args):
-    if not args:
-        result = run(["zenity", "--file-selection", "--multiple", "--separator=\n"], check=False, capture=True)
-        if result.returncode:
-            return
-        args = result.stdout.rstrip("\n").split("\n")
-    for value in args:
-        source = expand(value)
-        if not source.is_file():
-            raise ValueError(f"Missing media: {source}")
-        if source.suffix.lower() in (".mp4", ".mov", ".mkv", ".webm", ".avi"):
-            output = source.with_name(source.stem + "-converted.mp4")
-            run(["ffmpeg", "-n", "-i", source, "-c:v", "libx264", "-crf", "23", "-c:a", "aac", output])
-        else:
-            output = source.with_name(source.stem + "-converted.jpg")
-            if output.exists():
-                raise ValueError(f"Output already exists: {output}")
-            run(["magick", source, "-quality", "90", output])
+    backend = executable("desktop-transcode")
+    if len(args) > 1 and all(expand(value).is_file() for value in args):
+        for value in args:
+            run([backend, value])
+    else:
+        run([backend, *args])
 
 
 def keybindings():
@@ -785,7 +838,47 @@ def keybindings():
     run([executable("walker"), "--theme", "desktop-rounded", "--dmenu", "--placeholder", "Keybindings"], input="\n".join(sorted(set(lines))), check=False)
 
 
+def seed_preferences():
+    for kind, destination in [("config", CONFIG), ("state", STATE)]:
+        defaults = DATA / "desktop-defaults" / kind
+        if not defaults.is_dir():
+            continue
+        for source in defaults.rglob("*"):
+            if not source.is_file():
+                continue
+            target = destination / source.relative_to(defaults)
+            if target.exists() or target.is_symlink():
+                continue
+            # State toggles can be deliberately removed; seed them only once.
+            if kind == "state" and (STATE / "initial-preferences-seeded").exists():
+                continue
+            atomic_write(target, source.read_bytes())
+    atomic_write(STATE / "initial-preferences-seeded", "")
+
+
+def seed_application_preferences():
+    marker = STATE / "application-preferences-seeded"
+    if marker.exists() or not all(shutil.which(name) for name in ("dconf", "gsettings")):
+        return
+    complete = True
+    for schema, values in read_json(CONFIG / "desktop/applications.json").items():
+        for key, value in values.items():
+            path = "/" + schema.replace(".", "/") + "/" + key
+            existing = run(["dconf", "read", path], check=False, capture=True)
+            if existing.returncode:
+                complete = False
+                continue
+            if existing.stdout.strip():
+                continue
+            result = run(["gsettings", "set", schema, key, json.dumps(value)], check=False)
+            complete = complete and not result.returncode
+    if complete:
+        atomic_write(marker, "")
+
+
 def integrate():
+    seed_preferences()
+    seed_application_preferences()
     defaults = CONFIG / "breakd/default.toml"
     preferences = CONFIG / "breakd/config.toml"
     if defaults.is_file() and not preferences.exists():
@@ -855,6 +948,8 @@ def dispatch(command, args):
         source, _, light = prepare_theme()
         apply_appearance(source, light)
         integrate()
+    elif command == "seed-preferences":
+        seed_preferences()
     elif command == "cwd":
         print(cwd())
     elif command == "path":

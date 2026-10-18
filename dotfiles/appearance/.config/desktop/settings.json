@@ -8,7 +8,7 @@
     "~/.config/desktop/themes"
   ],
   "wallpaperDirectories": [
-    "~/.local/share/wallpapers"
+    "~/.local/share/wallpapers/tokyoled"
   ],
   "defaultWallpaper": "~/.local/share/wallpapers/tokyoled/digital-art/background.png"
 }

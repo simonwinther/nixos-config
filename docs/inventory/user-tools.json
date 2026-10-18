@@ -1,0 +1,291 @@
+{
+  "referenceHost": "lambda",
+  "commands": [
+    {
+      "referenceCommand": "agy",
+      "kind": "nix_package",
+      "package": "unstable.antigravity-cli"
+    },
+    {
+      "referenceCommand": "agy.1786845245186832927.old",
+      "kind": "backup_artifact",
+      "disposition": "Keep in encrypted backup; do not install as a command"
+    },
+    {
+      "referenceCommand": "background-grid",
+      "kind": "portable_source",
+      "source": "dotfiles/background-grid/.local/bin/background-grid"
+    },
+    {
+      "referenceCommand": "background-grid-build",
+      "kind": "portable_source",
+      "source": "dotfiles/background-grid/.local/bin/background-grid-build"
+    },
+    {
+      "referenceCommand": "background-grid-setup",
+      "kind": "portable_source",
+      "source": "dotfiles/background-grid/.local/bin/background-grid-setup"
+    },
+    {
+      "referenceCommand": "breakd",
+      "kind": "nix_package",
+      "package": "custom.breakd"
+    },
+    {
+      "referenceCommand": "canvas-mcp-server",
+      "kind": "nix_package",
+      "package": "custom.canvas-mcp"
+    },
+    {
+      "referenceCommand": "chatgpt-dictate-audio-duck-host",
+      "kind": "portable_source",
+      "source": "dotfiles/chrome/.local/bin/chatgpt-dictate-audio-duck-host"
+    },
+    {
+      "referenceCommand": "claude",
+      "kind": "nix_package",
+      "package": "unstable.claude-code"
+    },
+    {
+      "referenceCommand": "cluster",
+      "kind": "portable_source",
+      "source": "dotfiles/cluster/.local/bin/cluster"
+    },
+    {
+      "referenceCommand": "cluster-build",
+      "kind": "portable_source",
+      "source": "dotfiles/cluster/.local/bin/cluster-build"
+    },
+    {
+      "referenceCommand": "cluster-setup",
+      "kind": "portable_source",
+      "source": "dotfiles/cluster/.local/bin/cluster-setup"
+    },
+    {
+      "referenceCommand": "codex",
+      "kind": "nix_package",
+      "package": "unstable.codex"
+    },
+    {
+      "referenceCommand": "copilot",
+      "kind": "nix_package",
+      "package": "unstable.github-copilot-cli"
+    },
+    {
+      "referenceCommand": "cx-switch",
+      "kind": "portable_source",
+      "source": "dotfiles/bin/.local/bin/cx-switch"
+    },
+    {
+      "referenceCommand": "dictate",
+      "kind": "portable_source",
+      "source": "dotfiles/dictate/.local/bin/dictate"
+    },
+    {
+      "referenceCommand": "dictate-build",
+      "kind": "portable_source",
+      "source": "dotfiles/dictate/.local/bin/dictate-build"
+    },
+    {
+      "referenceCommand": "dictation-volume-duck",
+      "kind": "portable_source",
+      "source": "dotfiles/chrome/.local/bin/dictation-volume-duck"
+    },
+    {
+      "referenceCommand": "dictation-volume-duck-build",
+      "kind": "portable_source",
+      "source": "dotfiles/chrome/.local/bin/dictation-volume-duck-build"
+    },
+    {
+      "referenceCommand": "dotenv-linter",
+      "kind": "nix_package",
+      "package": "unstable.dotenv-linter"
+    },
+    {
+      "referenceCommand": "elephant",
+      "kind": "nix_package",
+      "package": "custom.elephant"
+    },
+    {
+      "referenceCommand": "file-picker",
+      "kind": "portable_source",
+      "source": "dotfiles/file-picker/.local/bin/file-picker"
+    },
+    {
+      "referenceCommand": "file-picker-build",
+      "kind": "portable_source",
+      "source": "dotfiles/file-picker/.local/bin/file-picker-build"
+    },
+    {
+      "referenceCommand": "gemini",
+      "kind": "nix_package",
+      "package": "unstable.gemini-cli"
+    },
+    {
+      "referenceCommand": "ghui",
+      "kind": "nix_package",
+      "package": "unstable.ghui"
+    },
+    {
+      "referenceCommand": "globalsnip",
+      "kind": "portable_source",
+      "source": "dotfiles/hypr/.local/bin/globalsnip"
+    },
+    {
+      "referenceCommand": "hendrix-setup",
+      "kind": "portable_source",
+      "source": "dotfiles/hendrix/.local/bin/hendrix-setup"
+    },
+    {
+      "referenceCommand": "hyprspace-launch",
+      "kind": "nix_package",
+      "package": "custom.hyprspace"
+    },
+    {
+      "referenceCommand": "iphone-transfer",
+      "kind": "portable_source",
+      "source": "dotfiles/iphone-transfer/.local/bin/iphone-transfer"
+    },
+    {
+      "referenceCommand": "iphone-transfer-build",
+      "kind": "portable_source",
+      "source": "dotfiles/iphone-transfer/.local/bin/iphone-transfer-build"
+    },
+    {
+      "referenceCommand": "kaggle",
+      "kind": "nix_package",
+      "package": "unstable.kaggle"
+    },
+    {
+      "referenceCommand": "macro-picker",
+      "kind": "portable_source",
+      "source": "dotfiles/hypr/.local/bin/macro-picker"
+    },
+    {
+      "referenceCommand": "notification-menu",
+      "kind": "portable_source",
+      "source": "dotfiles/walker/.local/bin/notification-menu"
+    },
+    {
+      "referenceCommand": "oh-my-posh",
+      "kind": "nix_package",
+      "package": "stable.oh-my-posh"
+    },
+    {
+      "referenceCommand": "omarchy",
+      "kind": "independent_replacement",
+      "replacement": "desktopctl"
+    },
+    {
+      "referenceCommand": "omarchy-launch-walker",
+      "kind": "independent_replacement",
+      "replacement": "desktopctl launcher"
+    },
+    {
+      "referenceCommand": "omarchy-theme-bg-next",
+      "kind": "independent_replacement",
+      "replacement": "background-grid --next / desktopctl wallpaper next"
+    },
+    {
+      "referenceCommand": "omarchy-theme-bg-set",
+      "kind": "independent_replacement",
+      "replacement": "background-grid --set / desktopctl wallpaper set"
+    },
+    {
+      "referenceCommand": "opencode",
+      "kind": "nix_package",
+      "package": "unstable.opencode"
+    },
+    {
+      "referenceCommand": "pdf-picker",
+      "kind": "portable_source",
+      "source": "dotfiles/hypr/.local/bin/pdf-picker"
+    },
+    {
+      "referenceCommand": "pi",
+      "kind": "nix_package",
+      "package": "unstable.pi-coding-agent"
+    },
+    {
+      "referenceCommand": "playwright-cli",
+      "kind": "portable_source",
+      "source": "dotfiles/bin/.local/bin/playwright-cli"
+    },
+    {
+      "referenceCommand": "plot",
+      "kind": "portable_source",
+      "source": "dotfiles/bin/.local/bin/plot"
+    },
+    {
+      "referenceCommand": "plot-build",
+      "kind": "portable_source",
+      "source": "dotfiles/bin/.local/bin/plot-build"
+    },
+    {
+      "referenceCommand": "receive-iphone-files",
+      "kind": "portable_source",
+      "source": "dotfiles/iphone-transfer/.local/bin/receive-iphone-files"
+    },
+    {
+      "referenceCommand": "restow",
+      "kind": "portable_source",
+      "source": "dotfiles/bin/.local/bin/restow"
+    },
+    {
+      "referenceCommand": "send-to-iphone",
+      "kind": "portable_source",
+      "source": "dotfiles/iphone-transfer/.local/bin/send-to-iphone"
+    },
+    {
+      "referenceCommand": "ssh",
+      "kind": "portable_source",
+      "source": "dotfiles/hendrix/.local/bin/ssh"
+    },
+    {
+      "referenceCommand": "text-picker",
+      "kind": "portable_source",
+      "source": "dotfiles/text-picker/.local/bin/text-picker"
+    },
+    {
+      "referenceCommand": "text-picker-build",
+      "kind": "portable_source",
+      "source": "dotfiles/text-picker/.local/bin/text-picker-build"
+    },
+    {
+      "referenceCommand": "walker",
+      "kind": "portable_source",
+      "source": "dotfiles/walker/.local/bin/walker"
+    },
+    {
+      "referenceCommand": "waybar",
+      "kind": "portable_source",
+      "source": "dotfiles/waybar/.local/bin/waybar"
+    },
+    {
+      "referenceCommand": "waybar-build-tray-fix",
+      "kind": "independent_replacement",
+      "replacement": "Declaratively patched Waybar; no runtime rebuild helper"
+    },
+    {
+      "referenceCommand": "workspaces-slider",
+      "kind": "portable_source",
+      "source": "dotfiles/waybar/.local/bin/workspaces-slider"
+    },
+    {
+      "referenceCommand": "workspaces-slider-launch",
+      "kind": "portable_source",
+      "source": "dotfiles/waybar/.local/bin/workspaces-slider-launch"
+    }
+  ],
+  "unresolved": [],
+  "globalMisePackages": [
+    {
+      "referencePackage": "uipro-cli",
+      "referenceVersion": "2.2.3",
+      "command": "uipro",
+      "nixPackage": "uipro",
+      "dependencyLock": "pkgs/uipro/package-lock.json",
+      "disposition": "version-pinned Nix package; retain mise for portable development environments"
+    }
+  ]
+}

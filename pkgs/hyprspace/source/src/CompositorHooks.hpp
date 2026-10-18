@@ -1,0 +1,45 @@
+#pragma once
+
+#include "OverviewSession.hpp"
+#include "Scrolling.hpp"
+
+#include <functional>
+#include <expected>
+#include <hyprland/src/plugins/HookSystem.hpp>
+
+namespace hyprspace::hooks {
+    void                             install(std::function<bool()> ownsKeyboard, std::function<bool()> launchEnabled, std::function<bool(PHLMONITOR)> promotePanels);
+    void                             reconcileDispatchers();
+    void                             uninstall();
+    void                             ownCursor(bool own);
+    void                             setCursor(const std::string& name);
+    std::string                      cursorName();
+    std::function<bool()>            pointerConnectionGuard();
+    bool                             foregroundPointerAt(const Vector2D& point, bool ignorePanels = false);
+    std::string                      cursorShape();
+    void                             renderPanels(PHLMONITOR monitor);
+    bool                             keyboardOwned();
+    bool                             inspectionInputHeld();
+    bool                             devicePointerMotion();
+    void                             suspendOverviewKeys();
+    std::expected<void, std::string> validateZoomKey(const std::string& name);
+    std::expected<void, std::string> validateEmptyWorkspaceKey(const std::string& name);
+    std::expected<void, std::string> validateCloseWorkspaceKey(const std::string& name);
+    std::expected<void, std::string> validateWindowViewKey(const std::string& name);
+    std::expected<void, std::string> validateFollowKey(const std::string& name);
+    std::expected<void, std::string> validateHelpKey(const std::string& name);
+    double                           scrollFactor();
+    void                             syncKeyboardFocus();
+    CFunctionHook*                   attach(const std::string& name, const std::string& signature, void* callback);
+
+    // Desktop coordinates are scoped to one synchronous native operation.
+    // The hardware pointer never warps into a miniature's desktop position.
+    void                           atDesktopPoint(const Vector2D& point, const std::function<void()>& action);
+    bool                           mappingPointer();
+    bool                           place(PHLWINDOW window, const SOverviewTarget& source, const SOverviewTarget& destination, bool resize = false);
+    void                           cancelPlacement();
+    std::optional<SBoxF>           resizeGeometry(PHLWINDOW window, const SBoxF& initial, SPoint delta, bool left, bool top);
+    std::optional<SScrollViewport> scrollingViewport(const SOverviewTarget& target);
+    bool                           panWorkspace(const SOverviewTarget& target, double distance);
+    bool                           stepWorkspace(const SOverviewTarget& target, int direction, bool fromSelection);
+} // namespace hyprspace::hooks

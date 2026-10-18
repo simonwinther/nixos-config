@@ -4,6 +4,8 @@ An independent Hyprland desktop built from Simon's current laptop configuration.
 
 The shared configuration retains the Lua bindings, Hyprspace overview, patched Walker/Elephant, patched Waybar tray, workspace sliders, Ghostty, Neovim/LazyVim, personal wallpapers and themes, browser extensions, dictation, file picker, Hendrix, cluster helpers, and iPhone workflows. The former distribution's commands are replaced by `desktopctl`, native applications, and declarative services. Credentials and account databases are deliberately separate.
 
+The current phase is configuration parity with the reference Arch desktop: account for its settings, custom tools, plugins, development workflows, and private state before preparing installation media. Package builds and configuration checks are allowed without activation. ISO/live-system builds, USB preparation, activation, and installation await Simon's explicit approval. An earlier ISO was built prematurely; its existence does not establish configuration completeness or installation readiness.
+
 Read [MIGRATION.md](docs/MIGRATION.md) before installing, [VALIDATION.md](docs/VALIDATION.md) for actual test results and remaining acceptance checks, and [RECOVERY.md](docs/RECOVERY.md) for recovery. The desktop's disk, GPU, monitor arrangement, and backup destination still require its own inventory. No disk is selected by default. The Disko device definition is also withheld until the hardware and backup flags are true and the GPU and persistent disk path are selected.
 
 ```text
@@ -28,16 +30,17 @@ Build without activation from a Nix-capable Linux system:
 
 ```sh
 nix build .#checks.x86_64-linux.desktop-behavior \
+  .#checks.x86_64-linux.hyprland-config \
   .#checks.x86_64-linux.portable-syntax \
   .#checks.x86_64-linux.neovim-startup \
   .#checks.x86_64-linux.tmux-startup
-nix build .#nixosConfigurations.desktop-live.config.system.build.toplevel
-nix build .#desktop-iso
+nix build .#dictate .#file-picker .#workspaces-slider .#hyprspace
+nix build .#nixosConfigurations.desktop.config.home-manager.users.simon.home.activationPackage
 ```
 
 After completing the host review, run `nix flake check --no-build` as well. It intentionally reports the installed-profile guards while disk/hardware fields are unset. The current flake targets x86_64 Linux.
 
-The last two builds are substantial. The live profile contains the core desktop package set and personal configuration for hardware and desktop checks. Installed profiles include the complete recorded application collection, SDKs, TeX, and account-dependent services. Application-specific bindings for programs outside the core set are tested with the installed profile. An installed profile intentionally fails its installation assertions before the hardware and backups are reviewed.
+The current 25 package outputs, five checks and complete Home Manager environment build successfully without activation; see the dated validation record for workflow checks and limits. The Home Manager build includes the complete recorded application collection, SDKs, and TeX; it does not activate anything or restore private state. Installed system profiles intentionally fail their installation assertions before the hardware and backups are reviewed. The live profile is reserved for a later, separately approved media/testing phase.
 
 For another distribution, first install the programs listed in the package map and use the same pinned compositor/plugin versions. Simulate deployment to an explicit target with `scripts/stow-portable TARGET`; use `--apply` only after resolving all conflicts and backing up that target. No `--adopt`, manual links, or overwrite flags are used. Native tool source and Cargo locks are included; their portable `*-build` helpers build into XDG cache. See [PORTABLE.md](docs/PORTABLE.md) for user services.
 

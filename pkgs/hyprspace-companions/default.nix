@@ -2,6 +2,7 @@
   inputs,
   pkgs,
   unstable,
+  source ? inputs.hyprspace,
 }:
 let
   providers = [
@@ -19,7 +20,7 @@ let
     "websearch"
   ];
   elephant = (unstable.elephant.override { enabledProviders = providers; }).overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [ (inputs.hyprspace + "/companion/elephant-2.22.0.patch") ];
+    patches = (old.patches or [ ]) ++ [ (source + "/companion/elephant-2.22.0.patch") ];
   });
   walkerSource = pkgs.fetchzip {
     extension = "tar.gz";
@@ -30,7 +31,7 @@ let
     version = "2.17.0";
     src = walkerSource;
     cargoDeps = unstable.rustPlatform.importCargoLock { lockFile = ./walker-Cargo.lock; };
-    patches = (old.patches or [ ]) ++ [ (inputs.hyprspace + "/companion/walker-2.17.0.patch") ];
+    patches = (old.patches or [ ]) ++ [ (source + "/companion/walker-2.17.0.patch") ];
     nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.makeWrapper ];
     postFixup = (old.postFixup or "") + ''
       wrapProgram "$out/bin/walker" \

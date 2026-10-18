@@ -1,0 +1,75 @@
+{
+  "scope": "Decisions for reference-dotfiles paths that are not imported runtime source. Metadata only; private contents were not read or copied. New unclassified paths require review.",
+  "rules": [
+    {
+      "sources": [
+        "install.sh",
+        "waybar/.local/bin/waybar-build-tray-fix",
+        "bin/.local/bin/oh-my-posh",
+        "bin/.local/bin/restow"
+      ],
+      "prefixes": [
+        "omarchy-supplement/"
+      ],
+      "disposition": "independent_replacement",
+      "detail": "Use Nix modules/packages and portable Stow helpers instead of Arch installers or cached binaries."
+    },
+    {
+      "sources": [
+        "omarchy/.config/omarchy/branding/about.txt"
+      ],
+      "prefixes": [
+        "omarchy/.local/share/omarchy/bin/"
+      ],
+      "disposition": "excluded_distribution_infrastructure",
+      "detail": "Do not restore the old distribution branding or commands; personal screensaver art is captured separately."
+    },
+    {
+      "sources": [
+        "waypaper/.config/waypaper/style.css",
+        "waypaper/.config/waypaper/config.ini"
+      ],
+      "disposition": "independent_replacement",
+      "detail": "Rust wallpaper grid and desktopctl own the wallpaper workflow."
+    },
+    {
+      "sources": [
+        "zsh/.config/zsh/secrets.zsh",
+        "dictate/.config/dictate/secrets.env"
+      ],
+      "prefixes": [
+        "gemini/"
+      ],
+      "disposition": "private_or_mutable_state",
+      "detail": "Preserve through encrypted private transfer or fresh authentication, outside Git and the Nix store. Review public preferences separately from credentials and conversations."
+    },
+    {
+      "sources": [
+        "AGENTS.md",
+        "README.md",
+        ".gitignore",
+        "LAST_UPDATED",
+        "agents/AGENTS.md",
+        "dictate/AGENTS.md",
+        "dictate/.stow-local-ignore",
+        "nvim/.config/nvim/AGENTS.md",
+        "assets/current_look.png"
+      ],
+      "disposition": "reference_repository_metadata",
+      "detail": "Retain in the original project backup. This repository supplies its own instructions, ignore rules, ownership and deployment workflow."
+    },
+    {
+      "sources": [
+        "nvim/.config/nvim/nvim.log",
+        "oh-my-posh/.config/oh-my-posh/custom-respects-waybar.omp.json.old",
+        "hypr/.config/hypr/hyprspace.lua.bak.20261017-195003",
+        "hypr/.config/hypr/hyprspace.lua.bak.20261017-202030"
+      ],
+      "prefixes": [
+        ".ruff_cache/"
+      ],
+      "disposition": "history_backup_or_cache",
+      "detail": "Keep historical material in the original project backup; deploy the current captured source."
+    }
+  ]
+}

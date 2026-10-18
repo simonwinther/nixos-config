@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "dotfiles/desktop-tools/.local/share/desktop-tools/desktopctl.py"
@@ -43,6 +43,23 @@ class DesktopTests(unittest.TestCase):
         self.env.stop()
         self.globals.stop()
         self.temp.cleanup()
+
+    def test_application_defaults_preserve_existing_dconf_and_seed_once(self):
+        target = self.config / "desktop/applications.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps({"org.gnome.nautilus.preferences": {"default-folder-viewer": "list-view"},
+                                      "org.gnome.nautilus.icon-view": {"default-zoom-level": "small"}}))
+        def fake_run(command, **kwargs):
+            if command[:2] == ["dconf", "read"]:
+                return Mock(returncode=0, stdout="'icon-view'" if command[-1].endswith("default-folder-viewer") else "")
+            return Mock(returncode=0)
+        with patch.object(ctl.shutil, "which", return_value="/mock/tool"), patch.object(ctl, "run", side_effect=fake_run) as calls:
+            ctl.seed_application_preferences()
+            settings = [call.args[0] for call in calls.call_args_list if call.args[0][0] == "gsettings"]
+            self.assertEqual(settings, [["gsettings", "set", "org.gnome.nautilus.icon-view", "default-zoom-level", '\"small\"']])
+            calls.reset_mock()
+            ctl.seed_application_preferences()
+            calls.assert_not_called()
 
     def test_every_palette_renders_without_modifying_managed_files(self):
         themes = self.config / "desktop/themes"
@@ -84,6 +101,43 @@ class DesktopTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaises(ValueError):
                 ctl.theme(["set", name, "--no-reload"])
 
+    def test_seed_preferences_preserves_existing_and_linked_settings(self):
+        source = self.data / "desktop-defaults/config/htop"
+        source.mkdir(parents=True)
+        (source / "htoprc").write_text("initial preference")
+        ctl.seed_preferences()
+        target = self.config / "htop/htoprc"
+        self.assertEqual(target.read_text(), "initial preference")
+        target.write_text("interactive preference")
+        ctl.seed_preferences()
+        self.assertEqual(target.read_text(), "interactive preference")
+        target.unlink()
+        destination = self.home / "precious"
+        destination.write_text("keep linked content")
+        target.symlink_to(destination)
+        ctl.seed_preferences()
+        self.assertEqual(destination.read_text(), "keep linked content")
+
+    def test_initial_state_does_not_restore_a_deliberately_removed_toggle(self):
+        source = self.data / "desktop-defaults/state/toggles"
+        source.mkdir(parents=True)
+        (source / "suspend-off").write_text("")
+        ctl.seed_preferences()
+        target = self.state / "toggles/suspend-off"
+        self.assertTrue(target.exists())
+        target.unlink()
+        ctl.seed_preferences()
+        self.assertFalse(target.exists())
+
+    def test_bar_toggle_preserves_visibility_choice(self):
+        disabled = self.state / "toggles/waybar-off"
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0)):
+            ctl.toggle(["bar"])
+        self.assertTrue(disabled.exists())
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 1)):
+            ctl.toggle(["bar"])
+        self.assertFalse(disabled.exists())
+
     def test_notification_mode_matches_theme_rules(self):
         with patch.object(ctl, "run") as run:
             ctl.toggle(["notifications"])
@@ -102,10 +156,35 @@ class DesktopTests(unittest.TestCase):
 
     def test_cancelled_screenshot_has_no_side_effects(self):
         result = subprocess.CompletedProcess([], 1, "")
-        with patch.object(ctl, "run", return_value=result), patch.object(ctl.subprocess, "run") as binary:
+        freezer = Mock()
+        freezer.poll.return_value = None
+        with patch.object(ctl, "run", return_value=result), patch.object(ctl.subprocess, "run") as binary, patch.object(ctl, "background", return_value=freezer), patch.object(ctl.time, "sleep"):
             ctl.capture(["screenshot", "region"])
         binary.assert_not_called()
+        freezer.terminate.assert_called_once()
         self.assertFalse((self.home / "Pictures").exists())
+
+    def test_copy_only_capture_keeps_freeze_until_pixels_are_read(self):
+        events = []
+        freezer = Mock()
+        freezer.poll.return_value = None
+        freezer.terminate.side_effect = lambda: events.append("thaw")
+        def pixels(*args, **kwargs):
+            events.append("pixels")
+            return subprocess.CompletedProcess([], 0, b"image bytes")
+        with patch.object(ctl, "background", return_value=freezer), patch.object(ctl.time, "sleep"), patch.object(ctl, "screenshot_geometry", return_value="0,0 100x100"), patch.object(ctl.subprocess, "run", side_effect=pixels), patch.object(ctl, "copy_data") as copy:
+            ctl.capture(["screenshot", "region", "copy"])
+        self.assertEqual(events, ["pixels", "thaw"])
+        copy.assert_called_once_with(b"image bytes", "image/png")
+        self.assertFalse((self.home / "Pictures").exists())
+
+    def test_save_only_capture_uses_reference_names_and_preserves_clipboard(self):
+        with patch.object(ctl, "screenshot_geometry", return_value="0,0 100x100"), patch.object(ctl.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, b"image bytes")), patch.object(ctl, "copy_data") as copy:
+            ctl.capture(["screenshot", "fullscreen", "save"])
+        images = list((self.home / "Pictures").glob("screenshot-*.png"))
+        self.assertEqual(len(images), 1)
+        self.assertEqual(images[0].read_bytes(), b"image bytes")
+        copy.assert_not_called()
 
 
 if __name__ == "__main__":

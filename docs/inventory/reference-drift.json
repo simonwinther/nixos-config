@@ -302,5 +302,7 @@
       "path": "text-picker/README.md",
       "sha256": "14169ecfe0053ef5f48e1010a9e2b2d9362f9fe5399046c19d4c3b30029560ff"
     }
-  ]
+  ],
+  "supersededBy": "current-reference.json",
+  "currentDecision": "On 2026-10-18 Simon approved including the current setup and newer Rust changes. Keep the original list as historical provenance."
 }

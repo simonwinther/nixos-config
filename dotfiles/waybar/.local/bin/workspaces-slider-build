@@ -5,4 +5,4 @@ cache="${XDG_CACHE_HOME:-$HOME/.cache}/workspaces-slider"
 mkdir -p "$cache"
 exec 9>"$cache/build.lock"
 flock 9
-cargo build --locked --release --manifest-path "$source_dir/Cargo.toml" --target-dir "$cache/target"
+nice -n 10 cargo build --locked --release --manifest-path "$source_dir/Cargo.toml" --target-dir "$cache/target"

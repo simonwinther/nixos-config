@@ -3,6 +3,7 @@
   lib,
   pkgs,
   packages,
+  osConfig,
   profile,
   ...
 }:
@@ -31,6 +32,14 @@ let
     };
     Install.WantedBy = [ "desktop-session.target" ];
   };
+  visibleBar =
+    unit:
+    unit
+    // {
+      Unit = unit.Unit // {
+        ConditionPathExists = "!${config.xdg.stateHome}/desktop/toggles/waybar-off";
+      };
+    };
   warmPicker = pdf: {
     Unit = {
       Description = if pdf then "Prepare the PDF picker" else "Prepare the file picker";
@@ -58,8 +67,14 @@ in
     mako = "${pkgs.mako}/bin/mako";
     swayosd-server = "${pkgs.swayosd}/bin/swayosd-server";
     background-grid-native = "${packages.background-grid}/bin/background-grid-native";
+    dictation-volume-duck-native = "${packages.dictation-volume-duck}/bin/dictation-volume-duck-native";
+    text-picker-native = "${packages.text-picker}/bin/text-picker-native";
+    plot-native = "${packages.formula-plot}/bin/plot-native";
+    cluster-native = "${packages.cluster-tools}/bin/cluster-native";
+    iphone-transfer-native = "${packages.iphone-transfer}/bin/iphone-transfer-native";
     workspaces-slider-native = "${packages.workspaces-slider}/bin/workspaces-slider";
     btop = "${pkgs.btop}/bin/btop";
+    desktop-transcode = "${packages.desktop-tools}/bin/desktop-transcode";
   };
   systemd.user.targets.desktop-session.Unit = {
     Description = "Personal Hyprland desktop";
@@ -96,17 +111,25 @@ in
         Requires = [ "desktop-elephant.service" ];
       };
     };
-    desktop-waybar = service "Main desktop bar" "${ctl} run waybar -- --config /home/simon/.config/waybar/config.jsonc --style /home/simon/.config/waybar/style.css";
-    desktop-workspaces = service "Workspace slider overlays" "${packages.workspaces-slider}/bin/workspaces-slider";
+    desktop-waybar = visibleBar (
+      service "Main desktop bar" "${ctl} run waybar -- --config /home/simon/.config/waybar/config.jsonc --style /home/simon/.config/waybar/style.css"
+    );
+    desktop-workspaces = visibleBar (
+      service "Workspace slider overlays" "${packages.workspaces-slider}/bin/workspaces-slider"
+    );
     desktop-mako = service "Notifications" "${ctl} run mako";
     desktop-monitor-watch = service "Recover the internal display after unplugging a dock" "${ctl} monitor-watch";
     desktop-awww = service "Wallpaper daemon" "${pkgs.awww}/bin/awww-daemon --no-cache";
     desktop-swayosd = service "Volume and brightness display" "${ctl} run swayosd-server";
-    desktop-hypridle = service "Idle and suspend coordination" "${pkgs.hypridle}/bin/hypridle";
+    desktop-hypridle = (service "Idle and suspend coordination" "${pkgs.hypridle}/bin/hypridle") // {
+      # The current reference leaves idle locking opt-in for each session.
+      Install = { };
+    };
     desktop-hyprsunset = (service "Night light" "${pkgs.hyprsunset}/bin/hyprsunset") // {
       Install = { };
     };
     desktop-polkit = service "Privilege prompts" "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
+    desktop-fcitx5 = service "Keyboard input method" "${osConfig.i18n.inputMethod.package}/bin/fcitx5 --disable notificationitem";
     desktop-wallpaper = (service "Restore wallpapers" "${ctl} wallpaper restore") // {
       Unit = {
         Description = "Restore wallpapers";
@@ -148,7 +171,9 @@ in
       };
     };
     desktop-waybar-minimal =
-      (service "Laptop display bar" "${ctl} run waybar -- --config /home/simon/.config/waybar/config-minimal.jsonc --style /home/simon/.config/waybar/style-minimal.css")
+      (visibleBar (
+        service "Laptop display bar" "${ctl} run waybar -- --config /home/simon/.config/waybar/config-minimal.jsonc --style /home/simon/.config/waybar/style-minimal.css"
+      ))
       // {
         Install = lib.mkIf (config.desktop.outputs.minimal != [ ]) {
           WantedBy = [ "desktop-session.target" ];
@@ -171,7 +196,17 @@ in
       };
     };
     taildrop-receive = lib.mkIf (profile != "live" && profile != "recovery") (
-      service "Receive and sort iPhone Taildrop files" "/home/simon/.local/bin/receive-iphone-files"
+      (service "Receive and sort iPhone Taildrop files" "${packages.iphone-transfer}/bin/iphone-transfer-native receive")
+      // {
+        Service = {
+          Type = "exec";
+          ExecStart = "${packages.iphone-transfer}/bin/iphone-transfer-native receive";
+          Restart = "always";
+          RestartSec = 5;
+          UMask = "0077";
+          Environment = environment;
+        };
+      }
     );
   };
   systemd.user.timers.desktop-battery = {

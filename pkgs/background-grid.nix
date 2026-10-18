@@ -1,45 +1,58 @@
 {
   lib,
-  stdenvNoCC,
-  python3,
-  makeWrapper,
+  rustPlatform,
+  pkg-config,
   wrapGAppsHook4,
-  gobject-introspection,
+  makeWrapper,
   gtk4,
-  gdk-pixbuf,
-  glib,
-  pango,
+  awww,
+  uwsm,
+  procps,
+  coreutils,
+  bash,
+  hyprland,
 }:
-let
-  python = python3.withPackages (p: [
-    p.pygobject3
-    p.pillow
-  ]);
-in
-stdenvNoCC.mkDerivation {
+rustPlatform.buildRustPackage {
   pname = "background-grid";
   version = "1.0.0";
-  dontUnpack = true;
-  dontBuild = true;
+  src = ../dotfiles/background-grid/.local/share/background-grid;
+  cargoLock.lockFile = ../dotfiles/background-grid/.local/share/background-grid/Cargo.lock;
   nativeBuildInputs = [
-    makeWrapper
+    pkg-config
     wrapGAppsHook4
-    gobject-introspection
+    makeWrapper
   ];
-  buildInputs = [
-    gtk4
-    gdk-pixbuf
-    glib
-    pango
+  buildInputs = [ gtk4 ];
+  nativeCheckInputs = [
+    bash
+    coreutils
   ];
-  installPhase = ''
-    mkdir -p "$out/bin" "$out/share/background-grid"
-    cp ${../dotfiles/background-grid/.config/background-grid/picker.py} "$out/share/background-grid/picker.py"
-    cp ${../dotfiles/background-grid/.config/background-grid/style.css} "$out/share/background-grid/style.css"
-    makeWrapper ${python}/bin/python3 "$out/bin/background-grid-native" \
-      --add-flags "$out/share/background-grid/picker.py"
+  cargoTestFlags = [ "--all-targets" ];
+  preCheck = ''
+    export TMPDIR=/tmp
+    substituteInPlace tests/commands.rs \
+      --replace-fail '/usr/bin:/bin' '${
+        lib.makeBinPath [
+          bash
+          coreutils
+        ]
+      }'
+  '';
+  postFixup = ''
+    wrapProgram "$out/bin/background-grid-native" \
+      --prefix PATH : ${
+        lib.makeBinPath [
+          awww
+          uwsm
+          procps
+          coreutils
+          bash
+          hyprland
+        ]
+      }
   '';
   meta = {
+    description = "Native Rust wallpaper grid and wallpaper controller";
     platforms = lib.platforms.linux;
     mainProgram = "background-grid-native";
   };

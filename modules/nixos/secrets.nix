@@ -25,7 +25,8 @@ in
           mode = "0600";
           path = "/home/simon/.config/desktop/secrets/weather-key";
         };
-      };
+      }
+      // cfg.additionalFiles;
     };
     users.mutableUsers = false;
     users.users.simon.hashedPasswordFile = config.sops.secrets.simon-password-hash.path;

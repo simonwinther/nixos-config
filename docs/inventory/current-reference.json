@@ -1,0 +1,2181 @@
+{
+  "capturedAtUTC": "2026-10-17T22:15:30.331423+00:00",
+  "referenceHost": "lambda",
+  "decision": "Simon approved including the current setup and newer Rust changes on 2026-10-18. No ISO/media/installation approval.",
+  "referenceCommit": "a67e189b2c20df9eb23117f033e0f2626bc55f81",
+  "sourceFiles": [
+    {
+      "source": "applications/.local/share/applications/Draw.desktop",
+      "destination": "dotfiles/applications/.local/share/applications/Draw.desktop",
+      "sha256": "340b4d6af5b7633edc3f698f56765fd8fd4244b35ed5ee917de08eeed6116d45",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "applications/.local/share/applications/icons/Draw.png",
+      "destination": "dotfiles/applications/.local/share/icons/hicolor/128x128/apps/Draw.png",
+      "sha256": "3601aaa37c49467644be9e29879d0a98d8e553b882e434c4eee09d90a584a0e0",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "background-grid/.config/background-grid/README.md",
+      "destination": "dotfiles/background-grid/.config/background-grid/README.md",
+      "sha256": "dbe22a1de483349292ef1a7f3700130a36c191ee8b86eb143958344b2785c1fe"
+    },
+    {
+      "source": "background-grid/.config/background-grid/folders.json",
+      "destination": "dotfiles/background-grid/.config/background-grid/folders.json",
+      "sha256": "79db44ed543620a20ef24d6326ca3b8e58e2faf66b1c64e0c0fbd32e43fae829"
+    },
+    {
+      "source": "background-grid/.config/background-grid/hyprland.conf",
+      "destination": "dotfiles/hypr/.config/hypr/background-grid.lua",
+      "sha256": "32ec1c8eacd1cfb770b79fbbb190ad828559da64bf241bc2f6037b89e3731bb6",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "background-grid/.config/background-grid/style.css",
+      "destination": "dotfiles/background-grid/.config/background-grid/style.css",
+      "sha256": "bc76109acd0ef7e2cb0ce54f01e36ccef8f5bc998d79300b1827760eb1d3f77c"
+    },
+    {
+      "source": "background-grid/.config/background-grid/transition.json",
+      "destination": "dotfiles/background-grid/.config/background-grid/transition.json",
+      "sha256": "5d8ed3d0f94d1129c9c4d677c30f86fc6b09e15714467ad07a53f956341d1fa0"
+    },
+    {
+      "source": "background-grid/.config/omarchy/hooks/post-boot.d/background-grid",
+      "destination": "dotfiles/background-grid/.config/omarchy/hooks/post-boot.d/background-grid",
+      "sha256": "53b3a2f360390b0f1f124dc421d64c00dbd519243353f03aeb12e77f19522b95"
+    },
+    {
+      "source": "background-grid/.local/bin/background-grid",
+      "destination": "dotfiles/background-grid/.local/bin/background-grid",
+      "sha256": "fc8637bacc29cc085783c5eda063b5e55a1e25a3261d1a6825c8b20d34219e62"
+    },
+    {
+      "source": "background-grid/.local/bin/background-grid-build",
+      "destination": "dotfiles/background-grid/.local/bin/background-grid-build",
+      "sha256": "27ed9e3c9df85fe23f5fb5ef6b2f4a9309221017dac663505ef28cc7849768fe"
+    },
+    {
+      "source": "background-grid/.local/bin/background-grid-setup",
+      "destination": "dotfiles/background-grid/.local/bin/background-grid-setup",
+      "sha256": "df8f7cba1b0ac49b40fcfecc9b0e9be98d02b071c3f98601d4b5a1725a15bfce"
+    },
+    {
+      "source": "background-grid/.local/bin/omarchy",
+      "destination": "dotfiles/background-grid/.local/bin/omarchy",
+      "sha256": "272add74a7698335f5d4563680c45a464655ca76167e98fae28a85f251766dff"
+    },
+    {
+      "source": "background-grid/.local/bin/omarchy-launch-walker",
+      "destination": "dotfiles/background-grid/.local/bin/omarchy-launch-walker",
+      "sha256": "eec2de103020b4657c092b58aa387ae8feb5565b15ee47b2dc903a1794a00784"
+    },
+    {
+      "source": "background-grid/.local/bin/omarchy-theme-bg-next",
+      "destination": "dotfiles/background-grid/.local/bin/omarchy-theme-bg-next",
+      "sha256": "5219e3348ad90be51b8cc04859aeaae701db89fa726b0bab5477bc5fcac6ea49"
+    },
+    {
+      "source": "background-grid/.local/bin/omarchy-theme-bg-set",
+      "destination": "dotfiles/background-grid/.local/bin/omarchy-theme-bg-set",
+      "sha256": "bc096a9380bd0a3c4c6cbaeeac8aae943ee424906922de3a8a316b2148f8619e"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/Cargo.toml",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/Cargo.toml",
+      "sha256": "8db0d0a9f3ef2334f1f144ac42462342298f16ef354a94e8d2aa66805ffffca3"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/src/catalog.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/src/catalog.rs",
+      "sha256": "b0a78bd6e02abeb54b250ce7f17b13bd259e900c9184644caa1745fcda557279"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/src/config.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/src/config.rs",
+      "sha256": "fdeb96cbfda553d9ecd1b99a703c4d025ae7f835a5ba8e3098198ee7b9fd1b50"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/src/lib.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/src/lib.rs",
+      "sha256": "580dce6580e5a00a500aed86e2d0cdd100b28a617ad2ac6d4a2e59cb9f93dacc"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/src/main.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/src/main.rs",
+      "sha256": "ac0badfed8363e7794fdbb1970cbe14ca964b2bd1d543c2cedf36f38391a50a0"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/src/setup.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/src/setup.rs",
+      "sha256": "91c6e2feee6f45678c8cd765000d3ceec76f6d4f8d7c865a8d8e1b353b02227f"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/src/thumbnail.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/src/thumbnail.rs",
+      "sha256": "d1a06d78d1d9227ab2a490b7bdb6e858df42e34faa3f96bee3fc3399039e7754"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/src/ui.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/src/ui.rs",
+      "sha256": "ea76e9b5f990a0e882438ac2505d20315b4cfd030a2515cfc3523bf6ca3fc69e"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/src/wallpaper.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/src/wallpaper.rs",
+      "sha256": "78272dacaea481715a968fd16412945e51545a1d9e1c2317a4031736cb9ade89"
+    },
+    {
+      "source": "background-grid/.local/share/background-grid/tests/commands.rs",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/tests/commands.rs",
+      "sha256": "8d1284cff7ea036a44dc4cf6bbb6c1ed39f5cdf4b0acb4755235b5d32c020974"
+    },
+    {
+      "source": "background-grid/README.md",
+      "destination": "dotfiles/background-grid/README.md",
+      "sha256": "eaefa9335b4ea38dac6747a61e560d7b7ddb1d28a8fc2fb39db4b3b642c893a5"
+    },
+    {
+      "source": "bin/.local/bin/plot",
+      "destination": "dotfiles/bin/.local/bin/plot",
+      "sha256": "fe9d29016a616e03855b4e057f1147c3e3dda0b3993d1a1680248537d55f8b1e"
+    },
+    {
+      "source": "bin/.local/bin/plot-build",
+      "destination": "dotfiles/bin/.local/bin/plot-build",
+      "sha256": "0e7ffd1c4ea6482f2279f587b05a4a4c85a0330b33357bb670a3212244480b21"
+    },
+    {
+      "source": "bin/.local/share/plot/Cargo.toml",
+      "destination": "dotfiles/bin/.local/share/plot/Cargo.toml",
+      "sha256": "b5331b2c1cd0721b20ed346dfbd9e8fc6d33f10aba3e2d8d235f2c47ba9d6660"
+    },
+    {
+      "source": "bin/.local/share/plot/src/expression.rs",
+      "destination": "dotfiles/bin/.local/share/plot/src/expression.rs",
+      "sha256": "a74ba1330231f3acc373dc27831bc1620aa815f461e4d0d750d84267b5480b09"
+    },
+    {
+      "source": "bin/.local/share/plot/src/gui.rs",
+      "destination": "dotfiles/bin/.local/share/plot/src/gui.rs",
+      "sha256": "5b75e30ef942da6ea59577ac43fb06121628f5e70682b4c62b6170e1c32802fc"
+    },
+    {
+      "source": "bin/.local/share/plot/src/lib.rs",
+      "destination": "dotfiles/bin/.local/share/plot/src/lib.rs",
+      "sha256": "02f7539b82a2d5429aea80ff7e34ec20ee528978d61e56d9d56949b3ca841aac"
+    },
+    {
+      "source": "bin/.local/share/plot/src/main.rs",
+      "destination": "dotfiles/bin/.local/share/plot/src/main.rs",
+      "sha256": "fe80e2765275556de7f716da2cb652c283d9bf78a421948f8af91a63f9a6e157"
+    },
+    {
+      "source": "bin/.local/share/plot/src/model.rs",
+      "destination": "dotfiles/bin/.local/share/plot/src/model.rs",
+      "sha256": "5eb6e7bae2e97a2c10d5746203f6337f59f8029a28d0837872877ccd5d25c7ba"
+    },
+    {
+      "source": "bin/.local/share/plot/src/pdf.rs",
+      "destination": "dotfiles/bin/.local/share/plot/src/pdf.rs",
+      "sha256": "a7b888ffafa5e46b889641ae36c4d9f58eb2f44fd4c7f17901baab87c7a24f20"
+    },
+    {
+      "source": "bin/.local/share/plot/src/render.rs",
+      "destination": "dotfiles/bin/.local/share/plot/src/render.rs",
+      "sha256": "82765ba69fd831ef3734023c6d559e5e3c43d808a5878ed8319139b306d3aea9"
+    },
+    {
+      "source": "bin/.local/share/plot/tests/cli.rs",
+      "destination": "dotfiles/bin/.local/share/plot/tests/cli.rs",
+      "sha256": "79ea92149df327aa26d3df36d2cd568c3a963467884a4f7164bc83315917b81f"
+    },
+    {
+      "source": "bin/README.md",
+      "destination": "dotfiles/bin/README.md",
+      "sha256": "08b861a05465b515a0bf1737663fc1e3b159221bb777f9660109a8741a47938b"
+    },
+    {
+      "source": "chrome/.config/chromium/NativeMessagingHosts/com.simon.chatgptdictate.audioduck.json",
+      "destination": "dotfiles/chrome/.config/desktop/native-host.json",
+      "sha256": "39d89a168b106096656b930b4a431ca1e0e3bd814818f118bf91b4a74d1eab6c",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "chrome/.config/google-chrome/NativeMessagingHosts/com.simon.chatgptdictate.audioduck.json",
+      "destination": "dotfiles/chrome/.config/desktop/native-host.json",
+      "sha256": "39d89a168b106096656b930b4a431ca1e0e3bd814818f118bf91b4a74d1eab6c",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "chrome/.local/bin/chatgpt-dictate-audio-duck-host",
+      "destination": "dotfiles/chrome/.local/bin/chatgpt-dictate-audio-duck-host",
+      "sha256": "dba4a1d0ab4dbfa1cac93d3054445110ae76a13c18ceb120c558f2815131b5cf"
+    },
+    {
+      "source": "chrome/.local/bin/dictation-volume-duck",
+      "destination": "dotfiles/chrome/.local/bin/dictation-volume-duck",
+      "sha256": "663bd3bccde3115d3e205a960accb3058cb40afc65923be96d9ccb4ca737ff91"
+    },
+    {
+      "source": "chrome/.local/bin/dictation-volume-duck-build",
+      "destination": "dotfiles/chrome/.local/bin/dictation-volume-duck-build",
+      "sha256": "e9ed101a3824d4dd4cccf053c2983cb1b77ba08233a12befff0c58f4d5e970ce"
+    },
+    {
+      "source": "chrome/.local/share/dictation-volume-duck/Cargo.toml",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/Cargo.toml",
+      "sha256": "7af12b103ae23704a2bf46decc2538ea0f307edfde5421ba96c63eb5ab24e6ac"
+    },
+    {
+      "source": "chrome/.local/share/dictation-volume-duck/src/audio.rs",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/src/audio.rs",
+      "sha256": "51a7456fbda360b5ac8fb37ae275ad445622007fe0980fb51dba7f1a13a48f09"
+    },
+    {
+      "source": "chrome/.local/share/dictation-volume-duck/src/command.rs",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/src/command.rs",
+      "sha256": "561a8d1673a9d5f67ab824303e21e542dd0bd806d7ae387daad78f44eb0a7aea"
+    },
+    {
+      "source": "chrome/.local/share/dictation-volume-duck/src/lib.rs",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/src/lib.rs",
+      "sha256": "a76a26fe392ff31c7edf7c654027cd531495931998fd231cff38e73b79b7c47c"
+    },
+    {
+      "source": "chrome/.local/share/dictation-volume-duck/src/main.rs",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/src/main.rs",
+      "sha256": "c7700b62ccb74cea2ecc1b64d17f0f680be03e30873aedf99b7f3f2375581976"
+    },
+    {
+      "source": "chrome/.local/share/dictation-volume-duck/src/native.rs",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/src/native.rs",
+      "sha256": "4f7025d314d5b99a311370af428e6d57efdaab90d0c3c6ccb60e762ace0ae876"
+    },
+    {
+      "source": "chrome/.local/share/dictation-volume-duck/src/state.rs",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/src/state.rs",
+      "sha256": "7868cf1e04032929dacf839ee7cef503094eae255efa4e67be8cfb1e495a52e3"
+    },
+    {
+      "source": "chrome/.local/share/dictation-volume-duck/tests/commands.rs",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/tests/commands.rs",
+      "sha256": "43f0a68fd7da8342f64b8cea6a566ae26bcf99c557dc649f2b60a6173515ebce"
+    },
+    {
+      "source": "chrome/README.md",
+      "destination": "dotfiles/chrome/README.md",
+      "sha256": "b5889f724cfbf0cc36eb56bd24d61ed0a9a80df0bf318d8faf45f0d0d10fea7c"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-copy/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-copy/README.md",
+      "sha256": "e4d69c4500dc3ce2c96f90b910b1e54f8dd64cc7197237660d20a5c999869cd9"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-dictate/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-dictate/README.md",
+      "sha256": "e81a249f95ab9e81077c02535644131754bdddcdcc81de71eaadca5dbb7a6d5f"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/README.md",
+      "sha256": "dfa1e56b7a76158468f6fcddb218965fe026fb8752129e22fed594dc289cd1e7"
+    },
+    {
+      "source": "chrome/extensions/chatgpt-pdf-reader/vendor/temml/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/chatgpt-pdf-reader/vendor/temml/README.md",
+      "sha256": "54d050abc3e9bdcfff7397a80ce8b45b14a445bf6205c2006d97497b6dfadf86"
+    },
+    {
+      "source": "chrome/extensions/my-custom-keybinds/README.md",
+      "destination": "dotfiles/chrome/.local/share/browser-extensions/my-custom-keybinds/README.md",
+      "sha256": "abd42c1d3c7df774ffa4c9c4ac7e2079e482c5b7cea84499c0405c9be07ba8c7"
+    },
+    {
+      "source": "cluster/.local/bin/cluster",
+      "destination": "dotfiles/cluster/.local/bin/cluster",
+      "sha256": "94132bb2dd093e16f38907998b1f3dbcdf402cc15925e80b1a08daf041ff318f"
+    },
+    {
+      "source": "cluster/.local/bin/cluster-build",
+      "destination": "dotfiles/cluster/.local/bin/cluster-build",
+      "sha256": "14635f13ccef8a45c93502a982721e4469b8f8e436c31bd77e34afcf69861a1f"
+    },
+    {
+      "source": "cluster/.local/bin/cluster-setup",
+      "destination": "dotfiles/cluster/.local/bin/cluster-setup",
+      "sha256": "92f4d4da737461cdcbbfd96908a62abde7dd93af28799633122c37745639d4fe"
+    },
+    {
+      "source": "cluster/.local/share/cluster/Cargo.toml",
+      "destination": "dotfiles/cluster/.local/share/cluster/Cargo.toml",
+      "sha256": "6f4eac99af8c89ef42ffc0759ee8f9ec80e4b23f7c5f9bd6f82f99272971fd6a"
+    },
+    {
+      "source": "cluster/.local/share/cluster/src/main.rs",
+      "destination": "dotfiles/cluster/.local/share/cluster/src/main.rs",
+      "sha256": "b84e71d60585251981db69015ac528e332052f5d391ae9e018192eed6d0eb16c"
+    },
+    {
+      "source": "cluster/.local/share/cluster/src/probe.sh",
+      "destination": "dotfiles/cluster/.local/share/cluster/src/probe.sh",
+      "sha256": "a1075b3f5ed6c4d99d1ff80ac3eb95436383f4ea371dcc16250b57bee057d626"
+    },
+    {
+      "source": "cluster/.local/share/cluster/src/process.rs",
+      "destination": "dotfiles/cluster/.local/share/cluster/src/process.rs",
+      "sha256": "09295dcc9584b6048dc2d5774d07561f5d5933fcf80d45330a034039e4640bc4"
+    },
+    {
+      "source": "cluster/.local/share/cluster/src/remote.rs",
+      "destination": "dotfiles/cluster/.local/share/cluster/src/remote.rs",
+      "sha256": "e433b390819fbeeab660e6c3ff15328944a3906d93f4fa97f8dd451eb9a4a30b"
+    },
+    {
+      "source": "cluster/.local/share/cluster/src/setup.rs",
+      "destination": "dotfiles/cluster/.local/share/cluster/src/setup.rs",
+      "sha256": "0680ea2bd288683044243fa35dd42c8d77897f4d2048b903b66ae8583320b2ad"
+    },
+    {
+      "source": "cluster/.local/share/cluster/src/snapshot.rs",
+      "destination": "dotfiles/cluster/.local/share/cluster/src/snapshot.rs",
+      "sha256": "87b9e51fd33e4d7bb86d4582a0a389b68774ac3631b0931aeff3c063b6560596"
+    },
+    {
+      "source": "cluster/.local/share/cluster/src/sync.rs",
+      "destination": "dotfiles/cluster/.local/share/cluster/src/sync.rs",
+      "sha256": "44cc06cc64afb21fe195079e4bb443c2c408496f6dbdc47d5b7d200c375f5728"
+    },
+    {
+      "source": "cluster/README.md",
+      "destination": "dotfiles/cluster/README.md",
+      "sha256": "47bd577a0ae92a5ff4866c17f6526f40851660a9d57bf64228c75f570702b1bb"
+    },
+    {
+      "source": "cluster/tests/test_jobs.py",
+      "destination": "dotfiles/cluster/tests/test_jobs.py",
+      "sha256": "46274b07d0e2c3898afead7bb77b67f40c421f7baac29fdec99088d859945d96"
+    },
+    {
+      "source": "cluster/tests/test_setup.py",
+      "destination": "dotfiles/cluster/tests/test_setup.py",
+      "sha256": "761a9eae06572fcb3c761d93f1976c441867762666e3a603672cccc93e1783cf"
+    },
+    {
+      "source": "dictate/.config/dictate/config.env",
+      "destination": "dotfiles/dictate/.config/dictate/config.env",
+      "sha256": "d7372b5d081ebee1d106b4cf36e6c58096b2a3c8318beee65ac5b886dc6bb747"
+    },
+    {
+      "source": "dictate/.config/dictate/dictionary.toml",
+      "destination": "dotfiles/dictate/.config/dictate/dictionary.toml",
+      "sha256": "973fac475ae20db8d97e0a90a8a8340116ba5e8ce3e99c8d1e9c0d8380bf02dd"
+    },
+    {
+      "source": "dictate/.local/bin/dictate",
+      "destination": "dotfiles/dictate/.local/bin/dictate",
+      "sha256": "eb4fa016862676f1c2a841e5ec4882d28af3d90a9572a821813c0508886bc26c"
+    },
+    {
+      "source": "dictate/.local/bin/dictate-build",
+      "destination": "dotfiles/dictate/.local/bin/dictate-build",
+      "sha256": "5c75b7cf1e265872cd0e91c26fe361c39fb34917912a9853d6ff2d008b9310a4"
+    },
+    {
+      "source": "dictate/.local/share/dictate/Cargo.toml",
+      "destination": "dotfiles/dictate/.local/share/dictate/Cargo.toml",
+      "sha256": "ced206c3afbd7d45d84406b4a0cb27855d5057d138f137a44019cbc8ef4e1320"
+    },
+    {
+      "source": "dictate/.local/share/dictate/dictionary.example.toml",
+      "destination": "dotfiles/dictate/.local/share/dictate/dictionary.example.toml",
+      "sha256": "973fac475ae20db8d97e0a90a8a8340116ba5e8ce3e99c8d1e9c0d8380bf02dd"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/audio.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/audio.rs",
+      "sha256": "8002c78d52ab611aab61c92cc14fef9b13274d3e1ffb45e26daaa9796aeb02b9"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/config.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/config.rs",
+      "sha256": "d47a6c23b0be5ebd7fb538a72f1f9d1162580cbc4fbe630dc4cc125fa0140d39"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/desktop.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/desktop.rs",
+      "sha256": "99492ecae3232d88ed4d0baff6d198ff668f3ab0c405006a05eb270a425d5cd3"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/evaluation.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/evaluation.rs",
+      "sha256": "ab2e09a6e27c147788f4edd8857622ced548442bb4bc1f27e5de84212cd4570e"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/lib.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/lib.rs",
+      "sha256": "82c608d33d48bef0777d61938f79bfa88c468ea111f6fb979487841314041316"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/main.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/main.rs",
+      "sha256": "c800870b03f751ee4064d30d9017c2eb7784dfbd9a3dcd9e379e21c26883ff51"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/network.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/network.rs",
+      "sha256": "2f75ddcd4e8a0baa1722fde8b101ab91508f47111731179faac87f4398c9ec1c"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/overlay.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/overlay.rs",
+      "sha256": "ae28c6d92af707af47a54ab68ce95d88cc5313fa346e653dc31aa7bc91a8b93b"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/session.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/session.rs",
+      "sha256": "3236ee486c18893752fbd949e53d2526ccc834a6b61156be39cb927670275d32"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/storage.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/storage.rs",
+      "sha256": "e77399ea0dcf09384a49660b75e16f14f584bf48118d4aa149f0f39ff1e06edd"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/text.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/text.rs",
+      "sha256": "c3d6ce57be7b978f014af73128e70e06738610f921decf41c4a626258e5b172e"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/ui.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/ui.rs",
+      "sha256": "721d94801fb97e852586ac2b77ac1ec753b20ee4e82efa7417321cb8b22ecb7e"
+    },
+    {
+      "source": "dictate/.local/share/dictate/src/volume.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/src/volume.rs",
+      "sha256": "8aa463c499586fe267400bd8664d0a2389a4f1370b3a5bcc46a93b7be0d72e4b"
+    },
+    {
+      "source": "dictate/.local/share/dictate/tests/protocol.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/tests/protocol.rs",
+      "sha256": "08f701a6027e374632057d754b6a4d8439cbc08a6f38608ee321acfae96d8734"
+    },
+    {
+      "source": "dictate/.local/share/dictate/tests/sessions.rs",
+      "destination": "dotfiles/dictate/.local/share/dictate/tests/sessions.rs",
+      "sha256": "f0d15a6fc01c7db944068b02f30d17bfa3e59c9ee7c38db614d1a48ae93c83b7"
+    },
+    {
+      "source": "dictate/README.md",
+      "destination": "dotfiles/dictate/README.md",
+      "sha256": "681e989a69d2cf2574f3fbc3bdbc5270c79fa1de03850ecef30e2ea10f06bc05"
+    },
+    {
+      "source": "hypr/.config/hypr/defaults/autostart.lua",
+      "destination": "modules/home/services.nix",
+      "sha256": "3d6d3abc73db593b650b60a3c63345aa22d3216157318abda6e1d1cf17d5a350",
+      "adaptation": "Idle locking is opt-in each session; independent Home Manager user services replace startup commands."
+    },
+    {
+      "source": "hypr/.config/hypr/monitors.lua",
+      "destination": "hosts/lambda/monitors.lua",
+      "sha256": "a03ced8fb3a04e47899fb5a6e28f771e083f6b1a486be67ddc6dae35b4df85f1"
+    },
+    {
+      "source": "hypr/.local/bin/globalsnip",
+      "destination": "dotfiles/hypr/.local/bin/globalsnip",
+      "sha256": "8b7e24c1d75a64e190fbaf108aad13924f298d7e6635727d504aff12d25d5fe5"
+    },
+    {
+      "source": "hypr/.local/bin/macro-picker",
+      "destination": "dotfiles/hypr/.local/bin/macro-picker",
+      "sha256": "3a35cb31621e7c2d3e9be277514eef371011942b4155b65641efce40a08b6186"
+    },
+    {
+      "source": "iphone-transfer/.config/systemd/user/taildrop-receive.service",
+      "destination": "modules/home/services.nix",
+      "sha256": "716e1f9257fdb0140c94ba2eb25de9c9709ef962752d7ee65ab470e18c2fde2d",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "iphone-transfer/.config/taildrop/iphone.json",
+      "destination": "dotfiles/iphone-transfer/.config/taildrop/iphone.json",
+      "sha256": "a941f132dc9fea16c1e5a8af637c2e94f5cd2873a559989fa6985285c9ee08ea"
+    },
+    {
+      "source": "iphone-transfer/.local/bin/iphone-transfer",
+      "destination": "dotfiles/iphone-transfer/.local/bin/iphone-transfer",
+      "sha256": "a2727565f75b4a353ca139e7b436c1ab02fa299863d09470c0b400a814e99766"
+    },
+    {
+      "source": "iphone-transfer/.local/bin/iphone-transfer-build",
+      "destination": "dotfiles/iphone-transfer/.local/bin/iphone-transfer-build",
+      "sha256": "7203a9999e742243aadb5d460eedeb4039bb460f02edbba120c53602b8dd1236"
+    },
+    {
+      "source": "iphone-transfer/.local/bin/receive-iphone-files",
+      "destination": "dotfiles/iphone-transfer/.local/bin/receive-iphone-files",
+      "sha256": "7e49ea77cb299b4cda74159efb6231a54bc783a2536e7011ba17a2dee37c0df8"
+    },
+    {
+      "source": "iphone-transfer/.local/bin/send-to-iphone",
+      "destination": "dotfiles/iphone-transfer/.local/bin/send-to-iphone",
+      "sha256": "7ff8ec66423539a3920c640fc18a333bc743a876a5117f5b0522751cd5dfd6bb"
+    },
+    {
+      "source": "iphone-transfer/.local/share/applications/iphone-files.desktop",
+      "destination": "dotfiles/iphone-transfer/.local/share/applications/iphone-files.desktop",
+      "sha256": "89d6f3b124c1b84c318711f97e0fa7df02ea2b274865fc95ef493f594e8bbfaf"
+    },
+    {
+      "source": "iphone-transfer/.local/share/applications/send-to-iphone.desktop",
+      "destination": "dotfiles/iphone-transfer/.local/share/applications/send-to-iphone.desktop",
+      "sha256": "7ba04f79a60771d744511ee8b14e942a462cdaa9c4001e088e28c14301cd9b14"
+    },
+    {
+      "source": "iphone-transfer/.local/share/iphone-transfer/Cargo.toml",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/Cargo.toml",
+      "sha256": "c5b86c69cc781353286a33d7fa071439974dfb5ea2410aea73cfa4fea55fb1ab"
+    },
+    {
+      "source": "iphone-transfer/.local/share/iphone-transfer/src/api.rs",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/src/api.rs",
+      "sha256": "5c9917464228a5f80cf328a6ad5058f2128a677d964379e229f487162ce31f3a"
+    },
+    {
+      "source": "iphone-transfer/.local/share/iphone-transfer/src/lib.rs",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/src/lib.rs",
+      "sha256": "9ec632e73d554fdd0de785b6cf86973d8cec4df636a7555e2e20f7ea556f6413"
+    },
+    {
+      "source": "iphone-transfer/.local/share/iphone-transfer/src/main.rs",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/src/main.rs",
+      "sha256": "393ea80bc495e4bf21730335b9f21b1b7365967ba9cceef5aa1e576d8eb4eea5"
+    },
+    {
+      "source": "iphone-transfer/.local/share/iphone-transfer/src/process.rs",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/src/process.rs",
+      "sha256": "d40d597c3cf49d0adb321b47536d6f7e95264d84e1da26be7ddff34dab575510"
+    },
+    {
+      "source": "iphone-transfer/.local/share/iphone-transfer/src/receive.rs",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/src/receive.rs",
+      "sha256": "968fffec40deac91ca22334a7e910d7f3dfe9948a1b0dadbbdb62cf9bf68a654"
+    },
+    {
+      "source": "iphone-transfer/.local/share/iphone-transfer/src/send.rs",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/src/send.rs",
+      "sha256": "50e398bfb9f49fd2ced06328cc2ba5e7d4c868fa70d4e1429a18bdb1e33f3e52"
+    },
+    {
+      "source": "iphone-transfer/.local/share/iphone-transfer/tests/transfers.rs",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/tests/transfers.rs",
+      "sha256": "71a6f341e2ed0072edee7010c3ac6bf5c2c7cb6485d50d4bc19ed5c6ed4b543c"
+    },
+    {
+      "source": "iphone-transfer/.local/share/nautilus/scripts/Send to iPhone",
+      "destination": "dotfiles/iphone-transfer/.local/share/nautilus/scripts/Send to iPhone",
+      "sha256": "2e9aa7959c7f67073c75efc5d943430f54e12ce72c6601b6ac4b88f7c987bdad"
+    },
+    {
+      "source": "iphone-transfer/README.md",
+      "destination": "dotfiles/iphone-transfer/README.md",
+      "sha256": "cf4b899f5d755dd4878af217ffaafcd7cd3a895d7608ed2fe8fb54bdc0e77748"
+    },
+    {
+      "source": "latte-borders/.config/omarchy/themes/catppuccin-latte/hyprland.conf",
+      "destination": "dotfiles/appearance/.config/desktop/themes/catppuccin-latte/hyprland.conf",
+      "sha256": "176479840ea4c1899edf4a31c353caeb1ae47060bcacbc00e037a081c612ca35",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "nvim/.config/nvim/lazy-lock.json",
+      "destination": "dotfiles/nvim/.config/nvim/lazy-lock.json",
+      "sha256": "2acebe04b924f05ccc7d497833920bc536228345af40447879244851d89b3ca2"
+    },
+    {
+      "source": "omarchy/.config/omarchy/branding/screensavers/naruto.txt",
+      "destination": "dotfiles/appearance/.local/share/screensavers/naruto.txt",
+      "sha256": "b49486d4d6579ce411b14a65a7e7c57947ca2d87ef4bad40a3c10e99cf69d262",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/branding/screensavers/tomoe-sharingan.txt",
+      "destination": "dotfiles/appearance/.local/share/screensavers/tomoe-sharingan.txt",
+      "sha256": "31b88b39ae61777a6d3b16bc9c1b850696e305cda6795d3758ce2687e0d1e059",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/digital-art/aishot-1108.jpg",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/digital-art/aishot-1108.jpg",
+      "sha256": "6ff3c93f489989ed993310a0ac669ffcd5aed75bf20b2f3a8343e2f04400eef4",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/digital-art/aishot-3520.jpg",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/digital-art/aishot-3520.jpg",
+      "sha256": "505580c182f7affb9c8cf589c9707526baebb70c4675cf74f27ec14d65e20bed",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/digital-art/aishot-xxxx.jpeg",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/digital-art/aishot-xxxx.jpeg",
+      "sha256": "f7faf3ec7e6972ef1c45f4f8295d275605f33efa93c14a6d671b4b0ea319d9f7",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/digital-art/background.png",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/digital-art/background.png",
+      "sha256": "4ed52dcbb4f9099e4d284085a44fdd23b9092d279b1f2a42277e9a821a22bcea",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/jokes/3FC24A4A-C525-4FD2-A662-924DCF14A3CC.jpeg",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/jokes/3FC24A4A-C525-4FD2-A662-924DCF14A3CC.jpeg",
+      "sha256": "f30be77c38503d728729812ef01e5b428bded6f34d8a3e48067fb1e5fbf2629b",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/jokes/Gemini_Generated_Image_1teyeq1teyeq1tey.png",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/jokes/Gemini_Generated_Image_1teyeq1teyeq1tey.png",
+      "sha256": "cccaefa81f1c09f81dc1b1ffa20e0e9f5d25124edac8e0fb3071683726aadd2d",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/jokes/Gemini_Generated_Image_6357wu6357wu6357.png",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/jokes/Gemini_Generated_Image_6357wu6357wu6357.png",
+      "sha256": "ab25845d8dee2b3a832f73ca4cd0ed9c2a5e898a270f0fd2e9c7ef9b51f8aac3",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/space/4a40ceed-868f-41dd-84ec-3e4bd0c50ba0.png",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/space/4a40ceed-868f-41dd-84ec-3e4bd0c50ba0.png",
+      "sha256": "c80acf1c053ba76a17031b6d134c5ebe8865b32f1fdf3e05f2dcfa86413b2373",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/space/8fc9e7bd-2d27-49cb-a7a3-36a501fbbf3d.png",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/space/8fc9e7bd-2d27-49cb-a7a3-36a501fbbf3d.png",
+      "sha256": "631436fa4e8a13e874bebd74009a781599b398537ccca9dfc2edbf17f307cf7c",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/space/UltrawideWallpapersDotNet-933.jpeg",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/space/UltrawideWallpapersDotNet-933.jpeg",
+      "sha256": "1c1d64ec13f4f2bfe21b57179012c3be94a37ab59f7a9a989f6fa87af14c5851",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/space/aishot-1755.jpg",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/space/aishot-1755.jpg",
+      "sha256": "d0bbfa9d4d060783f5ea64d56d5e57cfda9d59d86e60eda3b5ad1058219c30df",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "omarchy/.config/omarchy/themes/tokyoled/backgrounds/space/cd3d6a44-3b5f-43c3-bf8b-5454e690cc39.png",
+      "destination": "dotfiles/wallpapers/.local/share/wallpapers/tokyoled/space/cd3d6a44-3b5f-43c3-bf8b-5454e690cc39.png",
+      "sha256": "c67f546d183c534595e2359cea14f8ab2c6e428f1c884ac28e7b167eb703b13f",
+      "adaptation": "Existing independent runtime equivalent or preserved personal asset; original distribution path is provenance only."
+    },
+    {
+      "source": "text-picker/.config/text-picker/macros.json",
+      "destination": "dotfiles/text-picker/.config/text-picker/macros.json",
+      "sha256": "beaec23e41eb98a64109a5f345fa484c5304aab9011b27f407942c8c65e37f2a"
+    },
+    {
+      "source": "text-picker/.config/text-picker/snippets.json",
+      "destination": "dotfiles/text-picker/.config/text-picker/snippets.json",
+      "sha256": "d310bf464fbeb4ad68e12bdd701e203d9ede94293f5b4b072577a93b578d8f06"
+    },
+    {
+      "source": "text-picker/.local/bin/text-picker",
+      "destination": "dotfiles/text-picker/.local/bin/text-picker",
+      "sha256": "e0716c2e562e22c22f56109bcd229c3f673f21f26739acd3c865f28141ef7374"
+    },
+    {
+      "source": "text-picker/.local/bin/text-picker-build",
+      "destination": "dotfiles/text-picker/.local/bin/text-picker-build",
+      "sha256": "3f85de1260cdb48fbccafd60174e3b83cd2d7aa340ea801cf33e45c192636d33"
+    },
+    {
+      "source": "text-picker/.local/share/text-picker/Cargo.toml",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/Cargo.toml",
+      "sha256": "3356c76b93dc76ec235ffd8e35bc81a0f1fa36441db69d36d88a8ff8c8b0dfb9"
+    },
+    {
+      "source": "text-picker/.local/share/text-picker/src/config.rs",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/src/config.rs",
+      "sha256": "d5f275bbdfc372119fba41dacb2d62f29d7b6573c5d6a0e885931cc01b32d644"
+    },
+    {
+      "source": "text-picker/.local/share/text-picker/src/handoff.rs",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/src/handoff.rs",
+      "sha256": "9ef5d2495781e3101738f141c9d5dc8893ce23f9e82d2a942f0e25422506b995"
+    },
+    {
+      "source": "text-picker/.local/share/text-picker/src/hyprland.rs",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/src/hyprland.rs",
+      "sha256": "3053e992197ea1b7afa8c5b16d0c3e26043e6faa5321afe5a89edfff3731ac3c"
+    },
+    {
+      "source": "text-picker/.local/share/text-picker/src/lib.rs",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/src/lib.rs",
+      "sha256": "84d30c96fd57836cab83fef04379969ee23736b4fc8ad6c6bc025ce6a141de4e"
+    },
+    {
+      "source": "text-picker/.local/share/text-picker/src/main.rs",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/src/main.rs",
+      "sha256": "73aaaa4c2e3b07c5d16d22ef65bcbdd3e5271ff91ffdc75fc42bbd44eb383bd6"
+    },
+    {
+      "source": "text-picker/.local/share/text-picker/src/paste.rs",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/src/paste.rs",
+      "sha256": "50addd741695396661c3579cfdfecc9a217fd096d354c6a800489c3e1ac4c2db"
+    },
+    {
+      "source": "text-picker/.local/share/text-picker/src/picker.rs",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/src/picker.rs",
+      "sha256": "e3f1be0c2082d1c3596007557363d3f65329676e699abe354eddd56e467e398b"
+    },
+    {
+      "source": "text-picker/README.md",
+      "destination": "dotfiles/text-picker/README.md",
+      "sha256": "14169ecfe0053ef5f48e1010a9e2b2d9362f9fe5399046c19d4c3b30029560ff"
+    }
+  ],
+  "cargoLocks": [
+    {
+      "package": "background-grid",
+      "source": "~/.cache/background-grid/build/Cargo.lock",
+      "destination": "dotfiles/background-grid/.local/share/background-grid/Cargo.lock",
+      "sha256": "123d3c4b516a08bbcfda7e7b47101eb7bbb459bfbba23af86a4735de04b481d1"
+    },
+    {
+      "package": "dictation-volume-duck",
+      "source": "~/.cache/dictation-volume-duck/build/Cargo.lock",
+      "destination": "dotfiles/chrome/.local/share/dictation-volume-duck/Cargo.lock",
+      "sha256": "5941f2a73f01fe6b988492ffff1627474c8f21fc7c53305ce30a68cf9582f177"
+    },
+    {
+      "package": "formula-plot",
+      "source": "~/.cache/plot/build/Cargo.lock",
+      "destination": "dotfiles/bin/.local/share/plot/Cargo.lock",
+      "sha256": "c3b1b7d40a15a5e49fe69b26ceec70de7b37e40eb4e6b0246a836d281808f54c"
+    },
+    {
+      "package": "cluster-tools",
+      "source": "~/.cache/cluster/build/Cargo.lock",
+      "destination": "dotfiles/cluster/.local/share/cluster/Cargo.lock",
+      "sha256": "35397957385f8874384940cd66ff6a676819c309e55d7c2c813b04d32db573c7"
+    },
+    {
+      "package": "text-picker",
+      "source": "~/.cache/text-picker/build/Cargo.lock",
+      "destination": "dotfiles/text-picker/.local/share/text-picker/Cargo.lock",
+      "sha256": "538cd8ae4fce6124ceccfca517549d5501659de75ea4183b5b6c875dec6fef52"
+    },
+    {
+      "package": "iphone-transfer",
+      "source": "~/.cache/iphone-transfer/build/Cargo.lock",
+      "destination": "dotfiles/iphone-transfer/.local/share/iphone-transfer/Cargo.lock",
+      "sha256": "7dcbe7001676fa0f9c92c46ac981f0bff420d3353b2c32820445b1928664d91a"
+    },
+    {
+      "package": "dictate",
+      "source": "~/.cache/dictate/build/Cargo.lock",
+      "destination": "dotfiles/dictate/.local/share/dictate/Cargo.lock",
+      "sha256": "191007f0f0d64734188792ea841f25987aeaf159545f733da14fd15510e1ddab"
+    }
+  ],
+  "adaptationsPending": false,
+  "vendorSourceCaptures": [
+    {
+      "name": "breakd",
+      "sourceBase": "~/dev/breakd",
+      "referenceCommit": "e912976591fe1e221676dfe2eba65ade82533ee2",
+      "capturedAtUTC": "2026-10-17T22:21:44.067707+00:00",
+      "files": [
+        {
+          "source": ".gitignore",
+          "destination": "pkgs/breakd/source/.gitignore",
+          "sha256": "1a9f5e0215419a7f3a94867bf282965ff8599655a6e0ff9579d00216314168df"
+        },
+        {
+          "source": ".release-please-manifest.json",
+          "destination": "pkgs/breakd/source/.release-please-manifest.json",
+          "sha256": "ce4644cb0a1e3394407b0d5f01877071e7e3d4f4f0bede8d38111f9b7b98734e"
+        },
+        {
+          "source": "CHANGELOG.md",
+          "destination": "pkgs/breakd/source/CHANGELOG.md",
+          "sha256": "8f670f60ab819166695793a9396dcd563b82305ed61a38414bb5a3d89ae471b3"
+        },
+        {
+          "source": "Cargo.lock",
+          "destination": "pkgs/breakd/source/Cargo.lock",
+          "sha256": "e20b70bfe707c623ccfd68e0d9a51d7a88add238d4ff97f39caa48d6b34a7bd7"
+        },
+        {
+          "source": "Cargo.toml",
+          "destination": "pkgs/breakd/source/Cargo.toml",
+          "sha256": "c3490ad5b6acf5028ef22eaaeb7b9832a34a91c114bbeb8054ef35946b33726e"
+        },
+        {
+          "source": "LICENSE",
+          "destination": "pkgs/breakd/source/LICENSE",
+          "sha256": "ca6bb445fc8e3cd5e19f34a2cba8e3aad7c3c48e97d775b560d987fb59adb950"
+        },
+        {
+          "source": "README.md",
+          "destination": "pkgs/breakd/source/README.md",
+          "sha256": "bc558f64562ccee8cbd79db7096caa99d883cd6d638cdd1faf965b79478d1ec4"
+        },
+        {
+          "source": "THIRD_PARTY_NOTICES.md",
+          "destination": "pkgs/breakd/source/THIRD_PARTY_NOTICES.md",
+          "sha256": "72182c03aaa5235779d48cc842bc1823268e6b0eb07ba0db5b23101750318cdc"
+        },
+        {
+          "source": "config.example.toml",
+          "destination": "pkgs/breakd/source/config.example.toml",
+          "sha256": "3e6909a6df875554de5d6918db3b087f5e6d0c01fd53c3668748192505213fac"
+        },
+        {
+          "source": "crates/config/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/config/Cargo.toml",
+          "sha256": "81c51f053814f1d7bddb88ddc43fc1510d1e5966e2e862fc2b821f4556d22fff"
+        },
+        {
+          "source": "crates/config/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/config/src/lib.rs",
+          "sha256": "ca003e80f956cd04db550b05eac7dcb14613af8e748deb850625875ba19b1ce2"
+        },
+        {
+          "source": "crates/config/src/messages.rs",
+          "destination": "pkgs/breakd/source/crates/config/src/messages.rs",
+          "sha256": "2ba78c2e4f6097b20dbb0b64144c9cbdc255daa70dd50dc28f1499136ea6e206"
+        },
+        {
+          "source": "crates/coop/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/coop/Cargo.toml",
+          "sha256": "572bf82c93d07882767f340ce34e913aa1cb21399444024d6c3949b157fe8b92"
+        },
+        {
+          "source": "crates/coop/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/coop/src/lib.rs",
+          "sha256": "d17d3c0038706651ef42d8e7167f96ff23ff45f3dfe3fee459a34b2a89459c79"
+        },
+        {
+          "source": "crates/core/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/core/Cargo.toml",
+          "sha256": "bebdbe04119e76e6cde6620af02acde950019595f947e5793d4e10b069d49d91"
+        },
+        {
+          "source": "crates/core/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/core/src/lib.rs",
+          "sha256": "49f9cb9f2ef7956e04cafa30483a4851d652a87baf111209f0d56c1ca7233ec8"
+        },
+        {
+          "source": "crates/daemon/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/daemon/Cargo.toml",
+          "sha256": "28030c525a821777d22edc9a8f773ea54238de7432b03f6421ad21d6c8ec1dd9"
+        },
+        {
+          "source": "crates/daemon/src/coop.rs",
+          "destination": "pkgs/breakd/source/crates/daemon/src/coop.rs",
+          "sha256": "05d8634cc20a3ec7f95292c7032905dcde17160bbf67630ccf2d727e636654f5"
+        },
+        {
+          "source": "crates/daemon/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/daemon/src/lib.rs",
+          "sha256": "9737d0011d0ceee41d0def830b6e9ae85bccb61de606a79d9a8e79a6856220f2"
+        },
+        {
+          "source": "crates/ipc/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/ipc/Cargo.toml",
+          "sha256": "647890645e72e4f64fe45f776192d95ccce6da40d56dbb2d6573b3fb1bf74ab1"
+        },
+        {
+          "source": "crates/ipc/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/ipc/src/lib.rs",
+          "sha256": "11552cbb98316060e3e96bec55a5f320cfc0113892adf59cc91340aacdbc6c49"
+        },
+        {
+          "source": "crates/platform-linux/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/platform-linux/Cargo.toml",
+          "sha256": "36da4d76c9838463ca0d463558ccb4eb47ccffe1d70b2b8f0b28ab2e9c3d591f"
+        },
+        {
+          "source": "crates/platform-linux/assets/01-warm-rise.oga",
+          "destination": "pkgs/breakd/source/crates/platform-linux/assets/01-warm-rise.oga",
+          "sha256": "a2406fd7a927bea64b874ff3942c24e510aca86a5200b598c5baa8dedce2bf81"
+        },
+        {
+          "source": "crates/platform-linux/assets/02-soft-bloom.oga",
+          "destination": "pkgs/breakd/source/crates/platform-linux/assets/02-soft-bloom.oga",
+          "sha256": "0501c075fc667f189ed89a54bbc6e2b0ad051af5830d77e53fbc13f39a0225d9"
+        },
+        {
+          "source": "crates/platform-linux/assets/03-deep-halo.oga",
+          "destination": "pkgs/breakd/source/crates/platform-linux/assets/03-deep-halo.oga",
+          "sha256": "d506de0b078024374362cfb5edf22c5f2f99486588b82fb3e6475ee69f268638"
+        },
+        {
+          "source": "crates/platform-linux/assets/04-clean-chime.oga",
+          "destination": "pkgs/breakd/source/crates/platform-linux/assets/04-clean-chime.oga",
+          "sha256": "355323809ab37e8dba816b8d5c895b78737a73d2d2280187c46ec29e59d23568"
+        },
+        {
+          "source": "crates/platform-linux/src/clock.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/clock.rs",
+          "sha256": "aab67bf091e5143af3c9450b5cbb9429f831f5b7009c94b1e179ab3ad7f154d2"
+        },
+        {
+          "source": "crates/platform-linux/src/event_sound.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/event_sound.rs",
+          "sha256": "ef58b79b67e97a34575684e09581250ac02880d506c69d8d084a33df70e04c46"
+        },
+        {
+          "source": "crates/platform-linux/src/hyprland.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/hyprland.rs",
+          "sha256": "cb24d4f540ab358954bca6032c480242cc62ed7937da3097a6f2cb0d3c522ce2"
+        },
+        {
+          "source": "crates/platform-linux/src/idle.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/idle.rs",
+          "sha256": "4e76b9adc6c675341c23b7b174f9638ae37545a4866bde1d5f8b7b9a0365ed89"
+        },
+        {
+          "source": "crates/platform-linux/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/lib.rs",
+          "sha256": "231f2318271230d2da72d76f2597b27e7e8ea3604f7c7ccbc0d36a21701e0620"
+        },
+        {
+          "source": "crates/platform-linux/src/logind.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/logind.rs",
+          "sha256": "fbf45d70afbbcf339d0d39ff19babad6c6aaf9c0d95abe4c8038f243b18d504f"
+        },
+        {
+          "source": "crates/platform-linux/src/notifications.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/notifications.rs",
+          "sha256": "57c0ca720f188a98bf3fee4450b6a5d602f58e2311732f41d623ab9ba9ee8cb1"
+        },
+        {
+          "source": "crates/platform-linux/src/state_store.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/state_store.rs",
+          "sha256": "26a61674fd6dbc1f7f345d29f0a5274a47f74657d07ff4d624901472d2053056"
+        },
+        {
+          "source": "crates/platform-linux/src/wayland_probe.rs",
+          "destination": "pkgs/breakd/source/crates/platform-linux/src/wayland_probe.rs",
+          "sha256": "7d018cab3fdcdbabbc5281c413e6e06962e1ad2ee9230ce0fdaa23306d5124cf"
+        },
+        {
+          "source": "crates/relay/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/relay/Cargo.toml",
+          "sha256": "27e9c0c58a56e50649e21027eda326c47544ddd1acb73cccf25c85cf0a01385f"
+        },
+        {
+          "source": "crates/relay/src/main.rs",
+          "destination": "pkgs/breakd/source/crates/relay/src/main.rs",
+          "sha256": "3bfe048a0507bf7d8615589ae2ccda89b8fdf88737b0b26a393ced5fdde44a76"
+        },
+        {
+          "source": "crates/scheduler/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/scheduler/Cargo.toml",
+          "sha256": "dd83d1eca5946b726ee54bffeb66a8f3cbb8c5bd2bb51e27513fab26e57ff3bb"
+        },
+        {
+          "source": "crates/scheduler/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/scheduler/src/lib.rs",
+          "sha256": "c4e166d62bb843834d5855bec063f4aa86f1eb9efd8ad9b96f91c3cf99d46363"
+        },
+        {
+          "source": "crates/settings/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/settings/Cargo.toml",
+          "sha256": "a359411959816b372e7b4c0edc4f85b5ca7e0afc2b6ccaf90059026b5fcdfd52"
+        },
+        {
+          "source": "crates/settings/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/settings/src/lib.rs",
+          "sha256": "7ae9a7d2de9bbf797100a61dcd0370a33005417b2027bf79158f5d8d4fa70a5b"
+        },
+        {
+          "source": "crates/tray/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/tray/Cargo.toml",
+          "sha256": "817dba45b59e90aaffca8a6248c6a791e4804d91dd435e9e54ae21216ccfd318"
+        },
+        {
+          "source": "crates/tray/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/tray/src/lib.rs",
+          "sha256": "15a009870f0e2f6bf52d307730e017db85ad216b17b9e84fd32b55789418d0e8"
+        },
+        {
+          "source": "crates/wayland-overlay/Cargo.toml",
+          "destination": "pkgs/breakd/source/crates/wayland-overlay/Cargo.toml",
+          "sha256": "c996dfbbb65059417d543a3d18797cf117d93a7e4dd9d0c7370673fabef59682"
+        },
+        {
+          "source": "crates/wayland-overlay/src/lib.rs",
+          "destination": "pkgs/breakd/source/crates/wayland-overlay/src/lib.rs",
+          "sha256": "0a615396aa12f713bafdd8812d7699ffeee4cfa919f28ac29c3006a87856cf3a"
+        },
+        {
+          "source": "flake.lock",
+          "destination": "pkgs/breakd/source/flake.lock",
+          "sha256": "25923b2135a3a754f7cb966845835f515793d0bc206e08637d5defc4c9de123f"
+        },
+        {
+          "source": "flake.nix",
+          "destination": "pkgs/breakd/source/flake.nix",
+          "sha256": "d4c688e866e38f248acfb1977d60a22da5f606465f9232aabd0e2d8941847d59"
+        },
+        {
+          "source": "packaging/io.github.simonwinther.breakd.settings.desktop",
+          "destination": "pkgs/breakd/source/packaging/io.github.simonwinther.breakd.settings.desktop",
+          "sha256": "d3753dceeb619c91d43a8633c384db3273efb736d7b2ee61ce3a9161f841fda2"
+        },
+        {
+          "source": "packaging/nix/module.nix",
+          "destination": "pkgs/breakd/source/packaging/nix/module.nix",
+          "sha256": "89803c4430bb01c9168b065633b06c0a8601a6c1558eb764c369dea8c7346e14"
+        },
+        {
+          "source": "packaging/nix/package.nix",
+          "destination": "pkgs/breakd/source/packaging/nix/package.nix",
+          "sha256": "48ecfed02e57b459163dc3f9d751a127de24bc713ed80eabbce248797165aa11"
+        },
+        {
+          "source": "packaging/nix/relay.nix",
+          "destination": "pkgs/breakd/source/packaging/nix/relay.nix",
+          "sha256": "89b228b88cd256ec33409ea9418e8d1299dc4701d9b32bbc338d84e4743c52d4"
+        },
+        {
+          "source": "packaging/systemd/breakd-local.service",
+          "destination": "pkgs/breakd/source/packaging/systemd/breakd-local.service",
+          "sha256": "5787d2ddac4d0b71b3879d922b858d1a08f8c08da7dc150721c8575684739e4f"
+        },
+        {
+          "source": "packaging/systemd/breakd-relay.service",
+          "destination": "pkgs/breakd/source/packaging/systemd/breakd-relay.service",
+          "sha256": "c033f27351cca9ce554fe94339fdab72f6743b8a7491e304bdcd3cbf5c2f1aec"
+        },
+        {
+          "source": "packaging/systemd/breakd.service",
+          "destination": "pkgs/breakd/source/packaging/systemd/breakd.service",
+          "sha256": "71b9f4a3daa4eee9d604625da830e1fc7ff50faf315178ee1820a71eef98a863"
+        },
+        {
+          "source": "release-please-config.json",
+          "destination": "pkgs/breakd/source/release-please-config.json",
+          "sha256": "cc3939bf845ae0af73a59247d1131a8434433a33de1f5a07619962df5a25737b"
+        },
+        {
+          "source": "scripts/breakd-dev",
+          "destination": "pkgs/breakd/source/scripts/breakd-dev",
+          "sha256": "3f21a2d76ed9b10a3d1e717fc26291f8552ec1f730b1ea29369afa114552a088"
+        },
+        {
+          "source": "scripts/build-arch-package.sh",
+          "destination": "pkgs/breakd/source/scripts/build-arch-package.sh",
+          "sha256": "2759ec4aab83ac8977fe204fbb9850a70cda6bc25e6efde321039dc1517402c8"
+        },
+        {
+          "source": "scripts/build-source-archive.sh",
+          "destination": "pkgs/breakd/source/scripts/build-source-archive.sh",
+          "sha256": "3b0965afd8dc8b1a9af99258403f4dd026592ab392c02f3fd9346ac8391244e9"
+        },
+        {
+          "source": "scripts/publish-aur.sh",
+          "destination": "pkgs/breakd/source/scripts/publish-aur.sh",
+          "sha256": "e64820c1c2ff8b4142528ef3e7d8ee4cdce935c73c1048f25b08002e6d2d8bad"
+        },
+        {
+          "source": "scripts/sync-cargo-lock.sh",
+          "destination": "pkgs/breakd/source/scripts/sync-cargo-lock.sh",
+          "sha256": "de00f1142bbe348fba7192bc9da3c817b212a196d2a90eaa5b9fa49d405fdc3e"
+        },
+        {
+          "source": "src/main.rs",
+          "destination": "pkgs/breakd/source/src/main.rs",
+          "sha256": "39f23033da1b1201d85591bf868542442f5b98a0abe9559db12faf9fdf4553a2"
+        },
+        {
+          "source": "tests/daemon_lifecycle.rs",
+          "destination": "pkgs/breakd/source/tests/daemon_lifecycle.rs",
+          "sha256": "bd9d33363468330dbc1d2c0418aa9f434860a31533f56a6c4bb49cc63cbcc4b4"
+        }
+      ]
+    },
+    {
+      "name": "hyprspace",
+      "sourceBase": "~/dev/hyprspace",
+      "referenceCommit": "2e805c9f9b403c1d13dde384b41da5b806450cc7",
+      "capturedAtUTC": "2026-10-17T22:21:44.181596+00:00",
+      "files": [
+        {
+          "source": "LICENSE",
+          "destination": "pkgs/hyprspace/source/LICENSE",
+          "sha256": "4abf2e5e85016d9ff7a506dfc5079944fcd953405e4a6027d0efe659e95be8cf"
+        },
+        {
+          "source": "Makefile",
+          "destination": "pkgs/hyprspace/source/Makefile",
+          "sha256": "b5680223085dbed72b37afa6b039ff2ba4170ee865542c6dfd5faacf4f3ee4b1"
+        },
+        {
+          "source": "README.md",
+          "destination": "pkgs/hyprspace/source/README.md",
+          "sha256": "8b950860327af81094f1bda4fb92eb6468c7e6f676bfcaf1d0955e40de98d2a7"
+        },
+        {
+          "source": "companion/README.md",
+          "destination": "pkgs/hyprspace/source/companion/README.md",
+          "sha256": "72fe6a16175831f720f6c9f4af9224d762a651fe8a35946d750074ee91c1552d"
+        },
+        {
+          "source": "companion/elephant-2.22.0.patch",
+          "destination": "pkgs/hyprspace/source/companion/elephant-2.22.0.patch",
+          "sha256": "c30a5c6a9f10c8f76161c6f0f842feaffbc595a7dfa5905816e925fb4c6acabf"
+        },
+        {
+          "source": "companion/versions.json",
+          "destination": "pkgs/hyprspace/source/companion/versions.json",
+          "sha256": "294534fccb06fd9b7724d6f440a0e3b88b43c16f0f1371cdac03a726864931dc"
+        },
+        {
+          "source": "companion/walker-2.17.0.patch",
+          "destination": "pkgs/hyprspace/source/companion/walker-2.17.0.patch",
+          "sha256": "840065fdd8092f9e734153df8aeb29f10155bb9e9099ac2f1b2b37649a01b9c1"
+        },
+        {
+          "source": "contrib/bindings.conf",
+          "destination": "pkgs/hyprspace/source/contrib/bindings.conf",
+          "sha256": "d029bc93a23116cea1005ec250b52cfa239bb0660d3e82c4232188a23cf2a5a2"
+        },
+        {
+          "source": "contrib/hyprspace.conf",
+          "destination": "pkgs/hyprspace/source/contrib/hyprspace.conf",
+          "sha256": "05848f88b6414b828c4cd3d7533e852fe0449e8a931fe49ee9ad78d19fdeef5d"
+        },
+        {
+          "source": "contrib/launch-helper/Cargo.lock",
+          "destination": "pkgs/hyprspace/source/contrib/launch-helper/Cargo.lock",
+          "sha256": "dc3a1949124508c69598708df033f4123cb942ca6d80dcf4a6e053c0180c6905"
+        },
+        {
+          "source": "contrib/launch-helper/Cargo.toml",
+          "destination": "pkgs/hyprspace/source/contrib/launch-helper/Cargo.toml",
+          "sha256": "9838faf6e9c7d080588f2afc5cdc25872c2be2900655d9438ebf0b9e42227e9b"
+        },
+        {
+          "source": "contrib/launch-helper/src/ipc.rs",
+          "destination": "pkgs/hyprspace/source/contrib/launch-helper/src/ipc.rs",
+          "sha256": "5b7cbddad7eac369f3e3cd77c3988fbe8d027ce395977a9491c1bef0716c5e3d"
+        },
+        {
+          "source": "contrib/launch-helper/src/main.rs",
+          "destination": "pkgs/hyprspace/source/contrib/launch-helper/src/main.rs",
+          "sha256": "33739bd12f2e6cec8107cf9371d6a986571f1d39cfd12f2e75e7ea5abb59eccf"
+        },
+        {
+          "source": "flake.nix",
+          "destination": "pkgs/hyprspace/source/flake.nix",
+          "sha256": "e090657113c3616b67d820a02c33f7260fce0febdf2d62144ac0c8776a2c9526"
+        },
+        {
+          "source": "scripts/atomic-output.sh",
+          "destination": "pkgs/hyprspace/source/scripts/atomic-output.sh",
+          "sha256": "05350e5fac300152b6c124040bc049facb20320820bd73d78b14a37fd1dcac10"
+        },
+        {
+          "source": "scripts/build-companions.py",
+          "destination": "pkgs/hyprspace/source/scripts/build-companions.py",
+          "sha256": "72b9292fe32f9e83d317fa148241355d8ddcefa60f18116ffa6e980127bc38d9"
+        },
+        {
+          "source": "scripts/check-abi.sh",
+          "destination": "pkgs/hyprspace/source/scripts/check-abi.sh",
+          "sha256": "5c364112590874e6059cf539e6df9259604b56e0a585b3e0e871ddfb613c27b7"
+        },
+        {
+          "source": "scripts/check-nix.py",
+          "destination": "pkgs/hyprspace/source/scripts/check-nix.py",
+          "sha256": "691b26b420994a300a67e05cf14edb4dbf323a1b92997e482070cc4dd075d8f1"
+        },
+        {
+          "source": "scripts/check-release.py",
+          "destination": "pkgs/hyprspace/source/scripts/check-release.py",
+          "sha256": "694289dd813922e78057958ea1c125e023515b1ccd1c1950baf1c96973349f99"
+        },
+        {
+          "source": "scripts/dist.sh",
+          "destination": "pkgs/hyprspace/source/scripts/dist.sh",
+          "sha256": "851b3e3d5796f533fe4f80d250afed658fe9b096168151c8be907b3cec125c05"
+        },
+        {
+          "source": "scripts/install-companions.py",
+          "destination": "pkgs/hyprspace/source/scripts/install-companions.py",
+          "sha256": "b171f7e23863f336fe3ea283972406fa8ed4abeeb74f4bde8c7ed317655db2d6"
+        },
+        {
+          "source": "scripts/release-draft.py",
+          "destination": "pkgs/hyprspace/source/scripts/release-draft.py",
+          "sha256": "c9d1157bd8e549800af2f23a3950f1cd03c2e7ad4b93a14ffa0d842da1db3220"
+        },
+        {
+          "source": "scripts/reload.sh",
+          "destination": "pkgs/hyprspace/source/scripts/reload.sh",
+          "sha256": "cece66890a17b80224d6ca781d8be8cb41fab6332b4e621a9b49040ac2011522"
+        },
+        {
+          "source": "src/Access.hpp",
+          "destination": "pkgs/hyprspace/source/src/Access.hpp",
+          "sha256": "16542e2e6a33088e99655d6c08367387612ed2d80faae390cc0d9359aea743a9"
+        },
+        {
+          "source": "src/BuildInfo.hpp",
+          "destination": "pkgs/hyprspace/source/src/BuildInfo.hpp",
+          "sha256": "80aa742d6eb022644c0c0a71a55516ee74e0199b0b3f4dbc179db04bba606b74"
+        },
+        {
+          "source": "src/Capture.cpp",
+          "destination": "pkgs/hyprspace/source/src/Capture.cpp",
+          "sha256": "006050b7033fb17794b229e683c1df35ba644e481c43c1d6eb3f7ee7ccee1f8c"
+        },
+        {
+          "source": "src/Capture.hpp",
+          "destination": "pkgs/hyprspace/source/src/Capture.hpp",
+          "sha256": "50f4e76f89a515d905e6676cbe0148796c91bab24d0f6b5543f16aac0b0e92eb"
+        },
+        {
+          "source": "src/CaptureGeometry.hpp",
+          "destination": "pkgs/hyprspace/source/src/CaptureGeometry.hpp",
+          "sha256": "4ee86f15f82929dcdcd6248072152dc49b76c24f2ea95a3ff3436b4efcb78ab2"
+        },
+        {
+          "source": "src/CompositorHooks.cpp",
+          "destination": "pkgs/hyprspace/source/src/CompositorHooks.cpp",
+          "sha256": "488987f143a5b4ebc888f956416b42cc1f959ce65f675b8b49e44419be72ad35"
+        },
+        {
+          "source": "src/CompositorHooks.hpp",
+          "destination": "pkgs/hyprspace/source/src/CompositorHooks.hpp",
+          "sha256": "0089c5100a698809d57f8bfd46082a85dd9f4541a3028e3336c3498009fd033c"
+        },
+        {
+          "source": "src/Config.cpp",
+          "destination": "pkgs/hyprspace/source/src/Config.cpp",
+          "sha256": "b939d83b5c7b4d47a217d450161485c2a0bcab784ad3353dd8036616df680c26"
+        },
+        {
+          "source": "src/Config.hpp",
+          "destination": "pkgs/hyprspace/source/src/Config.hpp",
+          "sha256": "146a4a8a0c7dacde3364b174f9b14f54c4177390483fc10bd1b7b45a14163289"
+        },
+        {
+          "source": "src/CursorFollowPreference.hpp",
+          "destination": "pkgs/hyprspace/source/src/CursorFollowPreference.hpp",
+          "sha256": "b4628696240b6cfd4e62e266fea5cb46dd975dc4acd8dab54777e0dc7d4aedbe"
+        },
+        {
+          "source": "src/DesktopDb.cpp",
+          "destination": "pkgs/hyprspace/source/src/DesktopDb.cpp",
+          "sha256": "f9bcbec314f6c283535610044ed2bcf3ed823c2448416bbbbc6ccedb98dfe760"
+        },
+        {
+          "source": "src/DesktopDb.hpp",
+          "destination": "pkgs/hyprspace/source/src/DesktopDb.hpp",
+          "sha256": "1c6106e4912452c33654573eda724bf3372392650c956fae1aa28e7aa9c0c46b"
+        },
+        {
+          "source": "src/Diagnostics.hpp",
+          "destination": "pkgs/hyprspace/source/src/Diagnostics.hpp",
+          "sha256": "d0e0eb6cb70986389c976cb25adc257561334a34e62b21194b2280b6331f1b6b"
+        },
+        {
+          "source": "src/EmptyWorkspace.hpp",
+          "destination": "pkgs/hyprspace/source/src/EmptyWorkspace.hpp",
+          "sha256": "9502dc1a842241388f219594de0d65caed1e99b403ee77800c301637152d8762"
+        },
+        {
+          "source": "src/Focus.cpp",
+          "destination": "pkgs/hyprspace/source/src/Focus.cpp",
+          "sha256": "45232e0137b2928faa93d1c54403d36f958079aefe2173f3ff7b520639e2335e"
+        },
+        {
+          "source": "src/Focus.hpp",
+          "destination": "pkgs/hyprspace/source/src/Focus.hpp",
+          "sha256": "bd64d78c1deddcc179ba0a4bf64cbea558df6bfa9bb11e0b6f1c98e58ad0cd76"
+        },
+        {
+          "source": "src/Geometry.hpp",
+          "destination": "pkgs/hyprspace/source/src/Geometry.hpp",
+          "sha256": "616889159dd48de0a74eaf68f126091fa3a6fd24a44e15dd41b417586c4024b5"
+        },
+        {
+          "source": "src/HelpModel.hpp",
+          "destination": "pkgs/hyprspace/source/src/HelpModel.hpp",
+          "sha256": "072ada5071699de6dbc8f9a93cf02e399a4d282f2a6a6eac9cd59334100db0ea"
+        },
+        {
+          "source": "src/HelpOverlay.cpp",
+          "destination": "pkgs/hyprspace/source/src/HelpOverlay.cpp",
+          "sha256": "f9e910ec238a8f5e7cf4c13defcee02a86fff34e1ac1d32bf5d75b4af05ddbe8"
+        },
+        {
+          "source": "src/HelpOverlay.hpp",
+          "destination": "pkgs/hyprspace/source/src/HelpOverlay.hpp",
+          "sha256": "748042f8c734d3309b97ecb0b00d7d6ed5d8789b0cebfb08255a550d41eeb694"
+        },
+        {
+          "source": "src/ImageCache.hpp",
+          "destination": "pkgs/hyprspace/source/src/ImageCache.hpp",
+          "sha256": "415d9fb2c84337ccdf779fc1b24d91273fd35d77405968d970e4c5c5d2bef230"
+        },
+        {
+          "source": "src/Input.hpp",
+          "destination": "pkgs/hyprspace/source/src/Input.hpp",
+          "sha256": "5c57059581c43728dfbe5be2c1a6c83b188dd402f4228f189f1df0b3eea4456b"
+        },
+        {
+          "source": "src/Interaction.hpp",
+          "destination": "pkgs/hyprspace/source/src/Interaction.hpp",
+          "sha256": "740e71f25e25ced0e2618959fc50c9898e031a843f1c01393f00662d0d85c396"
+        },
+        {
+          "source": "src/Launch.cpp",
+          "destination": "pkgs/hyprspace/source/src/Launch.cpp",
+          "sha256": "b0ec246410b1e1c7baba17047672f1264d4ccba78abf240bfb025fef0ca2f446"
+        },
+        {
+          "source": "src/Launch.hpp",
+          "destination": "pkgs/hyprspace/source/src/Launch.hpp",
+          "sha256": "089011a9daac5addc4c96dd9adbfd9718a70553539155ecbb232448366a06f5c"
+        },
+        {
+          "source": "src/LaunchGeometry.hpp",
+          "destination": "pkgs/hyprspace/source/src/LaunchGeometry.hpp",
+          "sha256": "8b7bb0ffc8def268bc5c13cb517d6063d2698395963abba9061fe3ff9bf3f35f"
+        },
+        {
+          "source": "src/OverlayPolicy.hpp",
+          "destination": "pkgs/hyprspace/source/src/OverlayPolicy.hpp",
+          "sha256": "3c38a877a01031ae47f355150514ba54f58e7e0645f4013282c48effb6a91447"
+        },
+        {
+          "source": "src/Overview.cpp",
+          "destination": "pkgs/hyprspace/source/src/Overview.cpp",
+          "sha256": "efe3a84759e978554433f168ee0ebfe43646b2d9a560cc15936c44b1d454e7c2"
+        },
+        {
+          "source": "src/Overview.hpp",
+          "destination": "pkgs/hyprspace/source/src/Overview.hpp",
+          "sha256": "7cd7ca16067084ece4e0cb87575a078fa2bb9568a70b6fbed8e753be6c1b5cb4"
+        },
+        {
+          "source": "src/OverviewLayout.hpp",
+          "destination": "pkgs/hyprspace/source/src/OverviewLayout.hpp",
+          "sha256": "03714d3fa80534738616650ead09410ba4a5001ba0e54f96719b523ceb4f2480"
+        },
+        {
+          "source": "src/OverviewSession.cpp",
+          "destination": "pkgs/hyprspace/source/src/OverviewSession.cpp",
+          "sha256": "380c8652ce5b7fd4eb3f291a81336bf60404446c0001bcc2bbaa7a9ffc23ad4d"
+        },
+        {
+          "source": "src/OverviewSession.hpp",
+          "destination": "pkgs/hyprspace/source/src/OverviewSession.hpp",
+          "sha256": "bf7b0261f7b566de42f32c36f011898be2029fa6ed9a95eafbb75de30acc7e87"
+        },
+        {
+          "source": "src/PassElements.cpp",
+          "destination": "pkgs/hyprspace/source/src/PassElements.cpp",
+          "sha256": "5139c855d37b27436934b78caffaa31bc9a433d7b57664ce12b3b1e8b27ee270"
+        },
+        {
+          "source": "src/PassElements.hpp",
+          "destination": "pkgs/hyprspace/source/src/PassElements.hpp",
+          "sha256": "65d2ffccc537f363e9952dacb861f3c26e50702c657851249cab1ba87f347691"
+        },
+        {
+          "source": "src/PreviewStyle.hpp",
+          "destination": "pkgs/hyprspace/source/src/PreviewStyle.hpp",
+          "sha256": "f61d8f933f691c8e8010b674a189ecaa333cae7a0c5776fce65a0ccbe97ca4e2"
+        },
+        {
+          "source": "src/Raster.cpp",
+          "destination": "pkgs/hyprspace/source/src/Raster.cpp",
+          "sha256": "15e13817b7d0988af05f0dcac2615c43c9f336c0806f80ed9634ee80eb5e1cc1"
+        },
+        {
+          "source": "src/Raster.hpp",
+          "destination": "pkgs/hyprspace/source/src/Raster.hpp",
+          "sha256": "542f1f16e42c86d66cb42030a11c7b1c08966a48b512938ffe3e95efcf7f93ce"
+        },
+        {
+          "source": "src/Scrolling.hpp",
+          "destination": "pkgs/hyprspace/source/src/Scrolling.hpp",
+          "sha256": "ad568f91af904a5829d69f174a84961337dce84dcbddcdc7238798592e6879eb"
+        },
+        {
+          "source": "src/SearchInput.hpp",
+          "destination": "pkgs/hyprspace/source/src/SearchInput.hpp",
+          "sha256": "00169e284b22102ed4f2801e0587dddf428b051e8781a0d6bb99b7e8b2d708b6"
+        },
+        {
+          "source": "src/Switcher.cpp",
+          "destination": "pkgs/hyprspace/source/src/Switcher.cpp",
+          "sha256": "77a1aa4781d5220fe7c48c668ee5c4379a6f6e3947a3738d1505f4d50753e9a1"
+        },
+        {
+          "source": "src/Switcher.hpp",
+          "destination": "pkgs/hyprspace/source/src/Switcher.hpp",
+          "sha256": "bee80eb259551770ec0844bc171a521d54df6263c56d37f2b274967d6e9b449d"
+        },
+        {
+          "source": "src/SwitcherLayout.hpp",
+          "destination": "pkgs/hyprspace/source/src/SwitcherLayout.hpp",
+          "sha256": "b07bfae2b8ff927cfd2f0a0dbd5b769309c333c6f0af939d0602b7dd2c2fff44"
+        },
+        {
+          "source": "src/Texture.cpp",
+          "destination": "pkgs/hyprspace/source/src/Texture.cpp",
+          "sha256": "7ace0a361d0121bc48620078b94f6134b1b9ba1da5b0f855ec2ba4be0646709f"
+        },
+        {
+          "source": "src/Texture.hpp",
+          "destination": "pkgs/hyprspace/source/src/Texture.hpp",
+          "sha256": "c231e1cd52737cfd230462c7f664d6b599e3fd4bb4030a393df0595e19f88d7b"
+        },
+        {
+          "source": "src/Version.hpp",
+          "destination": "pkgs/hyprspace/source/src/Version.hpp",
+          "sha256": "b0aac13bc5e52109ce7e3b81be342528b7c1468826d7a4933f815fe505f4d191"
+        },
+        {
+          "source": "src/WindowBoard.cpp",
+          "destination": "pkgs/hyprspace/source/src/WindowBoard.cpp",
+          "sha256": "34974e27c6f51863a32331bfc3df3510a9e9a9e2ea23fa30a5b6d20a9824eb3d"
+        },
+        {
+          "source": "src/WindowBoard.hpp",
+          "destination": "pkgs/hyprspace/source/src/WindowBoard.hpp",
+          "sha256": "ea1012c2d6ee555b411eea64d265f1bf0cd596fc933c51b6a7afe36959f3942b"
+        },
+        {
+          "source": "src/WindowViewModel.hpp",
+          "destination": "pkgs/hyprspace/source/src/WindowViewModel.hpp",
+          "sha256": "1c0e40a7636b556701095c86387fbc1c09f331f972954b18a9e76322f65a518b"
+        },
+        {
+          "source": "src/globals.hpp",
+          "destination": "pkgs/hyprspace/source/src/globals.hpp",
+          "sha256": "94adba3f98797a73f7d95fc284262264af564887e4dbc738b4b493eb12519910"
+        },
+        {
+          "source": "src/main.cpp",
+          "destination": "pkgs/hyprspace/source/src/main.cpp",
+          "sha256": "45ff2e292a8995f66a6650d8e675196d613c101718852d5c0ea05fc7d0ed20c6"
+        },
+        {
+          "source": "test/Makefile",
+          "destination": "pkgs/hyprspace/source/test/Makefile",
+          "sha256": "d7b23edad1b230e75fd10f04338eae86074f985083bad606486a342cf465fd42"
+        },
+        {
+          "source": "test/fixtures/abi.cpp",
+          "destination": "pkgs/hyprspace/source/test/fixtures/abi.cpp",
+          "sha256": "3713ea256377e3720f7631e1b773e9585eaf8a791e6370b6b70bda4ed9d1591f"
+        },
+        {
+          "source": "test/fixtures/cxx",
+          "destination": "pkgs/hyprspace/source/test/fixtures/cxx",
+          "sha256": "2d057b4592f4493669e57933a20c91590889997306b3141e1ff20f8919822c00"
+        },
+        {
+          "source": "test/fixtures/hyprctl",
+          "destination": "pkgs/hyprspace/source/test/fixtures/hyprctl",
+          "sha256": "cbbad0aa08bd996ee105a23336e5ec1a10fb5aad4516c1b8041591a3bd6a8bd3"
+        },
+        {
+          "source": "test/fixtures/nm",
+          "destination": "pkgs/hyprspace/source/test/fixtures/nm",
+          "sha256": "67700212b8e475b7bbddaba19c3f944936f681d29503d634ef425cf3ac005cab"
+        },
+        {
+          "source": "test/integration/activation.c",
+          "destination": "pkgs/hyprspace/source/test/integration/activation.c",
+          "sha256": "49d12ea6c6aea377c72b771d12b72b8790158428d7e6cf4b3baf2cd1b9a2e8c2"
+        },
+        {
+          "source": "test/integration/artifacts.py",
+          "destination": "pkgs/hyprspace/source/test/integration/artifacts.py",
+          "sha256": "0e8e1be036aeb16ce452b885af1c880c1bef02e502cf1ae4536c10afe9902a05"
+        },
+        {
+          "source": "test/integration/background.py",
+          "destination": "pkgs/hyprspace/source/test/integration/background.py",
+          "sha256": "044e6cf138d8ddc51a4e97e42bb3b90218a750507116c2fe612e56f6c45f8fbd"
+        },
+        {
+          "source": "test/integration/capture_client.c",
+          "destination": "pkgs/hyprspace/source/test/integration/capture_client.c",
+          "sha256": "aaf754a67a807493bca10fc65bc7c565cdbddf22e68d800456cdc0c2d6412697"
+        },
+        {
+          "source": "test/integration/capture_fixture.hpp",
+          "destination": "pkgs/hyprspace/source/test/integration/capture_fixture.hpp",
+          "sha256": "56186f2da205b646e3dd322a6d8e783ff09fc69b81554892d721d008b4f2b5ba"
+        },
+        {
+          "source": "test/integration/capture_regressions.py",
+          "destination": "pkgs/hyprspace/source/test/integration/capture_regressions.py",
+          "sha256": "68080a96bc3656f85018a95449d22525cba12f3659a848e5f6aea10fedfd0666"
+        },
+        {
+          "source": "test/integration/client.py",
+          "destination": "pkgs/hyprspace/source/test/integration/client.py",
+          "sha256": "289d711a8abe4ab1e02500c123fc9145a6a86453fec806cbbb1f97aa853e235e"
+        },
+        {
+          "source": "test/integration/close_workspaces.py",
+          "destination": "pkgs/hyprspace/source/test/integration/close_workspaces.py",
+          "sha256": "3d769889873b10cb7aa57b927af0ed42df62ff355e8ab94311487e7e5538a93b"
+        },
+        {
+          "source": "test/integration/configuration.py",
+          "destination": "pkgs/hyprspace/source/test/integration/configuration.py",
+          "sha256": "a406427e0442cff3d5d57afe4dc6a444db6f0dc162e9c4090338de19a64a1e05"
+        },
+        {
+          "source": "test/integration/cursor_confinement.py",
+          "destination": "pkgs/hyprspace/source/test/integration/cursor_confinement.py",
+          "sha256": "daddb3b65127b1bda2b2a82cf8032cb2ced6b08bb3ae0251bfa12aa94a73533d"
+        },
+        {
+          "source": "test/integration/cursor_return.py",
+          "destination": "pkgs/hyprspace/source/test/integration/cursor_return.py",
+          "sha256": "82552a09741c0406ff54014d6646d6a444e902397fe87ba7cc6ee3e438055bd0"
+        },
+        {
+          "source": "test/integration/dispatchers.cpp",
+          "destination": "pkgs/hyprspace/source/test/integration/dispatchers.cpp",
+          "sha256": "a25af195cb362e781621b72769e5228dfb22bc05b819b7222564ee3ccfa8d55d"
+        },
+        {
+          "source": "test/integration/dispatchers.py",
+          "destination": "pkgs/hyprspace/source/test/integration/dispatchers.py",
+          "sha256": "7f7a2f9f927d0f6405ae2afa934b94b8e78e8ecd13d84f38218706cd210035ea"
+        },
+        {
+          "source": "test/integration/empty_workspaces.py",
+          "destination": "pkgs/hyprspace/source/test/integration/empty_workspaces.py",
+          "sha256": "54fcf459521cc14969465a3dc94ddef6b175f624e97b4888d8320556f94da12a"
+        },
+        {
+          "source": "test/integration/generation.hpp",
+          "destination": "pkgs/hyprspace/source/test/integration/generation.hpp",
+          "sha256": "9ba06d6e73bc65fff8dd69ea913211aba8fb187bd278b9ac99827d3bdce1e66d"
+        },
+        {
+          "source": "test/integration/gesture_regressions.py",
+          "destination": "pkgs/hyprspace/source/test/integration/gesture_regressions.py",
+          "sha256": "b99d2ff538956ffb4211a5404070937475a192c4b3541650ec672496232d1a1a"
+        },
+        {
+          "source": "test/integration/headless.c",
+          "destination": "pkgs/hyprspace/source/test/integration/headless.c",
+          "sha256": "bc10a70e4a4ddb926c26c05a1149847d6da81a704d98f85ad25ff4dc11d6e327"
+        },
+        {
+          "source": "test/integration/help.py",
+          "destination": "pkgs/hyprspace/source/test/integration/help.py",
+          "sha256": "911bb0c0d0c51f3072a9ee21996ea086b23ff91345d78a81f93bea3cabbb47c9"
+        },
+        {
+          "source": "test/integration/ime.c",
+          "destination": "pkgs/hyprspace/source/test/integration/ime.c",
+          "sha256": "da8306379e58a6faa9933fb7e9c00a65dfa4c1d392f3ee53f545b26ad0693ab5"
+        },
+        {
+          "source": "test/integration/input-method.xml",
+          "destination": "pkgs/hyprspace/source/test/integration/input-method.xml",
+          "sha256": "fba4a71956dff5d60e5f1e3d89d99753e9921b35bfe8d7e9b6fe680ffc64cbfc"
+        },
+        {
+          "source": "test/integration/launch_regressions.py",
+          "destination": "pkgs/hyprspace/source/test/integration/launch_regressions.py",
+          "sha256": "ff1868af1051b2b43bc1a189cf5c178df5ab7a0b869395b5018222c8b7ecaf55"
+        },
+        {
+          "source": "test/integration/layer.py",
+          "destination": "pkgs/hyprspace/source/test/integration/layer.py",
+          "sha256": "c3b01e1e11aa449e897f5c402cd6edff3cb898d4be9b2dc1273ca8ca323011d0"
+        },
+        {
+          "source": "test/integration/layout.py",
+          "destination": "pkgs/hyprspace/source/test/integration/layout.py",
+          "sha256": "647788db5f9227b7c2a15270dd7b2f00f03125d8d078975af18c353a92124566"
+        },
+        {
+          "source": "test/integration/lock.c",
+          "destination": "pkgs/hyprspace/source/test/integration/lock.c",
+          "sha256": "51e6c3b712eae8b6c09f0a9ced36fa90ab600e39e2d43dc61337151919577a24"
+        },
+        {
+          "source": "test/integration/lock.py",
+          "destination": "pkgs/hyprspace/source/test/integration/lock.py",
+          "sha256": "3c88befea7f052af7e2db2f3b6e5a65182cc1a2a1c236de8b886bd97fbeeb55e"
+        },
+        {
+          "source": "test/integration/lua.py",
+          "destination": "pkgs/hyprspace/source/test/integration/lua.py",
+          "sha256": "6f5ba49d5b8ac1135f4e96e69eac562247a99d6117a60e168d19260a113bfac1"
+        },
+        {
+          "source": "test/integration/overview.cpp",
+          "destination": "pkgs/hyprspace/source/test/integration/overview.cpp",
+          "sha256": "67e3b3f66fd935c7ab60bff0395dfe357c36e1bce9145d5fa3d035750569644e"
+        },
+        {
+          "source": "test/integration/overview.py",
+          "destination": "pkgs/hyprspace/source/test/integration/overview.py",
+          "sha256": "8d8fda2c758f6fa7c9de20460b14a4eb4bdd782af7bbf757db64238f840fb95f"
+        },
+        {
+          "source": "test/integration/performance.py",
+          "destination": "pkgs/hyprspace/source/test/integration/performance.py",
+          "sha256": "c6e6aa11df945a4c6dc1c8cb7a9e9741d0a854c3dd9436f66808389a8549ca34"
+        },
+        {
+          "source": "test/integration/physical.py",
+          "destination": "pkgs/hyprspace/source/test/integration/physical.py",
+          "sha256": "eaa83c322f08a984f073b3f53fa5cbace6d46a8e7db414f59b4a718cbe55c483"
+        },
+        {
+          "source": "test/integration/pointer.c",
+          "destination": "pkgs/hyprspace/source/test/integration/pointer.c",
+          "sha256": "80757eed776fcc651e8941deea58a48a01beee9bcc42a2769cd3399c7939942f"
+        },
+        {
+          "source": "test/integration/protocol.py",
+          "destination": "pkgs/hyprspace/source/test/integration/protocol.py",
+          "sha256": "3f246d2b587b1719f4ec9133de9a220c32ca49b38bd07c61e04c0ebc0d4b376a"
+        },
+        {
+          "source": "test/integration/regressions.py",
+          "destination": "pkgs/hyprspace/source/test/integration/regressions.py",
+          "sha256": "322c91fe5363c658c618fd685f6f74ad182bfb3539233f6d13aea403cbf1604d"
+        },
+        {
+          "source": "test/integration/resize.py",
+          "destination": "pkgs/hyprspace/source/test/integration/resize.py",
+          "sha256": "b89a9995c4b0ec4b8ec0d14f16737cff4c4d96114d3519eb8751d37bb493886a"
+        },
+        {
+          "source": "test/integration/resources.hpp",
+          "destination": "pkgs/hyprspace/source/test/integration/resources.hpp",
+          "sha256": "fdd8c39202235f1944591359bacf20de8e74781cb7fbcdd3192dc7f09323d1c8"
+        },
+        {
+          "source": "test/integration/resources.py",
+          "destination": "pkgs/hyprspace/source/test/integration/resources.py",
+          "sha256": "da6c189c822ace95e09dc13083e70a49635a2e4fa3717d8d5cea176d5589e6b3"
+        },
+        {
+          "source": "test/integration/run.py",
+          "destination": "pkgs/hyprspace/source/test/integration/run.py",
+          "sha256": "68831e10ca4c027b91759a9965f45fc8f4ae449ca93761be562a3fc7405d753d"
+        },
+        {
+          "source": "test/integration/selection.py",
+          "destination": "pkgs/hyprspace/source/test/integration/selection.py",
+          "sha256": "8c73fb1c31e9419232ffb93f65b70f32e44f7bbe0a2085489f4061bef6a45868"
+        },
+        {
+          "source": "test/integration/switcher.py",
+          "destination": "pkgs/hyprspace/source/test/integration/switcher.py",
+          "sha256": "2fff4ef52ba9068b3c360dac39b2970ddd291a936230bfd62e78bc88b0c6bda3"
+        },
+        {
+          "source": "test/integration/transition_regressions.py",
+          "destination": "pkgs/hyprspace/source/test/integration/transition_regressions.py",
+          "sha256": "67af327a2eb871923544ef801d3fdd212731490d50fb5926fa9a8cf498750b21"
+        },
+        {
+          "source": "test/integration/virtual-keyboard.xml",
+          "destination": "pkgs/hyprspace/source/test/integration/virtual-keyboard.xml",
+          "sha256": "7ad7870003ecd592cae47dc19d277a609b7f18fd7b7be012623cf3225a7294f5"
+        },
+        {
+          "source": "test/integration/virtual-pointer.xml",
+          "destination": "pkgs/hyprspace/source/test/integration/virtual-pointer.xml",
+          "sha256": "3ff6d540be0bc5228195bf072bde42117ea17945a5c2061add5d3cf97d6bb524"
+        },
+        {
+          "source": "test/integration/window_views.py",
+          "destination": "pkgs/hyprspace/source/test/integration/window_views.py",
+          "sha256": "2a1776229d8336761ae3b3944751b7c391b6c67ca09493af51293e83d7763db5"
+        },
+        {
+          "source": "test/integration/window_views_demo.py",
+          "destination": "pkgs/hyprspace/source/test/integration/window_views_demo.py",
+          "sha256": "80a05be10159fe5172ce3574450d8865c7f5fd09b17da17fd5a9cbbb4aef6435"
+        },
+        {
+          "source": "test/integration/workspace_drag.py",
+          "destination": "pkgs/hyprspace/source/test/integration/workspace_drag.py",
+          "sha256": "19c7d23a019f41118bda2c83659497ebf588a99c7b5dc1909f6be4716f90d570"
+        },
+        {
+          "source": "test/integration/zoom.py",
+          "destination": "pkgs/hyprspace/source/test/integration/zoom.py",
+          "sha256": "44a5e44a8b1a48e608d15d76aedfad0803eff7acd729b23c855818456067d498"
+        },
+        {
+          "source": "test/lsan.supp",
+          "destination": "pkgs/hyprspace/source/test/lsan.supp",
+          "sha256": "b22dfaefcd795e79265e70d2c3b33f569973938d3a4fdd5cbc00d991d7fa561d"
+        },
+        {
+          "source": "test/test_build.sh",
+          "destination": "pkgs/hyprspace/source/test/test_build.sh",
+          "sha256": "d5e783341ff20a86ab405f01744f3e677577c3c1d4dab530db50827342f27dbc"
+        },
+        {
+          "source": "test/test_capture_geometry.hpp",
+          "destination": "pkgs/hyprspace/source/test/test_capture_geometry.hpp",
+          "sha256": "0f7906253cd79dd01d8a57843e89423aa0c626b5d0aa37e6af9d7e60493e1cbf"
+        },
+        {
+          "source": "test/test_companion_install.py",
+          "destination": "pkgs/hyprspace/source/test/test_companion_install.py",
+          "sha256": "4912b0c007edde6a2fde756c1e7bb3a633421806307ddf9a5c8532755b4c3008"
+        },
+        {
+          "source": "test/test_empty_workspace.hpp",
+          "destination": "pkgs/hyprspace/source/test/test_empty_workspace.hpp",
+          "sha256": "07d6b5537670a76065fbe21cf11dd217f61a2ac0d073d3237294de610165cbab"
+        },
+        {
+          "source": "test/test_help.hpp",
+          "destination": "pkgs/hyprspace/source/test/test_help.hpp",
+          "sha256": "a6e16bc9c38435e8cd4fbea8238fb9cb5a6d6fd898a1f1a4f9e3824b979d8680"
+        },
+        {
+          "source": "test/test_hyprspace.cpp",
+          "destination": "pkgs/hyprspace/source/test/test_hyprspace.cpp",
+          "sha256": "463591910f1b4b81b0d83d6622c9437dd89b525846bc2f257cbff280c98d88d6"
+        },
+        {
+          "source": "test/test_integration_artifacts.py",
+          "destination": "pkgs/hyprspace/source/test/test_integration_artifacts.py",
+          "sha256": "13fc0e9bbb1715bbf632061f7c0f83509859a38eb291d19ad7619b3a93758d13"
+        },
+        {
+          "source": "test/test_integration_runner.py",
+          "destination": "pkgs/hyprspace/source/test/test_integration_runner.py",
+          "sha256": "98702de98d96ca8e5ecda6d18b828bd2d50673297031e6d3a15dc9eed4c78ba9"
+        },
+        {
+          "source": "test/test_launch_geometry.hpp",
+          "destination": "pkgs/hyprspace/source/test/test_launch_geometry.hpp",
+          "sha256": "89ff8fad7e5fd9b5fcfd0a766c609a91a44fd90a277e45aa242062106190d8d1"
+        },
+        {
+          "source": "test/test_launch_helper.py",
+          "destination": "pkgs/hyprspace/source/test/test_launch_helper.py",
+          "sha256": "3878a8ab4c8bb61eb71febf91b2daa2d4a15e1294380016fb2fc003bd90169db"
+        },
+        {
+          "source": "test/test_physical_commands.py",
+          "destination": "pkgs/hyprspace/source/test/test_physical_commands.py",
+          "sha256": "fd276391ab1c209172182ebbc8eade38920cfbc6c9c4fa0231c4a7a23e6e4bf2"
+        },
+        {
+          "source": "test/test_release.py",
+          "destination": "pkgs/hyprspace/source/test/test_release.py",
+          "sha256": "8d4dc27dc94d4592906c92f460adcfbebef1495f77d4450fb6aca4faccd70296"
+        },
+        {
+          "source": "test/test_search_input.hpp",
+          "destination": "pkgs/hyprspace/source/test/test_search_input.hpp",
+          "sha256": "532f41e6de557fe68d5aa72ab38ff55ff34562ee4c3ffa4df3083ee0e2f088a1"
+        },
+        {
+          "source": "test/test_window_views.hpp",
+          "destination": "pkgs/hyprspace/source/test/test_window_views.hpp",
+          "sha256": "41ebbb537dfe258a6b814f1775cf1d60a0a945b8d5be7a275232aef5970d68f6"
+        },
+        {
+          "source": "test/test_zoom_geometry.hpp",
+          "destination": "pkgs/hyprspace/source/test/test_zoom_geometry.hpp",
+          "sha256": "bcf50a8864bbfba6297a03574bceb35110d78b089b73c46eaa5849e165f1d717"
+        },
+        {
+          "source": "test/test_zoom_input.hpp",
+          "destination": "pkgs/hyprspace/source/test/test_zoom_input.hpp",
+          "sha256": "2b91ca12ea6602230c18cbf799cbaee76ae6a41a4328f8039c29795cd7658fa1"
+        },
+        {
+          "source": "version.txt",
+          "destination": "pkgs/hyprspace/source/version.txt",
+          "sha256": "bb7320d831e7a151aa901c35e7326c752fa2ef5024f30768c42319b8bed171ed"
+        }
+      ]
+    }
+  ],
+  "sourceDeletions": [
+    {
+      "source": "background-grid/.config/background-grid/picker.py",
+      "reason": "Superseded by the approved current Rust implementation."
+    }
+  ],
+  "additionalPreferences": [
+    {
+      "source": "~/.config/alacritty/alacritty.toml",
+      "destination": "dotfiles/desktop-settings/.config/alacritty/alacritty.toml",
+      "sha256": "c918cfea24c5fccf60f0b50ec63b1ea82baf5988452bff3074cbdaae6a642b02",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/hyprland-preview-share-picker/config.yaml",
+      "destination": "dotfiles/desktop-settings/.config/hyprland-preview-share-picker/config.yaml",
+      "sha256": "cf88364e497e4af2adaff9a0b7ca12227d29f831bc7e18846dd8f03bf4c618a8",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/imv/config",
+      "destination": "dotfiles/desktop-settings/.config/imv/config",
+      "sha256": "569b52b9614a78be67ce9f0a828ff1a7a73e4741d4751577ec6b247ab78e29ea",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/kitty/kitty.conf",
+      "destination": "dotfiles/desktop-settings/.config/kitty/kitty.conf",
+      "sha256": "fd1e71be5e7476291be0c31e0d6cc8c2dbf83b529702162d9a1da44a3a8785f4",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/user-dirs.dirs",
+      "destination": "dotfiles/desktop-settings/.config/user-dirs.dirs",
+      "sha256": "f40be4b6772dc3b7ec699a0cc156bbb505ccc6965ae0b3254613e1d0e8bfb07c",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/user-dirs.locale",
+      "destination": "dotfiles/desktop-settings/.config/user-dirs.locale",
+      "sha256": "674ac4b0bd40c5764a1ddf4e0119e9b4ee02f743211eefcf7b27c932a4831a4b",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/cliamp/config.toml",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/cliamp/config.toml",
+      "sha256": "4c778cecb610c010befb26663c7ddc6a3379e4bf0488a5a3e5e1684fc0f11e88",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/fcitx5/conf/clipboard.conf",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/fcitx5/conf/clipboard.conf",
+      "sha256": "2d53b40811ee7ceb71c7db0422a3ed733647f389379a57dbf2915d522dff4193",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/fcitx5/conf/notifications.conf",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/fcitx5/conf/notifications.conf",
+      "sha256": "9ad16184fc23e3f4fa24487005573255e126b7d6d50a0dc98e073788053292f9",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/fcitx5/conf/xcb.conf",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/fcitx5/conf/xcb.conf",
+      "sha256": "f5cf059182c4361fa7b16d5149f20a09eb1e0915f4463ba60dae626b86df7d9c",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/fcitx5/profile",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/fcitx5/profile",
+      "sha256": "63f1fbeea307a1d79dbb20c7eb667ce9fa985ec193ba97c57c9d418758ff8ca8",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/gnuplot/qtterminal.conf",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/gnuplot/qtterminal.conf",
+      "sha256": "e9dbdf3e6b2c89f43dfcaf0679ab8f0fb8b60c3ac67404f5ee560c33a4dc554c",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/htop/htoprc",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/htop/htoprc",
+      "sha256": "566b266e5c33fbe3e2271db36bbe9d8b5904ab736b06201778ce018bc96e5983",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/lazydocker/config.yml",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/lazydocker/config.yml",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/wiremix/wiremix.toml",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/wiremix/wiremix.toml",
+      "sha256": "2da3e870d2a0326c0b6b8cad2d6deff5183e1c092bf5d0131ec5ed315f069172",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.local/bin/cx-switch",
+      "destination": "dotfiles/bin/.local/bin/cx-switch",
+      "sha256": "d97659c71a5c117c7db4c2e5282264a04e8adb6d18198b1d2c0cb3bb8a2f1efe",
+      "ownership": "home_manager_or_stow",
+      "note": "Source helper only; account credentials remain private runtime state."
+    },
+    {
+      "source": "~/.config/autostart/com.onepassword.OnePassword.desktop",
+      "destination": "dotfiles/applications/.config/autostart/com.onepassword.OnePassword.desktop",
+      "sha256": "ea0524d40aa274d66aaaccb00b9d75e16d136275abd713ae8adf8b97ce18dc0b",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/autostart/org.fcitx.Fcitx5.desktop",
+      "destination": "dotfiles/desktop-settings/.config/autostart/org.fcitx.Fcitx5.desktop",
+      "sha256": "a0260e7f35579a73f77e257e9e3795abd8b33119a17b931ca6016a07036e1670",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.local/state/omarchy/toggles/screensaver-off",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/state/toggles/screensaver-off",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.local/state/omarchy/toggles/suspend-off",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/state/toggles/suspend-off",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.local/state/omarchy/toggles/hypr/flags.conf",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/state/toggles/hypr/flags.conf",
+      "sha256": "4daee1c7f3cbbac4a2031f48c84265fdf9c36f688a6663bfeaa52405f61a437c",
+      "ownership": "seed_once_then_mutable"
+    },
+    {
+      "source": "~/.config/environment.d/fcitx.conf",
+      "destination": "dotfiles/desktop-settings/.config/environment.d/fcitx.conf",
+      "sha256": "8b077b6ea2594dc1d4b57592a3bc62703df4959e86b93ea0fc488b6686309095",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.local/share/omarchy/bin/omarchy-transcode",
+      "destination": "dotfiles/desktop-tools/.local/share/desktop-tools/transcode.sh",
+      "sha256": "b7087cc01f825c982008f5b54c6c032b2d3984eb1dd0ae93d79d83ea76216b10",
+      "ownership": "independent_portable_backend",
+      "adaptations": "Independent command/menu names, Nix packaging, and refusal to replace an existing output."
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/aliases",
+      "destination": "dotfiles/bash/.config/bash/aliases",
+      "sha256": "2701db46a3d033adad26a14248116fcd86be535c6e53c45152591fad899fe744",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/inputrc",
+      "destination": "dotfiles/bash/.config/bash/inputrc",
+      "sha256": "7747477fb94b32369c1b8e0101958eb6d3be0959c3b37ad32f3bac36fd192567",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/fns/compression",
+      "destination": "dotfiles/bash/.config/bash/functions/compression",
+      "sha256": "dde48d45a6d673dfb609373782d7ab7b90210533b47942ae98d561dc8ca82549",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/fns/drives",
+      "destination": "dotfiles/bash/.config/bash/functions/drives",
+      "sha256": "9cf1c87436c34dfc8fc0a903130a2e9ab03c907bc2bbd7b519ad48cffd31d5d6",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/fns/ssh-port-forwarding",
+      "destination": "dotfiles/bash/.config/bash/functions/ssh-port-forwarding",
+      "sha256": "5963a9cbe40f0b79c6e3c4d631e3aec416eb9d5b6cc554cc015dbfa35a0fecdd",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/fns/tmux",
+      "destination": "dotfiles/bash/.config/bash/functions/tmux",
+      "sha256": "8b4d4873e1ab1a29d6e8aa05c4a0aaeea549a01c5e7e385e9be19e177e85e5f8",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/fns/transcoding",
+      "destination": "dotfiles/bash/.config/bash/functions/transcoding",
+      "sha256": "abe96260335443da9d2ab90a15dda822939bbcd47d4ef594ce3fafa382d76003",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/fns/worktrees",
+      "destination": "dotfiles/bash/.config/bash/functions/worktrees",
+      "sha256": "fedafca701fcbc36f52ff442892b6b2b33b69208e79c6f3eccff399ca2168656",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.bashrc",
+      "destination": "dotfiles/bash/.bashrc",
+      "sha256": "846c642a2a036320fbdd32fcd7e7b9f03894d444ff5aab74580345aee8903359",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.bash_profile",
+      "destination": "dotfiles/bash/.bash_profile",
+      "sha256": "d306a815391bb945982bd685121f6cfd287338fabfe715b421f28e6846cb02aa",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.bash_logout",
+      "destination": "dotfiles/bash/.bash_logout",
+      "sha256": "4330edf340394d0dae50afb04ac2a621f106fe67fb634ec81c4bfb98be2a1eb5",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/shell",
+      "destination": "dotfiles/bash/.config/bash/shell",
+      "sha256": "8f3842798022c289847993c32d8c6373106761f398b2a34fafd3de1ffc47f8ad",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/init",
+      "destination": "dotfiles/bash/.config/bash/init",
+      "sha256": "3ffd0028967c90ee2069ef96ddc06773f107788bfba04edab247967e5a4b3bcc",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.local/share/omarchy/default/bash/envs",
+      "destination": "dotfiles/bash/.config/bash/envs",
+      "sha256": "0918df04359684ef903cef267a4a0e331190aa05dc814caa4de9fe15ce5f76bd",
+      "ownership": "independent_portable_shell"
+    },
+    {
+      "source": "~/.config/starship.toml",
+      "destination": "dotfiles/desktop-settings/.config/starship.toml",
+      "sha256": "b17c9b5f096fc125e97050e359171c6011d6b3c7d7e9ac28f630e75b4d4bb9db",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/mise/config.toml",
+      "destination": "dotfiles/desktop-settings/.config/mise/config.toml",
+      "sha256": "d2eacbb7a408ff099f38465b9802cde3f3cffa81eb0db75add42a3d0ffde041e",
+      "ownership": "home_manager_or_stow"
+    },
+    {
+      "source": "~/.config/gh/config.yml",
+      "sha256": "709e48c0881dc2a66935754e9ff1c9a48fb17970b550151dcd00abb50f47cbb7",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/gh/config.yml",
+      "adaptation": "Non-secret preferences copied only if missing; authentication and application databases remain separate."
+    },
+    {
+      "source": "~/.config/cppman/cppman.cfg",
+      "sha256": "095fcb1b6f73aecd016b432855c8a6808272ac3cf059d65cec133fe479d933e9",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/cppman/cppman.cfg",
+      "adaptation": "Non-secret preferences copied only if missing; authentication and application databases remain separate."
+    },
+    {
+      "source": "~/.config/kdenlive-layoutsrc",
+      "sha256": "b55a77b2dae4598fbd7f8df336e62a229f6862d64da868c8a9e0019b1beae4a1",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/kdenlive-layoutsrc",
+      "adaptation": "Non-secret preferences copied only if missing; authentication and application databases remain separate."
+    },
+    {
+      "source": "~/.config/kdenliverc",
+      "sha256": "d2986e401702ed4c37df2d9e643658f35c104880d4ae30665063148d68231ffa",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/kdenliverc",
+      "adaptation": "Non-secret preferences copied only if missing; authentication and application databases remain separate."
+    },
+    {
+      "source": "~/.config/qalculate/qalc.cfg",
+      "sha256": "7baad37aa267764e91bb127d8ada153d2fdd67fc781e72b6d4970b66afaadd67",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/qalculate/qalc.cfg",
+      "adaptation": "Non-secret preferences copied only if missing; authentication and application databases remain separate."
+    },
+    {
+      "source": "~/.config/xournalpp/settings.xml",
+      "sha256": "47eafeeb3c246af1a5fb2cd1d87a748ce127d13410c351194c5d89bbaefb623d",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/xournalpp/settings.xml",
+      "adaptation": "Non-secret preferences copied only if missing; authentication and application databases remain separate."
+    },
+    {
+      "source": "~/.config/Pinta/palette.txt",
+      "sha256": "a6e405b6527ed527a353eaf510bec272f2d0663abf097ea0d0cad9852375aa96",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/Pinta/palette.txt",
+      "adaptation": "Non-secret preferences copied only if missing; authentication and application databases remain separate."
+    },
+    {
+      "source": "~/.config/Pinta/settings.xml",
+      "sha256": "3aa3eafa6a0146706b3593d065d42bd93c897b55780c5837df82b0d009a450be",
+      "destination": "dotfiles/application-state/.local/share/desktop-defaults/config/Pinta/settings.xml",
+      "adaptation": "Non-secret preferences copied only if missing; authentication and application databases remain separate."
+    }
+  ],
+  "desktopInterface": {
+    "capturedFrom": "gsettings get org.gnome.desktop.interface (read only)",
+    "preferences": {
+      "font-name": "Adwaita Sans 11",
+      "monospace-font-name": "Adwaita Mono 11",
+      "cursor-theme": "default",
+      "cursor-size": 24,
+      "text-scaling-factor": 1.0
+    }
+  },
+  "lastAdditionalPreferenceCaptureUTC": "2026-10-17T23:29:32.885594+00:00",
+  "currentPackageComparison": {
+    "explicitCount": 260,
+    "additionalExplicitPackages": [],
+    "removedExplicitPackages": [],
+    "changedVersions": [],
+    "comparisonDate": "2026-10-18"
+  },
+  "desktopApplicationPreferences": {
+    "org.gnome.nautilus.preferences": {
+      "default-folder-viewer": "icon-view"
+    },
+    "org.gnome.nautilus.icon-view": {
+      "default-zoom-level": "small-plus"
+    }
+  },
+  "incrementalRefreshes": [
+    {
+      "capturedAtUTC": "2026-10-17T23:41:17.515417+00:00",
+      "sources": [
+        "cluster/.local/share/cluster/src/main.rs",
+        "cluster/.local/share/cluster/src/remote.rs",
+        "cluster/.local/share/cluster/src/sync.rs"
+      ],
+      "reason": "Include current Rust cluster fetch support added while the component builds were running."
+    },
+    {
+      "capturedAtUTC": "2026-10-17T23:45:19.940498+00:00",
+      "sources": [
+        "cluster/README.md",
+        "cluster/tests/test_jobs.py"
+      ],
+      "reason": "Include the current cluster fetch documentation and seven new fake-remote workflow tests."
+    }
+  ],
+  "configurationValidation": {
+    "recordedAtUTC": "2026-10-18T00:04:59.039342+00:00",
+    "customPackageOutputs": 25,
+    "flakeChecks": 5,
+    "homeManagerEnvironmentBuilt": true,
+    "activationPerformed": false,
+    "isoBuiltInThisPhase": false,
+    "privateStateTransferred": false,
+    "hardwareRuntimeAccepted": false,
+    "scope": "Current captured software/configuration and isolated checks. Account state, projects, private keys, target hardware and physical workflow acceptance remain separate."
+  }
+}

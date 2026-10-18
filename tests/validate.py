@@ -31,6 +31,9 @@ for package in sorted(dots.iterdir()):
         if file.suffix == ".py":
             ast.parse(text, filename=str(file))
             checked += 1
+        elif file.name in (".bashrc", ".bash_profile", ".bash_logout") or (package.name == "bash" and file.suffix == "" and file.name != "inputrc"):
+            subprocess.run(["bash", "-n", file], check=True)
+            checked += 1
         elif file.suffix == ".lua":
             subprocess.run(["luac", "-p", file], check=True)
             checked += 1
@@ -47,4 +50,13 @@ assert all(row["kind"] in ("package", "custom", "module", "excluded") for row in
 plugins = json.loads((root / "pkgs/neovim/plugins.json").read_text())
 assert all(p.get("hash", "").startswith("sha256-") for p in plugins.values()), "Unpinned editor source"
 assert "sha256-AAAA" not in (root / "pkgs/hyprspace-companions/default.nix").read_text()
+editor_source = root / "pkgs/editor-extensions/sources.json"
+if editor_source.exists():
+    editor_sources = json.loads(editor_source.read_text())
+    assert all(row.get("hash", "").startswith("sha256-") for row in editor_sources.values()), "Unpinned editor extension"
+    for editor in ["vscode", "cursor"]:
+        recorded = json.loads((root / f"docs/inventory/{editor}-extensions.json").read_text())
+        expected = sorted((row["id"], row["version"], row["platform"] or "universal") for row in recorded)
+        actual = sorted((row["id"], row["version"], row["platform"]) for row in editor_sources.values() if editor in row["editors"])
+        assert expected == actual, f"Missing or changed {editor} extension source"
 print(f"Validated {checked} scripts, {len(targets)} unique text targets, {len(mapping)} package decisions, {len(plugins)} locked editor plugins")
