@@ -52,8 +52,9 @@ if hl.get_config("plugin.hyprspace.follow_mouse") ~= nil then
                     workspace_labels = true,
                     label_color = "rgba(cdd6f4ff)",
                     title_bg_color = "rgba(1e1e2ee6)",
-                    -- Show special workspaces, including scratchpad and hidden.
+                    -- Keep scratchpad and hidden visible, but omit prepared pickers.
                     include_special = true,
+                    exclude_workspaces = "special:pdf-picker,special:file-picker",
                     all_monitors = true,
                     font = "Sans 12",
                     fullscreen_border = "rgba(89b4faff)",
