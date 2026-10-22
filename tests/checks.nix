@@ -48,6 +48,46 @@
     pkgs.runCommand "storage-integration" { } ''
       touch "$out"
     '';
+  walker-layout =
+    pkgs.runCommand "walker-layout"
+      {
+        nativeBuildInputs = [
+          (pkgs.python3.withPackages (p: [ p.pygobject3 ]))
+          pkgs.xvfb-run
+          pkgs.dbus
+        ];
+        GI_TYPELIB_PATH = pkgs.lib.makeSearchPath "lib/girepository-1.0" (
+          map pkgs.lib.getLib (
+            with pkgs;
+            [
+              gtk4
+              pango
+              harfbuzz
+              gdk-pixbuf
+              graphene
+              glib
+              gobject-introspection
+            ]
+          )
+        );
+        LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (
+          with pkgs;
+          [
+            gtk4
+            pango
+            harfbuzz
+            gdk-pixbuf
+            graphene
+          ]
+        );
+        FONTCONFIG_FILE = pkgs.makeFontsConf { fontDirectories = [ pkgs.nerd-fonts.jetbrains-mono ]; };
+      }
+      ''
+        export HOME="$TMPDIR/home" XDG_RUNTIME_DIR="$TMPDIR/runtime" GSK_RENDERER=cairo GDK_BACKEND=x11
+        unset WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE
+        mkdir -p "$HOME" "$XDG_RUNTIME_DIR"
+        xvfb-run -a dbus-run-session --config-file=${pkgs.dbus}/share/dbus-1/session.conf -- python ${./walker-layout.py} ${../.} "$out"
+      '';
   desktop-ring = packages.desktop-ring;
   ring-integration =
     let

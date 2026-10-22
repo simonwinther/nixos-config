@@ -24,12 +24,15 @@ secrets/                    instructions only; private keys and plaintext are ex
 
 Home Manager links individual files from `dotfiles/` on NixOS. GNU Stow links the same files on another distribution. Mutable choices live in `~/.local/state/desktop`, generated CSS/configuration in `$XDG_RUNTIME_DIR/desktop`, and credentials in private runtime files. Neither theme changes nor helper programs rewrite Nix-managed files. Do not run Stow over Home Manager's targets. Keep the editable checkout at `~/nixos-config`; Neovim's dotfile-search bindings use its `dotfiles/` directory through `DOTFILES`. Change that session variable if you choose another checkout location.
 
+The familiar Apps/Learn/Trigger/Style/Setup/About/System menus, interactive font/theme controls and dedicated clipboard view are documented in [DESKTOP-MENUS.md](docs/DESKTOP-MENUS.md). Open the desktop menu with Super + Alt + Space and clipboard history with Super + Ctrl + V. Package installation, removal and updates remain declarative.
+
 NixOS 26.05 is the base. Selected applications use the separately pinned unstable input. Hyprland 0.56.2 and Hyprspace are pinned together; Walker 2.17.0 and Elephant 2.22.0 include the matching companion patches. Dependency updates are explicit changes to the lock files. The application map records a decision for every one of the reference system's 260 explicitly installed packages. Arch's base/package-management infrastructure and unused VirtualBox are excluded; their useful system functions are provided by NixOS modules. The five Flatpak applications retain their recorded commits and branches.
 
 Build without activation from a Nix-capable Linux system:
 
 ```sh
 nix build .#checks.x86_64-linux.desktop-behavior \
+  .#checks.x86_64-linux.walker-layout \
   .#checks.x86_64-linux.hyprland-config \
   .#checks.x86_64-linux.portable-syntax \
   .#checks.x86_64-linux.neovim-startup \
@@ -40,7 +43,7 @@ nix build .#nixosConfigurations.desktop.config.home-manager.users.simon.home.act
 
 After completing the host review, run `nix flake check --no-build` as well. It intentionally reports the installed-profile guards while disk/hardware fields are unset. The current flake targets x86_64 Linux.
 
-The current 25 package outputs, five checks and complete Home Manager environment build successfully without activation; see the dated validation record for workflow checks and limits. The Home Manager build includes the complete recorded application collection, SDKs, and TeX; it does not activate anything or restore private state. Installed system profiles intentionally fail their installation assertions before the hardware and backups are reviewed. The live profile is approved for the current USB preparation and desktop testing phase.
+The recorded baseline covers 25 package outputs, five checks and the complete Home Manager environment without activation. The menu/clipboard followup adds the `walker-layout` check; see the dated validation record for its results and limits. The Home Manager build includes the complete recorded application collection, SDKs, and TeX; it does not activate anything or restore private state. Installed system profiles intentionally fail their installation assertions before the hardware and backups are reviewed. The live profile is approved for the current USB preparation and desktop testing phase.
 
 For another distribution, first install the programs listed in the package map and use the same pinned compositor/plugin versions. Simulate deployment to an explicit target with `scripts/stow-portable TARGET`; use `--apply` only after resolving all conflicts and backing up that target. No `--adopt`, manual links, or overwrite flags are used. Native tool source and Cargo locks are included; their portable `*-build` helpers build into XDG cache. See [PORTABLE.md](docs/PORTABLE.md) for user services.
 

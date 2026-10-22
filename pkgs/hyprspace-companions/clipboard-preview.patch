@@ -1,0 +1,71 @@
+--- a/src/ui/window.rs
++++ b/src/ui/window.rs
+@@ -1177,8 +1177,15 @@
+             let mut preview_builder = w.preview_builder.borrow_mut();
+             if preview_builder.is_none() {
+                 let builder = Builder::new();
+-                let _ = builder
+-                    .add_from_string(include_str!("../../resources/themes/default/preview.xml"));
++                with_themes(|themes| {
++                    let theme = themes
++                        .get(&get_theme())
++                        .or_else(|| themes.get("default"))
++                        .expect("default theme missing");
++                    if let Err(error) = builder.add_from_string(&theme.preview) {
++                        set_error(format!("Invalid preview template: {error}"));
++                    }
++                });
+                 *preview_builder = Some(builder);
+             }
+             preview_builder.as_ref().unwrap().clone()
+--- a/src/preview/mod.rs
++++ b/src/preview/mod.rs
+@@ -168,11 +168,13 @@
+ 
+         let label = Label::new(None);
+         label.set_selectable(true);
+-        label.set_wrap_mode(gtk4::pango::WrapMode::Word);
++        label.set_wrap_mode(gtk4::pango::WrapMode::WordChar);
+         label.set_wrap(true);
+         label.set_xalign(0.0);
+         label.set_size_request(-1, -1);
+-        label.set_halign(gtk4::Align::Start);
++        label.set_halign(gtk4::Align::Fill);
++        label.set_hexpand(true);
++        label.set_max_width_chars(48);
+         label.set_valign(gtk4::Align::Start);
+ 
+         let display_text = if text.len() > 10000 {
+@@ -191,8 +193,10 @@
+ 
+         let scrolled = ScrolledWindow::new();
+         scrolled.set_child(Some(&label));
+-        scrolled.set_policy(PolicyType::Automatic, PolicyType::Automatic);
+-        scrolled.set_size_request(400, 300);
++        scrolled.set_policy(PolicyType::Never, PolicyType::Automatic);
++        scrolled.set_size_request(0, 0);
++        scrolled.set_hexpand(true);
++        scrolled.set_vexpand(true);
+         scrolled.set_vadjustment(Some(&gtk4::Adjustment::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)));
+ 
+         self.preview_area.add_child(&scrolled);
+--- a/src/providers/clipboard.rs
++++ b/src/providers/clipboard.rs
+@@ -28,12 +28,14 @@
+     }
+ 
+     fn text_transformer(&self, item: &Item, label: &gtk4::Label) {
+-        if item.preview_type == "file" {
+-            label.set_label("Image");
++        if item.preview_type == "file" && item.text.trim().is_empty() {
++            label.set_text("Image");
+             return;
+         }
+ 
+-        let text = item.text.trim();
++        // Flatten only the list summary. The original remains in the preview
++        // and clipboard; markup-like text is always shown literally.
++        let text = item.text.split_whitespace().collect::<Vec<_>>().join(" ");
+         let truncated: String = text.chars().take(LABEL_MAX_LEN).collect();
+         label.set_label(truncated.as_str());
+     }

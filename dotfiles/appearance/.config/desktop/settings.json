@@ -1,5 +1,6 @@
 {
   "defaultTheme": "tokyoled",
+  "defaultFont": "JetBrainsMono Nerd Font",
   "browser": "chromium",
   "editor": "nvim",
   "screenshots": "Pictures",
