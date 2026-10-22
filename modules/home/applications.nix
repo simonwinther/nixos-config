@@ -17,6 +17,23 @@ let
 in
 {
   imports = [ inputs.nix-flatpak.homeManagerModules.nix-flatpak ];
+  # Adwaita is also the reference laptop's default XCursor theme.
+  home.pointerCursor = {
+    enable = true;
+    package = pkgs.adwaita-icon-theme;
+    name = interface.cursor-theme;
+    size = interface.cursor-size;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+  gtk.enable = true;
+  xdg.configFile."desktop/cursor.lua".text = ''
+    hl.env("XCURSOR_THEME", ${builtins.toJSON interface.cursor-theme})
+    hl.env("XCURSOR_SIZE", ${builtins.toJSON (toString interface.cursor-size)})
+    hl.env("XCURSOR_PATH", ${builtins.toJSON "${config.home.profileDirectory}/share/icons:${config.xdg.dataHome}/icons"})
+    -- Adwaita provides XCursor assets; use them instead of Hyprland's fallback.
+    hl.config({ cursor = { enable_hyprcursor = false } })
+  '';
   dconf.settings =
     lib.mapAttrs' (schema: values: {
       name = lib.replaceStrings [ "." ] [ "/" ] schema;

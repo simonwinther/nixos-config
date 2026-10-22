@@ -2,7 +2,7 @@
 
 Current reference: **2026-10-18**, including the newer Rust tools and dirty Hyprspace/Breakd working trees approved by Simon. Source provenance is in [current-reference.json](inventory/current-reference.json). The previous snapshot-only decision is superseded.
 
-All work runs in an isolated checkout and Docker Nix store. No Home Manager activation, NixOS activation, desktop reload, host package installation, media writing or disk operation has been performed on the reference Arch laptop. The current phase permits package/environment builds and checks only. The earlier ISO is historical, stale output; it has not been rebuilt in this phase. Media and installation require Simon's explicit later approval.
+All builds run in an isolated checkout and Docker Nix store. The reference Arch configuration has not been activated or reloaded, and no host packages have been installed. On 2026-10-19 Simon approved building a fresh live image and preparing the Cruzer USB for the stationary desktop. Current media evidence belongs under `.work/usb-2026-10-19/`; the older ISO is historical output. Desktop installation and real-hardware acceptance remain pending.
 
 ## Current-source results
 
@@ -49,7 +49,7 @@ nix build .#checks.x86_64-linux.desktop-behavior \
 nix build .#nixosConfigurations.desktop.config.home-manager.users.simon.home.activationPackage
 ```
 
-Building an activation package does not run it. Do not run its activation script during this phase. Installed NixOS system outputs remain guarded until the desktop's actual hardware, disk and backups are reviewed. Do not use a broad build of every flake package: the reserved image output belongs to a later phase.
+Building an activation package does not run it. Do not run its activation script on the reference laptop. Installed NixOS system outputs remain guarded until the desktop's actual hardware, disk and backups are reviewed. The live image is built separately as `.#desktop-iso` for the approved USB preparation phase.
 
 The builder uses the pinned Nix Docker image, two CPUs and 4 GiB RAM, with `/src` read-only, `.work/` writable, and the separate `nixos-config-store` volume. Large builds run sequentially at reduced scheduling priority. Evaluate the Home Manager derivation path first and build that derivation separately to release evaluation memory. Logs and output JSON under `.work/` are local evidence, not independent backups.
 

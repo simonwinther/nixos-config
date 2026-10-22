@@ -12,7 +12,12 @@
     ./dotfiles.nix
     ./packages.nix
     ./services.nix
+    ./desktop-ring.nix
     ./applications.nix
+    ./appearance.nix
+    ./hendrix.nix
+    ./rebuild.nix
+    ./credentials.nix
     ./editors.nix
     (../../hosts + "/${host}/home.nix")
   ];
@@ -59,7 +64,9 @@
       _: value: value != null
     ) config.home.sessionVariables;
     xdg.configFile."desktop/monitors.lua".source = ../../hosts + "/${host}/monitors.lua";
-    xdg.configFile."desktop/bar-outputs.json".text = builtins.toJSON config.desktop.outputs;
+    xdg.configFile."desktop/bar-outputs.json".text = builtins.toJSON (
+      config.desktop.outputs // { scale = config.desktop.appearance.barScale; }
+    );
     xdg.configFile."desktop/workspaces.json".text = builtins.toJSON {
       output = config.desktop.outputs.full;
     };

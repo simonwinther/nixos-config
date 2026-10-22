@@ -445,7 +445,20 @@ def run_application(args):
             if bar:
                 config = json.loads(text)
                 config["output"] = bar.get("minimal" if "minimal" in source.name else "full", ["*"])
+                scale = float(bar.get("scale", 1.0))
+                if not 0.75 <= scale <= 2.0:
+                    raise ValueError("Waybar scale must be between 0.75 and 2")
+                for key in ("height", "margin-top", "margin-bottom", "margin-left", "margin-right"):
+                    if key in config:
+                        config[key] = round(config[key] * scale)
+                # Tray icons use pixels too; keep them proportional to labels.
+                if "tray" in config:
+                    for key in ("icon-size", "spacing"):
+                        if key in config["tray"]:
+                            config["tray"][key] = round(config["tray"][key] * scale)
                 text = json.dumps(config)
+            else:
+                scale = 1.0
             if light:
                 mapping = {"#f4f4f5": "#4c4f69", "#cdd6f4": "#4c4f69", "#60a5fa": "#1e66f5", "#89b4fa": "#1e66f5", "#4ade80": "#40a02b", "#eab308": "#df8e1d", "#f87171": "#d20f39"}
                 text = re.sub(r"#[0-9a-fA-F]{6}", lambda m: mapping.get(m[0].lower(), m[0]), text)
@@ -453,6 +466,11 @@ def run_application(args):
                 if alternate.exists():
                     style = alternate
             text = re.sub(r'("NordVPN"\s*:\s*")[^"]*(")', lambda m: m[1] + ("nordvpn-tray-black" if light else "nordvpn-tray-white") + m[2], text)
+            if scale != 1.0:
+                css = re.sub(r"(?<![\w.])([0-9]+(?:\.[0-9]+)?)px", lambda m: f"{float(m[1]) * scale:g}px", style.read_text())
+                scaled_style = RUNTIME / ("waybar-" + style.name)
+                atomic_write(scaled_style, css)
+                style = scaled_style
             target = RUNTIME / ("waybar-" + source.name); atomic_write(target, text)
             filtered = []
             skip = False
@@ -478,7 +496,20 @@ def toggle(args):
     marker = STATE / "toggles" / feature
     if feature == "enabled":
         return 0 if len(args) > 1 and (STATE / "toggles" / args[1]).exists() else 1
-    services = {"bar": ["desktop-waybar", "desktop-waybar-minimal", "desktop-workspaces"], "idle": ["desktop-hypridle"], "nightlight": ["desktop-hyprsunset"]}
+    if feature == "idle":
+        # Automatic locking is opt-in for this login. Sleep protection always runs.
+        with state_lock("idle"):
+            marker = RUNTIME / "idle-enabled"
+            enabled = not marker.exists()
+            if args[1:2] in (["on"], ["off"]):
+                enabled = args[1] == "on"
+            if enabled:
+                atomic_write(marker, "")
+            else:
+                marker.unlink(missing_ok=True)
+            run(["systemctl", "--user", "restart", "desktop-hypridle.service"])
+        return
+    services = {"bar": ["desktop-waybar", "desktop-waybar-minimal", "desktop-workspaces"], "nightlight": ["desktop-hyprsunset"]}
     if feature in services:
         services[feature] = selected_units(services[feature])
         service = services[feature][0] + ".service"
@@ -528,6 +559,9 @@ def display(args):
     external = [m for m in monitors if not m["name"].startswith(("eDP", "LVDS")) and not m.get("disabled")]
     if args == ["external"]:
         return 0 if external else 1
+    if (CONFIG / "desktop/ring.json").exists():
+        command = "rescan" if args[-1:] in (["on"], ["off"]) else "menu"
+        return run(["desktop-ring", command], check=False).returncode
     internal = next((m for m in monitors if m["name"].startswith(("eDP", "LVDS"))), None)
     if not internal:
         raise ValueError("No internal display is present")
@@ -591,6 +625,12 @@ def lock(args):
     result = run(["systemctl", "--user", "start", unit], check=False, capture=True)
     if result.returncode:
         background([sys.executable, __file__, "lock-worker", *(args or [])])
+
+
+def idle_worker(args):
+    config = "hypridle.conf" if (RUNTIME / "idle-enabled").exists() else "hypridle-sleep.conf"
+    binary = executable("hypridle")
+    os.execv(binary, [binary, "--config", str(CONFIG / "hypr" / config)])
 
 
 def lock_worker(args):
@@ -791,7 +831,7 @@ def menu(args):
     group = args[0] if args else "main"
     menus = {
         "main": {"Applications": ["launcher"], "Themes": ["menu", "theme"], "Wallpapers": ["wallpaper", "grid"], "Capture": ["menu", "capture"], "Toggle": ["menu", "toggle"], "Hardware": ["menu", "hardware"], "System": ["menu", "system"]},
-        "system": {"Lock": ["lock"], "Suspend": ["power", "suspend"], "Log out": ["power", "logout"], "Restart": ["power", "reboot"], "Shut down": ["power", "poweroff"]},
+        "system": {"Lock": ["lock"], "Sleep": ["power", "suspend"], "Log out": ["power", "logout"], "Restart": ["power", "reboot"], "Shut down": ["power", "poweroff"]},
         "capture": {"Screenshot": ["capture", "screenshot"], "Region": ["capture", "screenshot", "region"], "Window": ["capture", "screenshot", "windows"], "Full output": ["capture", "screenshot", "fullscreen"], "Edit last screenshot": ["capture", "edit-latest"], "Record / stop": ["capture", "record"], "Extract text": ["capture", "ocr"]},
         "screenrecord": {"Choose output/window with audio / stop": ["capture", "record"], "Record selected region / stop": ["capture", "record", "region"], "Record silently / stop": ["capture", "record", "screen", "--silent"], "Record desktop and microphone / stop": ["capture", "record", "screen", "--microphone"]},
         "toggle": {x.title(): ["toggle", x] for x in ["bar", "idle", "nightlight", "notifications", "gaps", "square", "touchpad"]},
@@ -895,7 +935,7 @@ def integrate():
 def session(args):
     desktop_environment = (
         "WAYLAND_DISPLAY", "DISPLAY", "HYPRLAND_INSTANCE_SIGNATURE", "XDG_CURRENT_DESKTOP", "XDG_SESSION_DESKTOP",
-        "XDG_SESSION_TYPE", "XCURSOR_SIZE", "HYPRCURSOR_SIZE", "GDK_BACKEND", "QT_QPA_PLATFORM",
+        "XDG_SESSION_TYPE", "XCURSOR_THEME", "XCURSOR_PATH", "XCURSOR_SIZE", "HYPRCURSOR_THEME", "HYPRCURSOR_SIZE", "GDK_BACKEND", "QT_QPA_PLATFORM",
         "QT_STYLE_OVERRIDE", "MOZ_ENABLE_WAYLAND", "ELECTRON_OZONE_PLATFORM_HINT", "OZONE_PLATFORM", "XCOMPOSEFILE",
     )
     names = [name for name in desktop_environment if name in os.environ]
@@ -912,7 +952,22 @@ def session(args):
         if not any(not m["name"].startswith(("eDP", "LVDS")) and not m.get("disabled") for m in monitors):
             flags.unlink(); run(["hyprctl", "reload"], check=False)
     run(["systemctl", "--user", "start", "desktop-session.target"], check=False)
+    recover_graphics_services()
     run(["hyprctl", "reload"], check=False)
+
+
+def recover_graphics_services():
+    # A compositor restart replaces its socket. Services that exhausted their
+    # retries against the old socket need another start after environment import.
+    result = run(["systemctl", "--user", "--failed", "--plain", "--no-legend", "--no-pager"],
+                 check=False, capture=True)
+    graphics = {"desktop-awww.service", "desktop-wallpaper.service", "desktop-polkit.service",
+                "xdg-desktop-portal.service", "xdg-desktop-portal-hyprland.service"}
+    failed = sorted({words[0] for line in (result.stdout or "").splitlines()
+                     if (words := line.lstrip("● ").split()) and words[0] in graphics})
+    if failed:
+        run(["systemctl", "--user", "reset-failed", *failed], check=False)
+        run(["systemctl", "--user", "start", *failed], check=False)
 
 
 def monitor_watch(args):
@@ -940,7 +995,7 @@ def monitor_watch(args):
 def dispatch(command, args):
     functions = {"theme": theme, "wallpaper": wallpaper, "terminal": terminal, "launch": launch, "run": run_application,
                  "launcher": launcher, "toggle": toggle, "display": display, "brightness": brightness, "osd": osd,
-                 "lock": lock, "lock-worker": lock_worker, "capture": capture, "reminder": reminder, "menu": menu,
+                 "lock": lock, "lock-worker": lock_worker, "idle-worker": idle_worker, "capture": capture, "reminder": reminder, "menu": menu,
                  "transcode": transcode, "session": session, "monitor-watch": monitor_watch}
     if command in functions:
         return functions[command](args)
@@ -996,9 +1051,13 @@ def dispatch(command, args):
     elif command == "power":
         if args == ["logout"]:
             run(["uwsm", "stop"])
-        elif args[:1] in (["suspend"], ["reboot"], ["poweroff"]):
-            if args[0] == "suspend":
-                lock(["--only"])
+        elif args == ["suspend"]:
+            # Share the Rust backend's capability and lock-inhibitor checks.
+            result = run([executable("desktop-ring"), "action", '{"kind":"suspend"}'],
+                         check=False, capture=True)
+            if result.returncode:
+                raise ValueError(result.stderr.strip() or "Sleep request failed")
+        elif args[:1] in (["reboot"], ["poweroff"]):
             run(["systemctl", args[0]])
         else:
             raise ValueError("power: suspend, reboot, poweroff, or logout")

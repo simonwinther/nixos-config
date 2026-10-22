@@ -154,6 +154,42 @@ class DesktopTests(unittest.TestCase):
             ctl.lock_worker(["--only"])
         prepare.assert_not_called()
 
+    def test_idle_toggle_leaves_sleep_coordinator_running(self):
+        marker = self.runtime / "idle-enabled"
+        with patch.object(ctl, "run") as calls:
+            ctl.toggle(["idle"])
+            self.assertTrue(marker.exists())
+            ctl.toggle(["idle"])
+            self.assertFalse(marker.exists())
+        self.assertEqual([c.args[0] for c in calls.call_args_list],
+                         [["systemctl", "--user", "restart", "desktop-hypridle.service"]] * 2)
+
+    def test_session_recovers_only_failed_graphics_services(self):
+        failed = "● desktop-awww.service loaded failed failed Wallpaper\nku-vpn.service loaded failed failed VPN\ndesktop-lock.service loaded failed failed Lock\n"
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, failed)) as calls:
+            ctl.recover_graphics_services()
+        self.assertEqual([c.args[0] for c in calls.call_args_list][1:], [
+            ["systemctl", "--user", "reset-failed", "desktop-awww.service"],
+            ["systemctl", "--user", "start", "desktop-awww.service"]])
+
+    def test_idle_worker_chooses_sleep_only_unless_explicitly_enabled(self):
+        with patch.object(ctl, "executable", return_value="/mock/hypridle"), patch.object(ctl.os, "execv") as execute:
+            ctl.idle_worker([])
+            self.assertTrue(execute.call_args.args[1][-1].endswith("hypridle-sleep.conf"))
+            ctl.atomic_write(self.runtime / "idle-enabled", "")
+            ctl.idle_worker([])
+            self.assertTrue(execute.call_args.args[1][-1].endswith("/hypridle.conf"))
+
+    def test_system_sleep_uses_guarded_rust_action_and_propagates_failure(self):
+        with patch.object(ctl, "executable", return_value="/mock/desktop-ring"), \
+             patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0)) as calls:
+            ctl.dispatch("power", ["suspend"])
+            calls.assert_called_once_with(["/mock/desktop-ring", "action", '{"kind":"suspend"}'], check=False, capture=True)
+        with patch.object(ctl, "executable", return_value="/mock/desktop-ring"), \
+             patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 1, "", "Lock protection unavailable")), \
+             self.assertRaisesRegex(ValueError, "Lock protection unavailable"):
+            ctl.dispatch("power", ["suspend"])
+
     def test_cancelled_screenshot_has_no_side_effects(self):
         result = subprocess.CompletedProcess([], 1, "")
         freezer = Mock()

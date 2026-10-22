@@ -111,7 +111,7 @@ function M.toggles()
         )
     )
     for path in files:lines() do
-        M.apply(path)
+        if not path:match("/internal%-display.conf$") then M.apply(path) end
     end
     files:close()
 end

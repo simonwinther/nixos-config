@@ -48,7 +48,6 @@ x-scheme-handler/aether=aether-protocol-handler.desktop
 inode/directory=org.gnome.Nautilus.desktop
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 x-scheme-handler/slack=slack.desktop
-x-scheme-handler/discord-1170028348756471908=discord-1170028348756471908.desktop
 x-scheme-handler/codex=chatgpt.desktop
 
 [Added Associations]

@@ -34,7 +34,7 @@
           "type": "os",
           "style": "plain",
           "foreground": "p:teal",
-          "template": "\uf120 "
+          "template": " "
         },
         {
           "type": "path",

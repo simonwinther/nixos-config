@@ -59,7 +59,7 @@
     };
   };
   services.tailscale = {
-    enable = profile != "live";
+    enable = true;
     openFirewall = true;
     extraUpFlags = [ "--accept-dns=false" ];
     extraSetFlags = [

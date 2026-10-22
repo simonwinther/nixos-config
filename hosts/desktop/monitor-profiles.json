@@ -1,0 +1,181 @@
+[
+  {
+    "name": "Desktop \u2014 MSI MP273A",
+    "monitors": [
+      {
+        "identity": {
+          "make": "Microstep",
+          "model": "MSI MP273A",
+          "serial": "PB4HA75503387"
+        },
+        "mode": "1920x1080@100",
+        "scale": 1,
+        "transform": 0,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "name": "Desktop \u2014 32G2WG3",
+    "monitors": [
+      {
+        "identity": {
+          "make": "AOC",
+          "model": "32G2WG3",
+          "serial": "0x00000568"
+        },
+        "mode": "1920x1080@165",
+        "scale": 1,
+        "transform": 0,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "name": "Desktop \u2014 portrait VG248",
+    "monitors": [
+      {
+        "identity": {
+          "make": "Ancor Communications Inc",
+          "model": "VG248",
+          "serial": "J5LMQS024117"
+        },
+        "mode": "1920x1080@144",
+        "scale": 1,
+        "transform": 3,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "name": "Desktop \u2014 MSI MP273A / 32G2WG3",
+    "monitors": [
+      {
+        "identity": {
+          "make": "Microstep",
+          "model": "MSI MP273A",
+          "serial": "PB4HA75503387"
+        },
+        "mode": "1920x1080@100",
+        "scale": 1,
+        "transform": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "identity": {
+          "make": "AOC",
+          "model": "32G2WG3",
+          "serial": "0x00000568"
+        },
+        "mode": "1920x1080@165",
+        "scale": 1,
+        "transform": 0,
+        "x": 1920,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "name": "Desktop \u2014 MSI MP273A / portrait VG248",
+    "monitors": [
+      {
+        "identity": {
+          "make": "Microstep",
+          "model": "MSI MP273A",
+          "serial": "PB4HA75503387"
+        },
+        "mode": "1920x1080@100",
+        "scale": 1,
+        "transform": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "identity": {
+          "make": "Ancor Communications Inc",
+          "model": "VG248",
+          "serial": "J5LMQS024117"
+        },
+        "mode": "1920x1080@144",
+        "scale": 1,
+        "transform": 3,
+        "x": 1920,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "name": "Desktop \u2014 32G2WG3 / portrait VG248",
+    "monitors": [
+      {
+        "identity": {
+          "make": "AOC",
+          "model": "32G2WG3",
+          "serial": "0x00000568"
+        },
+        "mode": "1920x1080@165",
+        "scale": 1,
+        "transform": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "identity": {
+          "make": "Ancor Communications Inc",
+          "model": "VG248",
+          "serial": "J5LMQS024117"
+        },
+        "mode": "1920x1080@144",
+        "scale": 1,
+        "transform": 3,
+        "x": 1920,
+        "y": 0
+      }
+    ]
+  },
+  {
+    "name": "Desktop \u2014 MSI MP273A / 32G2WG3 / portrait VG248",
+    "monitors": [
+      {
+        "identity": {
+          "make": "Microstep",
+          "model": "MSI MP273A",
+          "serial": "PB4HA75503387"
+        },
+        "mode": "1920x1080@100",
+        "scale": 1,
+        "transform": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "identity": {
+          "make": "AOC",
+          "model": "32G2WG3",
+          "serial": "0x00000568"
+        },
+        "mode": "1920x1080@165",
+        "scale": 1,
+        "transform": 0,
+        "x": 1920,
+        "y": 0
+      },
+      {
+        "identity": {
+          "make": "Ancor Communications Inc",
+          "model": "VG248",
+          "serial": "J5LMQS024117"
+        },
+        "mode": "1920x1080@144",
+        "scale": 1,
+        "transform": 3,
+        "x": 3840,
+        "y": 0
+      }
+    ]
+  }
+]

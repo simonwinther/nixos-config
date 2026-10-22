@@ -129,6 +129,16 @@ fn find_font(dir: &std::path::Path, depth: usize) -> Option<std::path::PathBuf> 
 }
 
 impl Renderer {
+    /// Align buffer dimensions to the integer Wayland buffer scale even when
+    /// the UI's logical height is fractional (for example 36 * 1.2).
+    pub fn for_surface(ui_scale: f32, buffer_scale: i32) -> Option<Self> {
+        let device = buffer_scale.max(1) as u32;
+        let mut renderer = Self::new(ui_scale * device as f32)?;
+        renderer.width = (PANEL_WIDTH * ui_scale).round() as u32 * device;
+        renderer.height = (PANEL_HEIGHT * ui_scale).round() as u32 * device;
+        Some(renderer)
+    }
+
     pub fn new(scale: f32) -> Option<Self> {
         let font = load_font()?;
         let px = FONT_PX * scale;

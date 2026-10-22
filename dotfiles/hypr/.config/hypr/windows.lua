@@ -8,16 +8,6 @@ hl.config({
 
 -- Window rules migrated from legacy-overrides/hypr/hyprland-overrides.conf
 hl.window_rule({
-    match = { class = "^(Stretchly)$" },
-    name = "stretchly-giant",
-    float = true,
-    monitor = os.getenv("DESKTOP_PRIMARY_OUTPUT"),
-    move = { 0, 0 },
-    size = { 1920, 1080 },
-    pin = true,
-})
-
-hl.window_rule({
     match = { class = "^global\\.snip$" },
     name = "global-snip",
     float = true,

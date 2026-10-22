@@ -46,11 +46,13 @@
     package = unstable.twingate;
   };
   systemd.services.twingate.wantedBy = lib.mkIf config.services.twingate.enable (lib.mkForce [ ]);
-  environment.systemPackages = lib.optionals (profile != "live") [
+  environment.systemPackages = [
     packages.hendrix-vpn
     pkgs.openconnect
   ];
-  systemd.services.ku-vpn = lib.mkIf (profile != "live") {
+  systemd.services.ku-vpn = {
+    # A rebuild must not replay an expired authenticator code or drop an active tunnel.
+    restartIfChanged = false;
     description = "KU split-tunnel VPN for Hendrix";
     wants = [ "network-online.target" ];
     after = [ "network-online.target" ];
@@ -63,7 +65,7 @@
       Restart = "no";
     };
   };
-  security.sudo.extraRules = lib.optionals (profile != "live") [
+  security.sudo.extraRules = [
     {
       users = [ "simon" ];
       commands = [

@@ -4,6 +4,97 @@
   self,
 }:
 {
+  desktop-ring = packages.desktop-ring;
+  ring-integration =
+    let
+      live = self.nixosConfigurations.desktop-live.config.home-manager.users.simon;
+      laptop = self.nixosConfigurations.lambda.config.home-manager.users.simon;
+    in
+    assert live.desktop.ring.enable;
+    assert !live.desktop.ring.settings.laptop;
+    assert laptop.desktop.ring.settings.laptop;
+    assert live.desktop.ring.settings.power;
+    assert builtins.elem "desktop-session.target"
+      live.systemd.user.services.desktop-hypridle.Install.WantedBy;
+    assert live.home.pointerCursor.enable;
+    assert live.home.pointerCursor.name == "Adwaita";
+    assert live.home.pointerCursor.size == 24;
+    assert !(builtins.hasAttr "desktop-monitor-watch" live.systemd.user.services);
+    pkgs.runCommand "ring-integration" { nativeBuildInputs = [ pkgs.python3 ]; } ''
+      python - <<'PYTEST'
+      import json
+      config = json.load(open("${live.xdg.configFile."desktop/ring.json".source}"))
+      assert config["monitors"] and config["audio"] and config["bluetooth"] and config["power"]
+      assert config["laptop"] is False
+      assert "${live.desktop.ring.menuKey}" == "SUPER + R"
+      PYTEST
+      touch "$out"
+    '';
+  private-runtime-integration =
+    let
+      live = self.nixosConfigurations.desktop-live.config;
+      home = live.home-manager.users.simon;
+    in
+    assert builtins.hasAttr "ku-vpn" live.systemd.services;
+    assert (live.systemd.services.ku-vpn.wantedBy or [ ]) == [ ];
+    assert !(builtins.hasAttr ".config/dictate/secrets.env" home.home.file);
+    assert !(builtins.hasAttr ".config/hendrix/totp.json" home.home.file);
+    assert home.programs.gh.enable;
+    assert home.desktop.rebuild.action == "test";
+    assert home.desktop.rebuild.target == "desktop-live";
+    assert
+      self.nixosConfigurations.lambda.config.home-manager.users.simon.desktop.rebuild.action == "switch";
+    assert
+      self.nixosConfigurations.lambda.config.home-manager.users.simon.desktop.rebuild.target == "lambda";
+    assert !(builtins.hasAttr ".config/gh/hosts.yml" home.home.file);
+    assert !(builtins.hasAttr ".netrc" home.home.file);
+    pkgs.runCommand "private-runtime-integration" { nativeBuildInputs = [ pkgs.openssh ]; } ''
+      grep -q HENDRIX_SPLIT_TUNNEL_V1 ${packages.hendrix-vpn}/bin/ku-vpn
+      ssh -G -F ${home.home.file.".ssh/config".source} hendrix > config
+      grep -qx 'hostname hendrixgate.unicph.domain' config
+      grep -qx 'user zlp616' config
+      grep -qx 'stricthostkeychecking true' config
+      touch "$out"
+    '';
+  live-session-launcher =
+    let
+      launcher =
+        self.nixosConfigurations.desktop-live.config.programs.uwsm.waylandCompositors.desktop.binPath;
+    in
+    pkgs.runCommand "live-session-launcher" { } ''
+      # UWSM must be able to read its launcher as an unprivileged user.
+      test -r ${launcher}
+      test -x ${launcher}
+      touch "$out"
+    '';
+  live-fonts =
+    let
+      live = self.nixosConfigurations.desktop-live.config;
+    in
+    assert live.fonts.fontconfig.enable;
+    pkgs.runCommand "live-fonts"
+      {
+        nativeBuildInputs = [ pkgs.fontconfig ];
+      }
+      ''
+        # Exercise the actual live system configuration without activating it.
+        root="$TMPDIR/font-root"
+        mkdir -p "$root/etc" "$root/nix" "$TMPDIR/config" "$TMPDIR/cache"
+        ln -s /nix/store "$root/nix/store"
+        ln -s ${live.environment.etc.fonts.source} "$root/etc/fonts"
+        export FONTCONFIG_SYSROOT="$root"
+        export FONTCONFIG_FILE=/etc/fonts/fonts.conf FONTCONFIG_PATH=/etc/fonts
+        export XDG_CONFIG_HOME="$TMPDIR/config" XDG_CACHE_HOME="$TMPDIR/cache"
+        for family in 'JetBrainsMono Nerd Font' 'Symbols Nerd Font'; do
+          actual=$(fc-match --format '%{family[0]}' "$family")
+          test "$actual" = "$family" || {
+            echo "Expected $family, matched $actual" >&2
+            exit 1
+          }
+        done
+        test "$(fc-match --format '%{style[0]}' 'JetBrainsMono Nerd Font:weight=demibold')" = SemiBold
+        touch "$out"
+      '';
   hyprland-config =
     pkgs.runCommand "hyprland-config"
       {
@@ -12,7 +103,7 @@
           pkgs.stow
           pkgs.gnugrep
           packages.desktop-tools
-          packages.hyprspace.compositor
+          (pkgs.lib.getBin packages.hyprspace.compositor)
         ];
       }
       ''
@@ -25,6 +116,17 @@
         unset HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY DISPLAY
         mkdir -p "$XDG_RUNTIME_DIR"
         desktopctl theme init
+        mkdir -p "$HOME/.config/desktop"
+        cp ${
+          self.nixosConfigurations.desktop-live.config.home-manager.users.simon.xdg.configFile."desktop/ring-bindings.lua".source
+        } "$HOME/.config/desktop/ring-bindings.lua"
+        cp ${
+          self.nixosConfigurations.desktop-live.config.home-manager.users.simon.xdg.configFile."desktop/cursor.lua".source
+        } "$HOME/.config/desktop/cursor.lua"
+        cp ${
+          self.nixosConfigurations.desktop-live.config.home-manager.users.simon.xdg.configFile."desktop/rebuild-bindings.lua".source
+        } "$HOME/.config/desktop/rebuild-bindings.lua"
+        cp ${../hosts/desktop/monitors.lua} "$HOME/.config/desktop/monitors.lua"
         if ! Hyprland --verify-config --config "$HOME/.config/hypr/hyprland.lua" > "$TMPDIR/hyprland.log" 2>&1; then
           cat "$TMPDIR/hyprland.log"
           exit 1
@@ -54,11 +156,11 @@
         mkdir -p "$TMPDIR/tools" "$TMPDIR/media"
         export TRANSCODE_TEST_CLIPBOARD="$TMPDIR/clipboard"
         cat > "$TMPDIR/tools/wl-copy" <<'SH'
-        #!/usr/bin/env bash
+        #!${pkgs.bash}/bin/bash
         cat > "$TRANSCODE_TEST_CLIPBOARD"
         SH
         cat > "$TMPDIR/tools/notify-send" <<'SH'
-        #!/usr/bin/env bash
+        #!${pkgs.bash}/bin/bash
         exit 0
         SH
         chmod +x "$TMPDIR/tools/"*

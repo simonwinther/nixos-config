@@ -44,6 +44,8 @@ let
     Unit = {
       Description = if pdf then "Prepare the PDF picker" else "Prepare the file picker";
       PartOf = [ "desktop-session.target" ];
+      StartLimitIntervalSec = 60;
+      StartLimitBurst = 3;
       After = [ "desktop-prepare.service" ];
     };
     Service = {
@@ -52,6 +54,8 @@ let
       ExecStart = "${packages.file-picker}/bin/file-picker --warm${lib.optionalString pdf " --pdf"}";
       Environment = environment;
       TimeoutStartSec = 20;
+      Restart = "on-failure";
+      RestartSec = 2;
     };
     Install.WantedBy = [ "desktop-session.target" ];
   };
@@ -118,13 +122,11 @@ in
       service "Workspace slider overlays" "${packages.workspaces-slider}/bin/workspaces-slider"
     );
     desktop-mako = service "Notifications" "${ctl} run mako";
-    desktop-monitor-watch = service "Recover the internal display after unplugging a dock" "${ctl} monitor-watch";
     desktop-awww = service "Wallpaper daemon" "${pkgs.awww}/bin/awww-daemon --no-cache";
     desktop-swayosd = service "Volume and brightness display" "${ctl} run swayosd-server";
-    desktop-hypridle = (service "Idle and suspend coordination" "${pkgs.hypridle}/bin/hypridle") // {
-      # The current reference leaves idle locking opt-in for each session.
-      Install = { };
-    };
+    # Keep logind/Wayland sleep coordination running even when idle locking is off.
+    # The worker selects the idle listener only when opted in for this session.
+    desktop-hypridle = service "Idle and suspend coordination" "${ctl} idle-worker";
     desktop-hyprsunset = (service "Night light" "${pkgs.hyprsunset}/bin/hyprsunset") // {
       Install = { };
     };
@@ -133,7 +135,10 @@ in
     desktop-wallpaper = (service "Restore wallpapers" "${ctl} wallpaper restore") // {
       Unit = {
         Description = "Restore wallpapers";
-        PartOf = [ "desktop-session.target" ];
+        PartOf = [
+          "desktop-session.target"
+          "desktop-awww.service"
+        ];
         After = [
           "desktop-prepare.service"
           "desktop-awww.service"
@@ -142,6 +147,7 @@ in
       };
       Service = {
         Type = "oneshot";
+        RemainAfterExit = true;
         ExecStart = "${ctl} wallpaper restore";
         Environment = environment;
       };

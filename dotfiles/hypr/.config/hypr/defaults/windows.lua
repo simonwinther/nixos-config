@@ -133,8 +133,6 @@ hl.window_rule({ match = { tag = "pop" }, rounding = 8 })
 hl.window_rule({ match = { tag = "noidle" }, idle_inhibit = "always" })
 -- Prevent Telegram from stealing focus on new messages
 hl.window_rule({ match = { class = "org.telegram.desktop" }, focus_on_activate = false })
--- Float Typora print dialog
-hl.window_rule({ match = { class = "^Typora$", title = "^Print$" }, float = true, center = true })
 -- Define terminal tag to style them uniformly
 hl.window_rule({ match = { class = "(Alacritty|kitty|com.mitchellh.ghostty|foot)" }, tag = "+terminal" })
 hl.window_rule({ match = { tag = "terminal" }, tag = "-default-opacity" })

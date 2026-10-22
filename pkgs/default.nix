@@ -21,6 +21,7 @@ in
 })
 // {
   desktop-tools = tools;
+  desktop-ring = pkgs.callPackage ./desktop-ring.nix { rustPlatform = unstable.rustPlatform; };
   uipro = pkgs.callPackage ./uipro { };
   background-grid = pkgs.callPackage ./background-grid.nix { hyprland = compositor; };
   dictate = pkgs.callPackage ./dictate.nix {
@@ -29,7 +30,10 @@ in
   file-picker = pkgs.callPackage ./file-picker.nix {
     hyprland = compositor;
   };
-  workspaces-slider = pkgs.callPackage ./workspaces-slider.nix { };
+  # Share the already selected Rust toolchain with the other desktop utilities.
+  workspaces-slider = pkgs.callPackage ./workspaces-slider.nix {
+    rustPlatform = unstable.rustPlatform;
+  };
   walker = companions.walker;
   elephant = companions.elephant;
   inherit hyprspace;
@@ -93,6 +97,7 @@ in
                 pkgs.gnused
               ]
             }:"$out/bin" \
+            --set HENDRIX_SPLIT_TUNNEL_V1 1 \
             --set VPNC_SCRIPT ${pkgs.vpnc-scripts}/bin/vpnc-script
         done
       '';

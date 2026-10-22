@@ -169,11 +169,6 @@ hl.bind(
 	hl.dsp.exec_cmd('desktopctl launch focus org.desktop.btop "desktopctl launch tui btop"'),
 	{ description = "Activity (btop)" }
 )
-hl.bind(
-	"SUPER + SHIFT + E",
-	hl.dsp.exec_cmd('desktopctl launch focus org.desktop.aerc "desktopctl launch tui aerc"'),
-	{ description = "Email (aerc)" }
-)
 
 -- =============================================================================
 -- WEB APPLICATIONS AND PROJECTS

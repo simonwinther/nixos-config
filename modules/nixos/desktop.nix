@@ -12,6 +12,10 @@ let
   desktop = profile != "recovery";
   live = profile == "live";
   compositor = packages.hyprspace.compositor;
+  # UWSM reads its launcher; the capability wrapper is intentionally execute-only.
+  sessionLauncher = pkgs.writeShellScriptBin "Hyprland" ''
+    exec /run/wrappers/bin/Hyprland "$@"
+  '';
   lockOnLogin = pkgs.writeShellScript "desktop-lock-on-login" ''
     export PATH="${
       lib.makeBinPath [
@@ -35,7 +39,7 @@ in
     programs.uwsm.waylandCompositors.desktop = {
       prettyName = "Hyprland Desktop";
       comment = "Personal Hyprland session managed by UWSM";
-      binPath = "/run/wrappers/bin/Hyprland";
+      binPath = "${sessionLauncher}/bin/Hyprland";
       extraArgs = lib.optionals (!live) [
         "--locked-cmd"
         "${lockOnLogin}"
@@ -86,12 +90,9 @@ in
     hardware.graphics = {
       enable = true;
       enable32Bit = true;
-    }
-    // lib.optionalAttrs (config.workstation.gpu != "nvidia") {
-      package = inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mesa;
-      package32 =
-        inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.pkgsi686Linux.mesa;
     };
+    # Keep Mesa and its video drivers on the system package set so their
+    # libva interface matches Chromium and the rest of the desktop.
     hardware.nvidia = lib.mkIf (config.workstation.gpu == "nvidia") {
       modesetting.enable = true;
       open = config.workstation.nvidiaOpen;

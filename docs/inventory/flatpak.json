@@ -21,13 +21,6 @@
     "commit": "ace8681dcfb970ef9dba9dc8e572489e57b5c9feec5b8ea396c39f8090a94b5c"
   },
   {
-    "appId": "net.hovancik.Stretchly",
-    "arch": "x86_64",
-    "branch": "stable",
-    "origin": "flathub",
-    "commit": "1ffd12c60cb7ad7e54b91d341e2d0c51f84cda735305fec426a8fe5aed66d7bf"
-  },
-  {
     "appId": "org.vinegarhq.Sober",
     "arch": "x86_64",
     "branch": "stable",

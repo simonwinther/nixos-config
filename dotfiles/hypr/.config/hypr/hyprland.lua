@@ -11,11 +11,17 @@ local data = require("config-data")
 local state = os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state")
 data.apply(state .. "/desktop/theme/hyprland.conf")
 local config = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+local cursor = io.open(config .. "/desktop/cursor.lua", "r")
+if cursor then cursor:close(); dofile(config .. "/desktop/cursor.lua") end
 local host = io.open(config .. "/desktop/monitors.lua", "r")
 if host then host:close(); dofile(config .. "/desktop/monitors.lua")
 else hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" }) end
 require("input")
 require("bindings")
+local ring_bindings = io.open(config .. "/desktop/ring-bindings.lua", "r")
+if ring_bindings then ring_bindings:close(); dofile(config .. "/desktop/ring-bindings.lua") end
+local rebuild_bindings = io.open(config .. "/desktop/rebuild-bindings.lua", "r")
+if rebuild_bindings then rebuild_bindings:close(); dofile(config .. "/desktop/rebuild-bindings.lua") end
 require("looknfeel")
 require("windows")
 data.toggles()

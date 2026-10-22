@@ -104,8 +104,8 @@
     },
     {
       "reference": ".config/Typora",
-      "disposition": "private_or_mutable_application_state",
-      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "disposition": "excluded_retired_application",
+      "detail": "Removed at user request. Archived application settings stay private; do not restore retired launchers or configuration.",
       "managedTargets": [],
       "seedSources": []
     },
@@ -118,13 +118,9 @@
     },
     {
       "reference": ".config/aerc",
-      "disposition": "managed_configuration_and_separate_state",
-      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
-      "managedTargets": [
-        ".config/aerc/accounts.conf",
-        ".config/aerc/aerc.conf",
-        ".config/aerc/binds.conf"
-      ],
+      "disposition": "excluded_retired_application",
+      "detail": "Application removed at user request. Preserve any mail or credentials privately; do not restore the retired application configuration.",
+      "managedTargets": [],
       "seedSources": []
     },
     {
@@ -817,8 +813,8 @@
     },
     {
       "reference": ".config/qBittorrent",
-      "disposition": "private_or_mutable_application_state",
-      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "disposition": "excluded_retired_application",
+      "detail": "Removed at user request. Archived application settings stay private; do not restore retired launchers or configuration.",
       "managedTargets": [],
       "seedSources": []
     },

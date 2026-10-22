@@ -23,6 +23,10 @@ def read_entry(config_path=CONFIG):
     if not row or not row[0]:
         raise ValueError('Firefox Authenticator data is unavailable.')
     entry = json.loads(row[0]).get(config['entry_id'])
+    return validate_entry(entry)
+
+
+def validate_entry(entry):
     if not isinstance(entry, dict) or entry.get('issuer', '').casefold() != 'netiq':
         raise ValueError('The selected Netiq authenticator is unavailable.')
     if entry.get('encrypted'):

@@ -272,10 +272,10 @@ hl.bind("SUPER + ALT + code:12", hl.dsp.group.active({ index = 3 }), { descripti
 hl.bind("SUPER + ALT + code:13", hl.dsp.group.active({ index = 4 }), { description = "Switch to group window 4" })
 hl.bind("SUPER + ALT + code:14", hl.dsp.group.active({ index = 5 }), { description = "Switch to group window 5" })
 
--- Cycle monitor scaling with SUPER + /
+-- Display controls are owned by desktop-ring; keep the familiar display shortcuts.
 hl.bind("SUPER + code:61", function()
     require("actions").cycle_monitor_scale(1)
-end, { description = "Cycle monitor scaling" })
+end, { description = "Desktop display controls" })
 hl.bind("SUPER + ALT + code:61", function()
     require("actions").cycle_monitor_scale(-1)
-end, { description = "Cycle monitor scaling backwards" })
+end, { description = "Desktop display controls" })

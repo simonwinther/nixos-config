@@ -1834,6 +1834,26 @@
     {
       "source": "background-grid/.config/background-grid/picker.py",
       "reason": "Superseded by the approved current Rust implementation."
+    },
+    {
+      "source": "aerc/.config/aerc/accounts.conf",
+      "reason": "Application retired at user request; Arch configuration and state preserved privately, and NixOS managed configuration removed."
+    },
+    {
+      "source": "aerc/.config/aerc/aerc.conf",
+      "reason": "Application retired at user request; Arch configuration and state preserved privately, and NixOS managed configuration removed."
+    },
+    {
+      "source": "aerc/.config/aerc/binds.conf",
+      "reason": "Application retired at user request; Arch configuration and state preserved privately, and NixOS managed configuration removed."
+    },
+    {
+      "source": "applications/.local/share/applications/typora.desktop",
+      "reason": "Application retired at user request; remove stale launcher on Arch and NixOS."
+    },
+    {
+      "source": "applications/.local/share/applications/sweethome3d.desktop",
+      "reason": "Application retired at user request; remove stale launcher on Arch and NixOS."
     }
   ],
   "additionalPreferences": [

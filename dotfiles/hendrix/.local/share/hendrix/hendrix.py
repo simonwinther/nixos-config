@@ -110,8 +110,13 @@ def reachable():
 def prepare_vpn_credentials():
     password = PASSWORD.read_bytes().rstrip(b'\n')
     config = json.loads(VPN_AUTH.read_text()) if VPN_AUTH.exists() else {'mode': 'push'}
-    if config.get('mode') == 'firefox':
-        from firefox_totp import current_code, read_entry
+    mode = config.get('mode', 'push')
+    if mode in ('firefox', 'totp'):
+        from firefox_totp import generate
+        if mode == 'totp':
+            from saved_totp import read_entry
+        else:
+            from firefox_totp import read_entry
         period = 30
         try:
             entry = read_entry()
@@ -123,11 +128,11 @@ def prepare_vpn_credentials():
             remaining = period - now % period
             if counter <= config.get('last_auth_counter', -1) or remaining < 8:
                 time.sleep(remaining + 0.2)
-            code = current_code()
+            code = generate(entry['secret'], period=period, digits=int(entry.get('digits') or 6))
         except (ValueError, OSError, sqlite3.Error, KeyError):
             period = 30
             if not sys.stdin.isatty():
-                raise RuntimeError('Firefox authenticator is unavailable. Retry ssh hendrix in a terminal to enter its code.') from None
+                raise RuntimeError('The KU authenticator is unavailable. Retry ssh hendrix in a terminal to enter its code.') from None
             code = getpass.getpass('KU code from Firefox Authenticator: ').strip()
             if not re.fullmatch(r'\d{6}', code):
                 raise RuntimeError('Enter the six-digit KU authenticator code.') from None
@@ -140,7 +145,7 @@ def prepare_vpn_credentials():
         os.replace(temporary, VPN_PASSWORD)
     finally:
         Path(temporary).unlink(missing_ok=True)
-    if config.get('mode') == 'firefox':
+    if mode in ('firefox', 'totp'):
         VPN_AUTH.write_text(json.dumps(config) + '\n')
         VPN_AUTH.chmod(0o600)
     return config.get('mode', 'push')
@@ -159,7 +164,7 @@ def ensure_vpn():
         if not routes.is_file() or 'HENDRIX_SPLIT_TUNNEL_V1' not in runner.read_text():
             raise RuntimeError('The internet-preserving VPN update needs to finish before connecting.')
         mode = prepare_vpn_credentials()
-        print('Starting KU VPN with Firefox Authenticator…' if mode == 'firefox' else
+        print('Starting KU VPN with your saved authenticator…' if mode in ('firefox', 'totp') else
               'Starting KU VPN — approve the KU phone notification if requested…',
               file=sys.stderr, flush=True)
         result = subprocess.run(
@@ -172,7 +177,7 @@ def ensure_vpn():
                 return
             if subprocess.run(['systemctl', 'is-failed', '--quiet',
                                'ku-vpn.service']).returncode == 0:
-                raise RuntimeError('KU VPN authentication failed. Retry ssh hendrix for a fresh authenticator code.' if mode == 'firefox' else
+                raise RuntimeError('KU VPN authentication failed. Retry ssh hendrix for a fresh authenticator code.' if mode in ('firefox', 'totp') else
                                    'KU VPN login failed or phone approval timed out. Retry ssh hendrix and approve the KU notification.')
             time.sleep(1)
         raise RuntimeError('KU VPN did not become reachable within 120 seconds.')
@@ -186,7 +191,7 @@ def ssh(args):
     if not PASSWORD.is_file():
         os.execv(SSH, [SSH, *args])
     ensure_vpn()
-    os.execve(SSH, [SSH, '-o', 'GSSAPIAuthentication=no',
+    os.execve(SSH, [SSH, '-o', 'PreferredAuthentications=publickey,password,keyboard-interactive',
                    '-o', 'NumberOfPasswordPrompts=1', *args], askpass_env())
 
 
@@ -199,7 +204,7 @@ def check_ssh(password_file):
     return subprocess.run(
         [SSH, '-o', 'ControlMaster=no', '-o', 'ControlPath=none',
          '-o', 'PreferredAuthentications=password', '-o', 'PubkeyAuthentication=no',
-         '-o', 'GSSAPIAuthentication=no', '-o', 'NumberOfPasswordPrompts=1',
+         '-o', 'NumberOfPasswordPrompts=1',
          '-o', 'ConnectTimeout=12', 'hendrix', 'true'],
         env=askpass_env(password_file), stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=20).returncode == 0
@@ -250,8 +255,8 @@ def finish_setup():
     status('waiting-for-sudo')
     print('\nInstalling the background VPN service. Enter your Linux sudo password.', flush=True)
     mode = prepare_vpn_credentials()
-    if mode == 'firefox':
-        print('KU authentication uses codes from Firefox automatically.', flush=True)
+    if mode in ('firefox', 'totp'):
+        print('KU authentication uses your saved authenticator automatically.', flush=True)
     else:
         print('Then approve the KU notification on your phone when the VPN starts.', flush=True)
     result = subprocess.run(['systemctl', 'cat', 'ku-vpn.service'], stdout=subprocess.DEVNULL)

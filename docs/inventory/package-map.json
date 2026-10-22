@@ -26,10 +26,8 @@
   {
     "arch": "aerc",
     "referenceVersion": "0.21.0-1",
-    "kind": "package",
-    "source": "stable",
-    "attribute": "aerc",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Removed at user request; no longer used."
   },
   {
     "arch": "aether",
@@ -135,9 +133,8 @@
   {
     "arch": "boosteroid",
     "referenceVersion": "1.10.22-1",
-    "kind": "custom",
-    "attribute": "boosteroid",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Removed at user request; no longer used."
   },
   {
     "arch": "breakd",
@@ -1141,10 +1138,8 @@
   {
     "arch": "qbittorrent",
     "referenceVersion": "5.2.3-3",
-    "kind": "package",
-    "source": "stable",
-    "attribute": "qbittorrent",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Removed at user request; no longer used."
   },
   {
     "arch": "qt5-wayland",
@@ -1317,10 +1312,8 @@
   {
     "arch": "sweethome3d",
     "referenceVersion": "7.5-2",
-    "kind": "package",
-    "source": "stable",
-    "attribute": "sweethome3d.application",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Removed at user request; no longer used."
   },
   {
     "arch": "system-config-printer",
@@ -1684,10 +1677,8 @@
   {
     "arch": "visidata",
     "referenceVersion": "3.4-1",
-    "kind": "package",
-    "source": "stable",
-    "attribute": "visidata",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Removed at user request; no longer used."
   },
   {
     "arch": "visual-studio-code-bin",
