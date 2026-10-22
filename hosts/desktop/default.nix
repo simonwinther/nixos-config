@@ -17,6 +17,6 @@
   };
   # R580 is the final NVIDIA branch supporting Pascal cards.
   hardware.nvidia.package = lib.mkIf (
-    profile == "workstation"
+    profile != "recovery" && config.workstation.gpu == "nvidia"
   ) config.boot.kernelPackages.nvidiaPackages.legacy_580;
 }

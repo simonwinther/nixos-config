@@ -31,6 +31,24 @@ in
       type = types.nullOr types.str;
       default = null;
     };
+    storage.existingBtrfs = mkOption {
+      default = null;
+      description = "Reuse an inspected LUKS/Btrfs installation without repartitioning or formatting it.";
+      type = types.nullOr (
+        types.submodule {
+          options = {
+            luksUuid = mkOption { type = types.str; };
+            filesystemUuid = mkOption { type = types.str; };
+            espUuid = mkOption { type = types.str; };
+            subvolumePrefix = mkOption {
+              type = types.strMatching "@[a-zA-Z0-9_-]+";
+              default = "@nixos";
+              description = "Prefix for separately created NixOS subvolumes; existing OS subvolumes are preserved.";
+            };
+          };
+        }
+      );
+    };
     gpu = mkOption {
       type = types.enum [
         "unreviewed"

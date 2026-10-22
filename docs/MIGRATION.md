@@ -1,6 +1,6 @@
 # Desktop-first migration procedure
 
-Current phase, approved by Simon on 2026-10-19: build the current project and prepare the Cruzer USB for live testing on the stationary desktop. See [LIVE-USB.md](LIVE-USB.md). This authorizes live-image building and USB preparation; installation still requires the desktop inventory, verified backups and explicit destructive-target selection described below.
+Simon approved installing the stationary desktop to its internal drive on 2026-10-22, selecting the Samsung 960 EVO after inspecting its contents. Its existing encrypted Arch filesystem will be preserved. See [DESKTOP-INSTALL.md](DESKTOP-INSTALL.md) for this host's installation plan. The destructive fresh-disk procedure below applies only to a separately reviewed, explicitly approved erasure; it is not the procedure for this desktop.
 
 ## 1. Establish the target and preserve the reference
 

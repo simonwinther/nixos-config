@@ -9,6 +9,14 @@
 let
   cfg = config.workstation;
   live = profile == "live";
+  existing = cfg.storage.existingBtrfs;
+  subvolumes = {
+    root = "/";
+    home = "/home";
+    nix = "/nix";
+    log = "/var/log";
+    snapshots = "/.snapshots";
+  };
   diskReady =
     cfg.hardwareReviewed
     && cfg.backupsVerified
@@ -17,6 +25,8 @@ let
     && lib.hasPrefix "/dev/disk/by-id/" cfg.targetDisk;
 in
 {
+  # Use the configured Danish keyboard at the disk-unlock prompt too.
+  console.earlySetup = lib.mkIf (!live) true;
   boot.loader = lib.mkIf (!live) {
     systemd-boot = {
       enable = true;
@@ -29,7 +39,8 @@ in
     enable = true;
     theme = "bgrt";
   };
-  disko.devices = lib.mkIf (!live && diskReady) {
+  # Reusing an existing filesystem must never generate Disko formatting commands.
+  disko.devices = lib.mkIf (!live && diskReady && existing == null) {
     disk.system = {
       type = "disk";
       device = cfg.targetDisk;
@@ -79,6 +90,33 @@ in
           };
         };
       };
+    };
+  };
+  fileSystems = lib.mkIf (!live && existing != null) (
+    lib.mapAttrs' (
+      name: mountpoint:
+      lib.nameValuePair mountpoint {
+        device = "/dev/disk/by-uuid/${existing.filesystemUuid}";
+        fsType = "btrfs";
+        options = [
+          "subvol=${existing.subvolumePrefix}-${name}"
+          "compress=zstd:3"
+          "noatime"
+        ];
+      }
+    ) subvolumes
+    // {
+      "/boot" = {
+        device = "/dev/disk/by-uuid/${existing.espUuid}";
+        fsType = "vfat";
+        options = [ "umask=0077" ];
+      };
+    }
+  );
+  boot.initrd.luks.devices = lib.mkIf (!live && existing != null) {
+    cryptroot = {
+      device = "/dev/disk/by-uuid/${existing.luksUuid}";
+      allowDiscards = true;
     };
   };
   services.snapper.configs.home = lib.mkIf (!live && cfg.targetDisk != null) {

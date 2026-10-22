@@ -4,6 +4,50 @@
   self,
 }:
 {
+  storage-integration =
+    let
+      desktop = self.nixosConfigurations.desktop.config;
+      live = self.nixosConfigurations.desktop-live.config;
+      existing = desktop.workstation.storage.existingBtrfs;
+      # Evaluation-only fixtures: these never run Disko or activate a system.
+      fresh =
+        (self.nixosConfigurations.desktop.extendModules {
+          modules = [
+            {
+              workstation.storage.existingBtrfs = pkgs.lib.mkForce null;
+              workstation.backupsVerified = pkgs.lib.mkForce true;
+            }
+          ];
+        }).config;
+      unreviewed =
+        (self.nixosConfigurations.desktop.extendModules {
+          modules = [
+            {
+              workstation.storage.existingBtrfs = pkgs.lib.mkForce null;
+              workstation.backupsVerified = pkgs.lib.mkForce false;
+            }
+          ];
+        }).config;
+    in
+    assert live.disko.devices.disk == { };
+    assert unreviewed.disko.devices.disk == { };
+    assert fresh.disko.devices.disk.system.device == desktop.workstation.targetDisk;
+    assert existing == null || desktop.disko.devices.disk == { };
+    assert
+      existing == null
+      || desktop.fileSystems."/".device == "/dev/disk/by-uuid/${existing.filesystemUuid}";
+    assert
+      existing == null
+      || builtins.elem "subvol=${existing.subvolumePrefix}-root" desktop.fileSystems."/".options;
+    assert
+      existing == null
+      || builtins.elem "subvol=${existing.subvolumePrefix}-home" desktop.fileSystems."/home".options;
+    assert
+      existing == null
+      || desktop.boot.initrd.luks.devices.cryptroot.device == "/dev/disk/by-uuid/${existing.luksUuid}";
+    pkgs.runCommand "storage-integration" { } ''
+      touch "$out"
+    '';
   desktop-ring = packages.desktop-ring;
   ring-integration =
     let
