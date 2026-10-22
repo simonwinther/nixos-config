@@ -119,6 +119,10 @@ in
       allowDiscards = true;
     };
   };
+  # Snapper needs a nested Btrfs subvolume before its first timeline snapshot.
+  systemd.tmpfiles.rules = lib.mkIf (!live && cfg.targetDisk != null) [
+    "v /home/.snapshots 0750 root root -"
+  ];
   services.snapper.configs.home = lib.mkIf (!live && cfg.targetDisk != null) {
     SUBVOLUME = "/home";
     ALLOW_USERS = [ "simon" ];

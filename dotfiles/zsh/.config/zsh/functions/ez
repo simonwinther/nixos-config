@@ -1,7 +1,0 @@
-# Edit and reload zsh config
-ez() {
-  nvim ~/.zshrc
-  source ~/.zshrc
-  print "󱄊 Zsh configuration reloaded."
-}
-

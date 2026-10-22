@@ -1,5 +1,0 @@
-cra() {
-  codex resume --last --all "$@"
-}
-
-

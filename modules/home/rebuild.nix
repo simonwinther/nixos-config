@@ -51,6 +51,7 @@ let
         exit 1
       fi
       cd "$repo"
+      git submodule update --init --recursive
       echo "Rebuilding $repo#${target} (${action}). Log: $log"
       ${lib.optionalString (
         profile == "live"

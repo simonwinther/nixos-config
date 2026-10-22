@@ -48,3 +48,15 @@ The recorded baseline covers 25 package outputs, five checks and the complete Ho
 For another distribution, first install the programs listed in the package map and use the same pinned compositor/plugin versions. Simulate deployment to an explicit target with `scripts/stow-portable TARGET`; use `--apply` only after resolving all conflicts and backing up that target. No `--adopt`, manual links, or overwrite flags are used. Native tool source and Cargo locks are included; their portable `*-build` helpers build into XDG cache. See [PORTABLE.md](docs/PORTABLE.md) for user services.
 
 Do not publish the reference inventory without reviewing its personal paths and account names. The repository has no remote and contains no copied login credentials. Provenance is recorded in `docs/inventory/reference.json`; third-party license notices remain in their source trees and `docs/licenses/`.
+
+## Repository checkout
+
+The `dotfiles/` directory is a Git submodule of `https://github.com/simonwinther/dotfiles`, pinned to the shared `nixos-portable` branch. Home Manager consumes those Stow packages on NixOS.
+
+```sh
+git clone --recurse-submodules https://github.com/simonwinther/nixos-config
+cd nixos-config
+git submodule update --init --recursive
+```
+
+The flake enables submodule fetching, and the rebuild keybind initializes the pinned submodule before building. Commit dotfiles changes in their own repository, push that revision, then commit the updated submodule pointer here. Keep runtime credentials and private state outside both repositories.
