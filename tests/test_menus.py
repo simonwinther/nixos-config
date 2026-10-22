@@ -1,6 +1,8 @@
 """Desktop navigation and appearance state, with synthetic clipboard/display data."""
 import json
+import os
 from pathlib import Path
+import shutil
 import subprocess
 import tomllib
 import unittest
@@ -57,6 +59,121 @@ class MenuTests(unittest.TestCase):
                 if command[0] == "menu":
                     self.assertIn(command[1], set(menus) | dynamic)
                 self.assertNotIn(command[0], ("install", "remove", "update", "rebuild"))
+
+    def test_focus_shortcut_launches_default_command_or_matches_title_without_case(self):
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, "[]")), patch.object(ctl.os, "execvp") as execute:
+            ctl.launch(["focus", "spotify"])
+        execute.assert_called_once_with("uwsm-app", ["uwsm-app", "--", "spotify"])
+        windows = [{"class": "electron", "title": "Spotify", "address": "0x123"}]
+        with patch.object(ctl, "run", side_effect=[subprocess.CompletedProcess([], 0, json.dumps(windows)), subprocess.CompletedProcess([], 0)]) as run, patch.object(ctl.os, "execvp") as execute:
+            ctl.launch(["focus", "spotify"])
+        self.assertIn("address:0x123", run.call_args.args[0][-1])
+        execute.assert_not_called()
+
+    def test_hardware_menu_omits_touchpad_on_stationary_desktop(self):
+        self.install_menus()
+        replies = [subprocess.CompletedProcess([], 0, '{"mice": []}'), subprocess.CompletedProcess([], 130, "")]
+        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run:
+            ctl.menu(["hardware"])
+        entries = run.call_args.kwargs["input"]
+        self.assertIn("Display controls", entries)
+        self.assertNotIn("Touchpad", entries)
+        self.assertNotIn("Internal display", entries)
+        self.assertNotIn("Mirror display", entries)
+
+    def test_reminders_show_messages_and_clear_with_visible_feedback(self):
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, "")) as run, patch.object(ctl, "notify") as notify:
+            ctl.reminder(["5", "Check the oven"])
+            ctl.reminder(["show"])
+            self.assertEqual(notify.call_args.args[0], "Upcoming reminders")
+            self.assertIn("Check the oven", notify.call_args.args[1])
+            self.assertIn("5 min", notify.call_args.args[1])
+            ctl.reminder(["clear"])
+            self.assertFalse(list((self.runtime / "reminders").glob("*.json")))
+            ctl.reminder(["show"])
+            notify.assert_called_with("Upcoming reminders", "No outstanding reminders")
+        self.assertEqual(run.call_args_list[0].args[0][-1], "Check the oven")
+
+    def test_share_selection_can_cancel_and_paths_remain_single_arguments(self):
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 1, "")) as run:
+            ctl.share(["file"])
+        self.assertEqual(run.call_count, 1)
+        path = self.home / "a file with spaces.txt"
+        path.write_text("synthetic share")
+        with patch.object(ctl, "run") as run:
+            ctl.share(["file", str(path)])
+        run.assert_called_once_with(["localsend", "--headless", "send", str(path)])
+
+    def test_shared_clipboard_image_is_private_and_survives_gui_handoff(self):
+        def fake_copy(command, **kwargs):
+            kwargs["stdout"].write(b"synthetic image")
+            return subprocess.CompletedProcess(command, 0)
+        with patch.object(ctl, "run", side_effect=[subprocess.CompletedProcess([], 0, "image/png\n"), subprocess.CompletedProcess([], 0)]) as run, patch.object(ctl.subprocess, "run", side_effect=fake_copy):
+            ctl.share(["clipboard"])
+        path = Path(run.call_args.args[0][-1])
+        self.assertEqual(path.suffix, ".png")
+        self.assertEqual(path.read_bytes(), b"synthetic image")
+        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+    def test_about_art_can_be_edited_previewed_and_reset_without_managed_writes(self):
+        with patch.object(ctl, "launch") as editor:
+            ctl.about(["edit"])
+        editor.assert_called_once_with(["editor", str(self.state / "about.txt")])
+        (self.state / "about.txt").write_text("synthetic artwork")
+        with patch.object(ctl, "terminal") as terminal:
+            ctl.about([])
+        self.assertIn("--logo-type file-raw", terminal.call_args.args[0][-1])
+        with patch.object(ctl, "notify"):
+            ctl.about(["reset"])
+        with patch.object(ctl, "terminal") as terminal:
+            ctl.about([])
+        self.assertNotIn("--logo", terminal.call_args.args[0][-1])
+        self.assertEqual((self.state / "about.txt").read_text(), "synthetic artwork")
+
+    def test_automatic_saver_preserves_disabled_preference_and_uses_common_worker(self):
+        ctl.atomic_write(self.state / "toggles/screensaver-off", "")
+        with patch.object(ctl.os, "execvp") as execute:
+            ctl.screensaver(["idle"])
+        execute.assert_not_called()
+        with patch.object(ctl, "notify"):
+            ctl.toggle(["screensaver"])
+        ctl.screensaver(["set", "matrix"])
+        with patch.object(ctl, "run", side_effect=[subprocess.CompletedProcess([], 1, ""), subprocess.CompletedProcess([], 0, "[]")]), patch.object(ctl.os, "execvp") as execute:
+            ctl.screensaver(["idle"])
+        self.assertIn("screensaver-worker", execute.call_args.args[1])
+        self.assertNotIn("cmatrix", execute.call_args.args[1])
+        for replies in ([subprocess.CompletedProcess([], 0, "123")],
+                        [subprocess.CompletedProcess([], 1, ""), subprocess.CompletedProcess([], 0, '[{"class":"org.desktop.screensaver"}]')]):
+            with patch.object(ctl, "run", side_effect=replies), patch.object(ctl.os, "execvp") as execute:
+                ctl.screensaver(["idle"])
+            execute.assert_not_called()
+
+    def test_new_configuration_entries_resolve_to_editable_source(self):
+        with patch.dict(os.environ, {"DOTFILES": str(ROOT / "dotfiles")}), patch.object(ctl, "launch") as editor:
+            for name in ("Application launchers", "Default terminal", "File and URL handlers", "SwayOSD", "XCompose", "Hyprland configuration"):
+                ctl.edit_config([name])
+                path = Path(editor.call_args.args[0][-1])
+                self.assertTrue(path.is_file(), path)
+                self.assertTrue(path.is_relative_to(ROOT / "dotfiles"))
+
+    @unittest.skipUnless(shutil.which("magick"), "Image conversion runs in the Nix check")
+    def test_image_art_preserves_source_and_generates_bounded_braille(self):
+        image = self.home / "white logo with spaces.png"
+        subprocess.run(["magick", "-size", "80x40", "xc:none", "-fill", "white", "-draw", "rectangle 10,5 60,35", str(image)], check=True)
+        before = image.read_bytes()
+        with patch.object(ctl, "notify"):
+            ctl.screensaver(["image", str(image)])
+            ctl.about(["image", str(image)])
+        self.assertEqual(image.read_bytes(), before)
+        self.assertEqual(ctl.state()["screensaver"], "custom")
+        for path, width in ((self.state / "screensaver.txt", 80), (self.state / "about.txt", 54)):
+            art = path.read_text()
+            self.assertTrue(any(0x2800 < ord(char) <= 0x28ff for char in art))
+            self.assertLessEqual(len(art.splitlines()), 26)
+            self.assertLessEqual(max(map(len, art.splitlines())), width)
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 1, "")):
+            self.assertIsNone(ctl.image_art([]))
 
     def test_default_ghostty_colors_remain_personal_until_theme_is_selected(self):
         ctl.theme(["init"])

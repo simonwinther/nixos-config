@@ -62,6 +62,7 @@ stdenvNoCC.mkDerivation {
           libnotify
           fontconfig
           power-profiles-daemon
+          imagemagick
           glib
           dconf
         ]

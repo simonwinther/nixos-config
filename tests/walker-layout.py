@@ -4,10 +4,13 @@ Run through the walker-layout Nix check. This validates layout/CSS, not Wayland
 focus or real clipboard capture. The native provider has separate Go tests.
 """
 import importlib.util
+import json
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import time
+from unittest.mock import patch
 
 import gi
 
@@ -33,7 +36,26 @@ def settle():
         time.sleep(0.01)
 
 
-def render(view, width, height, palette="tokyoled", image=False):
+def menu_entries(group):
+    captured = []
+    def fixture_run(argv, **kwargs):
+        if "--dmenu" in argv:
+            captured.extend(kwargs["input"].splitlines())
+            return subprocess.CompletedProcess(argv, 130, "")
+        if argv[0] == "fc-list":
+            return subprocess.CompletedProcess(argv, 0, "JetBrainsMono Nerd Font\nAdwaita Mono\n")
+        if argv[0] == "powerprofilesctl":
+            return subprocess.CompletedProcess(argv, 0, "  power-saver:\n* balanced:\n  performance:\n")
+        if argv[0] == "hyprctl":
+            return subprocess.CompletedProcess(argv, 0, '{"mice": []}')
+        raise AssertionError(argv)
+    with patch.object(ctl, "run", side_effect=fixture_run), patch.object(ctl, "executable", return_value="fixture-walker"):
+        ctl.menu([group])
+    assert captured, group
+    return captured
+
+
+def render(view, width, height, palette="tokyoled", image=False, group="main"):
     ctl.prepare_theme(palette)
     folder = ctl.RUNTIME / "walker/themes" / ("desktop-" + view)
     errors = []
@@ -48,7 +70,10 @@ def render(view, width, height, palette="tokyoled", image=False):
     window.set_default_size(width, height)
     for name in ("ElephantHint", "Placeholder", "Keybinds", "Error"):
         builder.get_object(name).set_visible(False)
-    entries = ["󰀻  Apps", "󰧑  Learn", "󱓞  Trigger", "  Style", "  Setup", "  About", "  System"] if view == "menu" else [
+    if view == "menu":
+        title = ctl.read_json(ctl.CONFIG / "desktop/menus.json")[group].get("title") if group in ctl.read_json(ctl.CONFIG / "desktop/menus.json") else None
+        builder.get_object("Input").set_placeholder_text(title or group.replace("-", " ").title() + "…")
+    entries = menu_entries(group) if view == "menu" else [
         "Image", "Meeting notes — next steps", "1. Path Parametrization & Instantaneous Velocity",
         "https://example.com/" + "very-long-path-" * 30, "Email address", "Pinned code snippet",
     ]
@@ -61,7 +86,11 @@ def render(view, width, height, palette="tokyoled", image=False):
             box, text, label = Gtk.Box(), Gtk.Box(), Gtk.Label(xalign=0)
             box.add_css_class("item-box")
             text.add_css_class("item-text-box")
+            text.set_hexpand(True)
             label.add_css_class("item-text")
+            # Match Walker's built-in item_dmenu.xml label behavior.
+            label.set_ellipsize(3)
+            label.set_single_line_mode(True)
             text.append(label)
             box.append(text)
             item.set_child(box)
@@ -104,6 +133,8 @@ def render(view, width, height, palette="tokyoled", image=False):
     assert not errors, errors
     actual_width, actual_height = window.get_width(), window.get_height()
     assert actual_width == width, (view, actual_width, width)
+    if view == "menu":
+        assert actual_height <= 700, (group, actual_height)
     if view != "menu":
         assert actual_height == height, (view, actual_height, height)
         assert preview.get_width() >= 250 and preview.get_height() >= 70, (view, "preview is unusable")
@@ -115,9 +146,10 @@ def render(view, width, height, palette="tokyoled", image=False):
     rectangle = Graphene.Rect()
     rectangle.init(0, 0, actual_width, actual_height)
     texture = renderer.render_texture(snapshot.to_node(), rectangle)
-    texture.save_to_png(str(OUTPUT / f"{view}-{palette}{'-image' if image else ''}.png"))
+    tag = "-" + group if view == "menu" else ""
+    texture.save_to_png(str(OUTPUT / f"{view}{tag}-{palette}{'-image' if image else ''}.png"))
     renderer.unrealize()
-    print(f"{view} / {palette}: {actual_width} × {actual_height}; CSS and geometry pass")
+    print(f"{view}{tag} / {palette}: {actual_width} × {actual_height}; CSS and geometry pass")
     window.destroy()
     Gtk.StyleContext.remove_provider_for_display(Gdk.Display.get_default(), css)
     settle()
@@ -131,7 +163,10 @@ with tempfile.TemporaryDirectory(prefix="desktop-ui-") as directory:
         path = ctl.CONFIG / target
         path.parent.mkdir(parents=True, exist_ok=True)
         path.symlink_to(ROOT / "dotfiles" / source)
-    render("menu", 350, 0)
+    (ctl.CONFIG / "desktop/menus.json").symlink_to(ROOT / "dotfiles/desktop-settings/.config/desktop/menus.json")
+    menus = json.loads((ctl.CONFIG / "desktop/menus.json").read_text())
+    for group in [*menus, "theme", "font", "config", "power-profile"]:
+        render("menu", 350, 0, group=group)
     render("clipboard", 1000, 520)
     render("clipboard", 1000, 520, image=True)
     render("clipboard-compact", 880, 380)

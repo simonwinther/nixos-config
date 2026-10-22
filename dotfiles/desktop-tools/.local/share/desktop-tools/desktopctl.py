@@ -444,15 +444,16 @@ def launch(args):
         raise ValueError("launch: browser, webapp URL, tui COMMAND, editor, focus CLASS COMMAND, audio, bluetooth, wifi")
     what, rest = args[0], args[1:]
     if what == "focus":
-        if len(rest) < 2:
-            raise ValueError("focus requires a class expression and a command")
+        if not rest:
+            raise ValueError("focus requires a window pattern and optional launch command")
         windows = json.loads(run(["hyprctl", "-j", "clients"], capture=True).stdout)
-        found = next((w for w in windows if re.search(rest[0], w.get("class", ""))), None)
+        pattern = re.compile(rest[0], re.IGNORECASE)
+        found = next((w for w in windows if pattern.search(w.get("class", "")) or pattern.search(w.get("title", ""))), None)
         if found:
             selector = json.dumps("address:" + found["address"])
             run(["hyprctl", "eval", f'hl.dispatch(hl.dsp.focus({{ window = {selector} }}))'])
         else:
-            command = shlex.split(rest[1]) if len(rest) == 2 else rest[1:]
+            command = ["uwsm-app", "--", rest[0]] if len(rest) == 1 else shlex.split(rest[1]) if len(rest) == 2 else rest[1:]
             os.execvp(command[0], command)
     elif what in ("audio", "bluetooth", "wifi"):
         terminal(["--app-id", "org.desktop." + {"audio": "wiremix", "bluetooth": "bluetui", "wifi": "impala"}[what], {"audio": "wiremix", "bluetooth": "bluetui", "wifi": "impala"}[what]])
@@ -635,6 +636,17 @@ def toggle(args):
         return
     if feature == "notifications":
         run(["makoctl", "mode", "-t", "do-not-disturb"])
+        return
+    if feature == "screensaver":
+        with state_lock():
+            marker = STATE / "toggles/screensaver-off"
+            if marker.exists():
+                marker.unlink()
+                enabled = True
+            else:
+                atomic_write(marker, "")
+                enabled = False
+        notify("Screensaver", "Automatic screensaver enabled" if enabled else "Automatic screensaver disabled")
         return
     if feature == "layout":
         workspace = json.loads(run(["hyprctl", "-j", "activeworkspace"], capture=True).stdout)
@@ -922,28 +934,86 @@ def capture(args):
 def reminder(args):
     action = args[0] if args else "show"
     if action == "show":
-        run(["systemctl", "--user", "list-timers", "--all", "--no-pager", "desktop-reminder-*"])
+        now = time.time()
+        pending = []
+        for path in sorted((RUNTIME / "reminders").glob("*.json")):
+            item = read_json(path)
+            if item.get("due", 0) <= now:
+                path.unlink(missing_ok=True)
+                continue
+            remaining = max(1, int((item["due"] - now + 59) // 60))
+            pending.append(f'{item["message"]} — in {remaining} min ({time.strftime("%H:%M", time.localtime(item["due"]))})')
+        notify("Upcoming reminders", "\n".join(pending) or "No outstanding reminders")
     elif action == "clear":
         units = run(["systemctl", "--user", "list-units", "--all", "--plain", "--no-legend", "desktop-reminder-*.timer"], capture=True).stdout
         names = [line.split()[0] for line in units.splitlines() if line.split()]
         if names:
             run(["systemctl", "--user", "stop", *names])
+        for path in (RUNTIME / "reminders").glob("*.json"):
+            path.unlink(missing_ok=True)
+        notify("Reminders", "All reminders cleared")
     else:
         minutes = float(action)
         if not 0 < minutes <= 525600:
             raise ValueError("Reminder delay must be positive and at most one year")
         message = " ".join(args[1:]) or "Reminder"
-        run(["systemd-run", "--user", "--collect", "--unit=desktop-reminder-" + uuid.uuid4().hex,
+        unit = "desktop-reminder-" + uuid.uuid4().hex
+        run(["systemd-run", "--user", "--quiet", "--collect", "--unit=" + unit,
              f"--on-active={minutes * 60}s", "notify-send", "Reminder", message])
+        due = time.time() + minutes * 60
+        atomic_write(RUNTIME / "reminders" / (unit + ".json"), json.dumps({"message": message, "due": due}))
+        notify("Reminder set", f'{message} — at {time.strftime("%H:%M", time.localtime(due))}')
+
+
+def share(args):
+    if not args or args[0] not in ("clipboard", "file", "folder"):
+        raise ValueError("share: clipboard, file [PATH], or folder [PATH]")
+    kind = args[0]
+    if kind == "clipboard":
+        types = run(["wl-paste", "--list-types"], capture=True).stdout.splitlines()
+        mime = next((m for m in ("text/plain;charset=utf-8", "text/plain", "image/png", "image/jpeg") if m in types), None)
+        if mime is None:
+            raise ValueError("The clipboard has no shareable text or image; choose File instead")
+        folder = RUNTIME / "shares"
+        folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+        suffix = ".png" if mime == "image/png" else ".jpg" if mime == "image/jpeg" else ".txt"
+        descriptor, filename = tempfile.mkstemp(prefix="clipboard-", suffix=suffix, dir=folder)
+        path = Path(filename)
+        try:
+            with os.fdopen(descriptor, "wb") as stream:
+                subprocess.run(["wl-paste", "--type", mime], stdout=stream, check=True)
+        except BaseException:
+            path.unlink(missing_ok=True)
+            raise
+        # LocalSend can hand the request to its existing GUI; retain this private
+        # file until logout rather than unlinking before the recipient is chosen.
+    elif len(args) == 2:
+        path = expand(args[1]).resolve()
+    else:
+        command = ["zenity", "--file-selection", "--title=Share " + kind]
+        if kind == "folder":
+            command.append("--directory")
+        result = run(command, capture=True, check=False)
+        if result.returncode or not result.stdout.strip():
+            return
+        path = expand(result.stdout.strip()).resolve()
+    if not (path.is_dir() if kind == "folder" else path.is_file()):
+        raise ValueError("Choose an existing " + kind)
+    run(["localsend", "--headless", "send", str(path)])
 
 
 def edit_config(args):
     choices = {
         "Hyprland": "hypr/.config/hypr/looknfeel.lua", "Keybindings": "hypr/.config/hypr/bindings.lua",
+        "Hyprland configuration": "hypr/.config/hypr/hyprland.lua",
         "Input": "hypr/.config/hypr/input.lua", "Monitors": "hypr/.config/hypr/monitors.lua",
         "Hypridle": "hypr/.config/hypr/hypridle.conf", "Hyprlock": "hypr/.config/hypr/hyprlock.conf",
         "Night light": "hypr/.config/hypr/hyprsunset.conf", "Walker": "walker/.config/walker/config.toml",
         "Waybar": "waybar/.config/waybar/config.jsonc", "Desktop menu": "desktop-settings/.config/desktop/menus.json",
+        "SwayOSD": "appearance/.config/swayosd/config.toml", "XCompose": "desktop-settings/.XCompose",
+        "Application launchers": "appearance/.config/desktop/settings.json",
+        "Default terminal": "desktop-settings/.config/xdg-terminals.list",
+        "File and URL handlers": "desktop-settings/.config/mimeapps.list",
     }
     if len(args) != 1 or args[0] not in choices:
         raise ValueError("config: " + ", ".join(choices))
@@ -994,6 +1064,78 @@ def appearance(args):
         raise ValueError("appearance: terminal-colors personal|desktop, or lock-background [IMAGE|reset]")
 
 
+def image_art(args, *, width=80, height=26):
+    if args:
+        image = expand(args[0]).resolve()
+    else:
+        result = run(["zenity", "--file-selection", "--title=Choose artwork image",
+                      "--file-filter=Images | *.svg *.png *.jpg *.jpeg *.webp"], capture=True, check=False)
+        if result.returncode or not result.stdout.strip():
+            return None
+        image = expand(result.stdout.strip()).resolve()
+    if not image.is_file() or image.suffix.lower() not in (".svg", ".png", ".jpg", ".jpeg", ".webp"):
+        raise ValueError("Choose an existing SVG, PNG, JPEG or WebP image")
+    # Detect actual source transparency before padding, so opaque photos use
+    # luminance while transparent logos retain their silhouette, of either color.
+    limits = run(["magick", "-background", "none", str(image), "-alpha", "extract",
+                  "-format", "%[fx:minima] %[fx:maxima]", "info:"], capture=True).stdout.split()
+    transparent = len(limits) == 2 and float(limits[0]) < .999 and float(limits[1]) > float(limits[0])
+    command = ["magick", "-background", "none", str(image), "-auto-orient"]
+    command += ["-alpha", "extract", "-alpha", "off"] if transparent else ["-background", "white", "-alpha", "remove", "-alpha", "off", "-colorspace", "Gray", "-negate"]
+    command += ["-bordercolor", "black", "-border", "1", "-trim", "+repage", "-resize", f"{width * 2}x{height * 4}",
+                "-gravity", "center", "-background", "black", "-extent", f"{width * 2}x{height * 4}", "-depth", "8", "gray:-"]
+    pixels = subprocess.run(command, check=True, capture_output=True).stdout
+    stride = width * 2
+    if len(pixels) != stride * height * 4:
+        raise ValueError("Image conversion returned unexpected dimensions")
+    dots = ((0, 0, 1), (0, 1, 2), (0, 2, 4), (1, 0, 8), (1, 1, 16), (1, 2, 32), (0, 3, 64), (1, 3, 128))
+    lines = []
+    for y in range(0, height * 4, 4):
+        line = ""
+        for x in range(0, stride, 2):
+            code = sum(bit for dx, dy, bit in dots if pixels[(y + dy) * stride + x + dx] >= 128)
+            line += chr(0x2800 + code) if code else " "
+        lines.append(line.rstrip())
+    art = "\n".join(lines).strip("\n")
+    if not art.strip():
+        raise ValueError("No artwork pixels found; choose an image with visible contrast")
+    return art + "\n"
+
+
+def about(args):
+    action = args[0] if args else "show"
+    target = STATE / "about.txt"
+    if action in ("edit", "image", "reset"):
+        if action == "reset":
+            with state_lock():
+                value = state(); value.pop("aboutArt", None); save_state(value)
+            notify("About artwork", "Restored the NixOS logo")
+            return
+        if action == "image":
+            art = image_art(args[1:], width=54)
+            if art is None:
+                return
+            atomic_write(target, art)
+        else:
+            if target.is_symlink():
+                raise ValueError("About artwork must be a writable state file, not a link")
+            if not target.exists():
+                atomic_write(target, "NixOS\n")
+        with state_lock():
+            value = state(); value["aboutArt"] = True; save_state(value)
+        if action == "edit":
+            launch(["editor", str(target)])
+        else:
+            notify("About artwork", "Image converted; open About to preview")
+    elif action == "show":
+        command = "fastfetch"
+        if state().get("aboutArt") and target.is_file():
+            command += " --logo-type file-raw --logo " + shlex.quote(str(target))
+        terminal(["--shell", command + "; read -r -n 1 -s"])
+    else:
+        raise ValueError("about: show, edit, image [PATH], or reset")
+
+
 def screensaver(args):
     action = args[0] if args else "start"
     name = state().get("screensaver", "naruto")
@@ -1014,12 +1156,28 @@ def screensaver(args):
             atomic_write(target, (DATA / "screensavers/naruto.txt").read_text())
         screensaver(["set", "custom"])
         launch(["editor", str(target)])
-    elif action == "start":
-        command = [sys.executable, __file__, "screensaver-worker"] if name != "matrix" else ["cmatrix", "-ab"]
+    elif action == "image":
+        art = image_art(args[1:])
+        if art is not None:
+            atomic_write(STATE / "screensaver.txt", art)
+            screensaver(["set", "custom"])
+            notify("Screensaver", "Image converted; choose Start to preview")
+    elif action == "reset":
+        screensaver(["set", "naruto"])
+        notify("Screensaver", "Restored the Naruto artwork")
+    elif action in ("start", "idle"):
+        if action == "idle" and (STATE / "toggles/screensaver-off").exists():
+            return
+        if run(["pgrep", "-u", str(os.getuid()), "-x", "hyprlock"], check=False, capture=True).returncode == 0:
+            return
+        clients = json.loads(run(["hyprctl", "-j", "clients"], capture=True).stdout)
+        if any(window.get("class") == "org.desktop.screensaver" for window in clients):
+            return
+        command = [sys.executable, __file__, "screensaver-worker"]
         os.execvp("ghostty", ["ghostty", "--class=org.desktop.screensaver", "--fullscreen=true", "--background-opacity=1",
                              "--font-size=18", "--window-padding-x=0", "--window-padding-y=0", "-e", *command])
     else:
-        raise ValueError("screensaver: start, current, set NAME, or edit")
+        raise ValueError("screensaver: start, current, set NAME, edit, image [PATH], or reset")
 
 
 def screensaver_worker(args):
@@ -1029,16 +1187,16 @@ def screensaver_worker(args):
     import tty
     name = state().get("screensaver", "naruto")
     path = STATE / "screensaver.txt" if name == "custom" else DATA / "screensavers" / (name + ".txt")
-    if not path.is_file():
+    if name != "matrix" and not path.is_file():
         raise ValueError(f"Missing screensaver artwork: {path}")
     previous = termios.tcgetattr(sys.stdin)
     child = None
     try:
         tty.setcbreak(sys.stdin.fileno())
         while True:
-            child = subprocess.Popen(["tte", "-i", str(path), "--frame-rate", "30", "--canvas-width", "0", "--canvas-height", "0",
-                                      "--anchor-canvas", "c", "--anchor-text", "c", "--random-effect", "--exclude-effects", "dev_worm", "--no-eol"],
-                                     stdin=subprocess.DEVNULL)
+            command = ["cmatrix", "-abs", "-u", "4"] if name == "matrix" else ["tte", "-i", str(path), "--frame-rate", "30", "--canvas-width", "0", "--canvas-height", "0",
+                       "--anchor-canvas", "c", "--anchor-text", "c", "--random-effect", "--exclude-effects", "dev_worm", "--no-eol"]
+            child = subprocess.Popen(command, stdin=None if name == "matrix" else subprocess.DEVNULL)
             while child.poll() is None:
                 if select.select([sys.stdin], [], [], .2)[0]:
                     return
@@ -1050,6 +1208,8 @@ def screensaver_worker(args):
                     return
             if child.returncode:
                 raise ValueError("Screensaver animation exited unsuccessfully")
+            if name == "matrix":
+                return
     finally:
         if child is not None and child.poll() is None:
             child.terminate()
@@ -1085,7 +1245,11 @@ def menu(args):
             families = run(["fc-list", ":spacing=mono", "--format", "%{family[0]}\n"], capture=True).stdout.splitlines()
             choices = {("●  " if family == selected_font() else "○  ") + family: ["font", "set", family] for family in sorted(set(families))}
         elif group == "config":
-            choices = {name: ["config", name] for name in ["Hyprland", "Keybindings", "Input", "Monitors", "Hypridle", "Hyprlock", "Night light", "Walker", "Waybar", "Desktop menu"]}
+            choices = {name: ["config", name] for name in ["Hyprland configuration", "Hyprland", "Keybindings", "Input", "Monitors", "Hypridle", "Hyprlock", "Night light", "SwayOSD", "Walker", "Waybar", "XCompose", "Desktop menu"]}
+        elif group in ("hardware", "toggle"):
+            devices = json.loads(run(["hyprctl", "-j", "devices"], capture=True).stdout)
+            if not any("touchpad" in m.get("name", "").lower() for m in devices.get("mice", [])):
+                choices = {label: command for label, command in choices.items() if command != ["toggle", "touchpad"]}
         elif group == "power-profile":
             result = run(["powerprofilesctl", "list"], capture=True, check=False)
             choices = {name.replace("-", " ").title(): ["exec", "powerprofilesctl", "set", name] for name in ("power-saver", "balanced", "performance") if re.search(r"(?m)^\s*\*?\s*" + name + r":", result.stdout)}
@@ -1249,6 +1413,7 @@ def dispatch(command, args):
                  "lock": lock, "lock-worker": lock_worker, "idle-worker": idle_worker, "capture": capture, "reminder": reminder, "menu": menu,
                  "transcode": transcode, "session": session, "monitor-watch": monitor_watch,
                  "font": font, "appearance": appearance, "config": edit_config, "clipboard": clipboard,
+                 "share": share, "about": about,
                  "screensaver": screensaver, "screensaver-worker": screensaver_worker}
     if command in functions:
         return functions[command](args)
@@ -1314,8 +1479,6 @@ def dispatch(command, args):
             run(["systemctl", args[0]])
         else:
             raise ValueError("power: suspend, reboot, poweroff, or logout")
-    elif command == "about":
-        terminal(["--shell", "fastfetch; read -r -n 1 -s"])
     elif command == "guide":
         root = expand(os.environ.get("DOTFILES", HOME / "nixos-config/dotfiles")).resolve().parent
         launch(["editor", str(root / "docs/DESKTOP-MENUS.md")])

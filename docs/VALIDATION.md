@@ -6,6 +6,17 @@ All builds run in an isolated checkout and Docker Nix store. The reference Arch 
 
 ## Current-source results
 
+### Complete submenu audit — 2026-10-22
+
+The followup compares every reference menu definition against the NixOS port. Install/Remove/Update stay absent; the resulting behavior and deliberate differences are listed in [DESKTOP-MENUS.md](DESKTOP-MENUS.md). Clipboard/file/folder sharing, visible reminder messages, About artwork, screensaver image/reset/automatic controls, declarative defaults and missing configuration entries are restored. Hardware menus omit absent touchpads and describe the supported display controls accurately. The Spotify focus shortcut, bounded input-only udev lookup and picker-workspace exclusions match the reference. No background service was added.
+
+- All **46** isolated behavior tests pass, including real ImageMagick conversion of a synthetic transparent logo, private clipboard-export fixtures, visible reminder state, launch/focus and automatic-saver lock/duplicate guards.
+- `walker-layout` renders **21 menu views and five clipboard cases**. Every static submenu and the dynamic Theme/Font/Configuration/Power profile views pass GTK CSS/geometry checks. The menu list labels use the same ellipsis behavior as Walker's native dmenu labels. Screenshots were visually inspected; long recording/appearance labels were shortened for readability. Hardware/font inputs are fixtures, not a physical-session capture.
+- `portable-syntax` still passes 172 scripts, 745 text targets and 260 package decisions; pinned Hyprland reports `config ok`. The updated desktop-tools package and complete desktop Home Manager environment build without running activation.
+- A disposable pseudo-terminal runs the actual Matrix worker with a fake Hyprland response. Both keypress and focus-loss exit pass; no real compositor is contacted.
+
+Evidence is in `.work/build/submenu-final-checks.{json,log}`, `submenu-{behavior,layout,syntax,hyprland}.log`, `submenu-home-manager*` and `screensaver-smoke.log`; inspected renders are under `.work/qa-submenus/`. This audit did not read private clipboard data, send files, reload the laptop, activate the configuration or build installation media. Real stationary-PC focus/input, capture/recording, service integration, hardware sleep and resource usage remain acceptance tests. Boot-unlock artwork, webcam overlays and multi-output screensaver replication remain unported; defaults and monitor configuration use declarative source edits.
+
 ### Menu and clipboard followup — 2026-10-22
 
 The `feat/nixos-menus-theme-clipboard` worktree adds the menu organization, appearance controls and clipboard changes described in [DESKTOP-MENUS.md](DESKTOP-MENUS.md), layered on `027f1fa` and its integrated Rust Desktop Ring, monitor profiles, scaling and sleep coordination. All edits stayed in this task's own worktree; the other worktrees were untouched.

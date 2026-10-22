@@ -9,7 +9,7 @@
 | Other application preferences | Plain terminal/viewer settings plus seed defaults for htop, Fcitx5, Wiremix, Lazydocker, Cliamp, Gnuplot, GitHub CLI, Cppman, Kdenlive, Qalculate, Pinta, and Xournal++ | Immutable portable settings live in Stow; mutable defaults are copied only when absent and never overwrite interactive settings |
 | Breakd preferences | Redacted `default.toml` | Seeded once into writable `config.toml`; interactive changes remain application state; room credential is provisioned separately |
 | Theme, wallpaper, file-backed gaps/input/display choices | Declared defaults | Writable XDG state, retained across configuration rebuilds |
-| Font, personal/desktop terminal colors, lock-screen background and custom screensaver text | Portable defaults and captured artwork | Writable desktop state; controls and scope in [DESKTOP-MENUS.md](DESKTOP-MENUS.md) |
+| Font, personal/desktop terminal colors, lock-screen background and custom screensaver/About artwork | Portable defaults and captured artwork | Writable desktop state; controls and scope in [DESKTOP-MENUS.md](DESKTOP-MENUS.md) |
 | Clipboard history and images | Empty on a fresh system | Elephant runtime cache; optional private transfer, never Git/Nix-store source |
 | Browser/1Password/mail/VPN/Canvas authentication | None | Fresh login or deliberate encrypted private transfer |
 | Browser extensions | Plain source under `.local/share/browser-extensions` | Load unpacked; verify IDs and native-messaging permissions |
