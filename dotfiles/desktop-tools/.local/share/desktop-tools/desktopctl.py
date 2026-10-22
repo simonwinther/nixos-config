@@ -20,6 +20,7 @@ import tempfile
 import time
 import tomllib
 import uuid
+from xml.sax.saxutils import escape as xml_escape
 
 HOME = Path.home()
 CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", HOME / ".config"))
@@ -139,15 +140,63 @@ def selected_theme():
     return state().get("theme", settings().get("defaultTheme", "tokyoled"))
 
 
+def selected_font():
+    return state().get("font", settings().get("defaultFont", "JetBrainsMono Nerd Font"))
+
+
+def font(args):
+    action = args[0] if args else "current"
+    if action == "current":
+        print(selected_font())
+        return
+    families = sorted(set(run(["fc-list", ":spacing=mono", "--format", "%{family[0]}\n"], capture=True).stdout.splitlines()))
+    if action == "list":
+        print("\n".join(families))
+        return
+    if action != "set" or len(args) not in (2, 3) or args[1] not in families or (len(args) == 3 and args[2] != "--no-reload"):
+        raise ValueError("font: list, current, or set an installed monospace font")
+    with state_lock():
+        value = state(); value["font"] = args[1]; save_state(value)
+        prepare_theme()
+    if "--no-reload" not in args:
+        run(["gsettings", "set", "org.gnome.desktop.interface", "monospace-font-name", args[1] + " 11"], check=False)
+        run(["makoctl", "reload"], check=False)
+        run(["pkill", "-USR2", "-u", str(os.getuid()), "-x", "ghostty"], check=False)
+        run(["pkill", "-USR1", "-u", str(os.getuid()), "-x", "kitty"], check=False)
+        restart("theme")
+
+
+def prepare_terminal_theme(c, follow_theme):
+    family = selected_font()
+    quoted = json.dumps(family)
+    ghostty = f"font-family = \"\"\nfont-family = {quoted}\n"
+    if follow_theme:
+        ghostty += "theme =\n" + "\n".join(f"{key} = {c[key]}" for key in ("background", "foreground")) + f"\ncursor-color = {c['cursor']}\n"
+        ghostty += "\n".join(f"palette = {i}={c[f'color{i}']}" for i in range(16)) + "\n"
+        ghostty += f"selection-background = {c.get('selection_background', c['accent'])}\nselection-foreground = {c.get('selection_foreground', c['background'])}\n"
+    atomic_write(STATE / "theme/ghostty.conf", ghostty)
+    kitty = "\n".join(f"{key} {c[key]}" for key in ("background", "foreground", "cursor")) + "\n"
+    kitty += "\n".join(f"color{i} {c[f'color{i}']}" for i in range(16)) + f"\nfont_family {family}\n"
+    atomic_write(STATE / "theme/kitty.conf", kitty)
+    alacritty = f"[font]\nnormal = {{ family = {quoted}, style = 'Regular' }}\nbold = {{ family = {quoted}, style = 'Bold' }}\nitalic = {{ family = {quoted}, style = 'Italic' }}\n"
+    alacritty += f"[colors.primary]\nbackground = '{c['background']}'\nforeground = '{c['foreground']}'\n[colors.cursor]\ncursor = '{c['cursor']}'\ntext = '{c['background']}'\n"
+    names = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]
+    for offset, section in [(0, "normal"), (8, "bright")]:
+        alacritty += f"[colors.{section}]\n" + "\n".join(f"{name} = '{c[f'color{i + offset}']}'" for i, name in enumerate(names)) + "\n"
+    atomic_write(STATE / "theme/alacritty.toml", alacritty)
+    atomic_write(STATE / "fontconfig.conf", '<?xml version="1.0"?>\n<fontconfig><match target="pattern"><test name="family"><string>monospace</string></test><edit name="family" mode="assign" binding="strong"><string>' + xml_escape(family) + '</string></edit></match></fontconfig>\n')
+
+
 def colors(path):
     palette = tomllib.loads((path / "colors.toml").read_text())
     for key in ("accent", "foreground", "background", *[f"color{i}" for i in range(16)]):
         if not re.fullmatch(r"#[0-9a-fA-F]{6}", palette.get(key, "")):
             raise ValueError(f"Invalid or missing color {key} in {path.name}")
+    palette.setdefault("cursor", palette["accent"])
     return palette
 
 
-def prepare_theme(name=None):
+def prepare_theme(name=None, *, follow_terminal=None):
     name = name or selected_theme()
     source = theme_path(name)
     c = colors(source)
@@ -173,7 +222,11 @@ def prepare_theme(name=None):
     }
     for filename, fallback in templates.items():
         original = source / filename
-        atomic_write(target / filename, original.read_text() if original.is_file() else fallback)
+        content = original.read_text() if original.is_file() else fallback
+        if filename == "mako.ini":
+            content = re.sub(r"(?m)^font=.*$", lambda _: "font=" + selected_font() + " 11", content)
+        atomic_write(target / filename, content)
+    prepare_terminal_theme(c, state().get("terminalTheme", False) if follow_terminal is None else follow_terminal)
     atomic_write(target / "colors.toml", (source / "colors.toml").read_text())
     btop = source / "btop.theme"
     fallback = "\n".join(f'theme[{key}]="{value}"' for key, value in {
@@ -193,14 +246,17 @@ def prepare_theme(name=None):
         marker.unlink()
     atomic_write(target / "name", name + "\n")
     # The runtime search path lets Walker find generated CSS without writing to managed configuration.
-    walker = RUNTIME / "walker/themes/desktop-rounded"
-    template = CONFIG / "walker/templates/rounded"
-    if template.is_dir():
+    template_root = CONFIG / "walker/templates"
+    for template in sorted(template_root.iterdir()) if template_root.is_dir() else []:
+        if not template.is_dir():
+            continue
+        walker = RUNTIME / "walker/themes" / ("desktop-" + template.name)
         for item in template.iterdir():
             if item.is_file():
                 content = item.read_text()
                 if item.name == "style.css":
                     content = (target / "walker.css").read_text() + "\n" + content
+                    content += "\n* { font-family: " + json.dumps(selected_font()) + ", monospace; }\n"
                 atomic_write(walker / item.name, content)
     os.environ["XDG_CONFIG_DIRS"] = str(RUNTIME) + ":" + os.environ.get("XDG_CONFIG_DIRS", "/etc/xdg")
     return source, c, light
@@ -237,12 +293,18 @@ def theme(args):
     elif action in ("init", "set"):
         name = args[1] if action == "set" and len(args) > 1 else selected_theme()
         with state_lock():
-            source, _, light = prepare_theme(name)
-            value = state(); value["theme"] = name; save_state(value)
+            source, _, light = prepare_theme(name, follow_terminal=True if action == "set" else None)
+            value = state(); value["theme"] = name
+            if action == "set":
+                value["terminalTheme"] = True
+                value["desktopTheme"] = True
+            save_state(value)
         if action == "set" and "--no-reload" not in args:
             apply_appearance(source, light)
             run(["hyprctl", "reload"], check=False)
             run(["makoctl", "reload"], check=False)
+            run(["pkill", "-USR2", "-u", str(os.getuid()), "-x", "ghostty"], check=False)
+            run(["pkill", "-USR1", "-u", str(os.getuid()), "-x", "kitty"], check=False)
             restart("theme")
     elif action == "generate":
         image_args = [x for x in args[1:] if not x.startswith("--")]
@@ -292,6 +354,8 @@ def apply_appearance(source, light):
         ("icon-theme", (source / "icons.theme").read_text().strip() if (source / "icons.theme").exists() else "Yaru-magenta"),
     ])
     values.update(read_json(CONFIG / "desktop/interface.json"))
+    if state().get("font"):
+        values["monospace-font-name"] = selected_font() + " 11"
     for key, value in values.items():
         run(["gsettings", "set", "org.gnome.desktop.interface", key, value], check=False)
 
@@ -411,6 +475,22 @@ def launch(args):
         raise ValueError(f"Unknown launch action: {what}")
 
 
+def bar_stylesheet(style, scale):
+    if scale == 1.0:
+        return "@import " + json.dumps(str(style)) + ";\n"
+
+    def inline(path, seen=()):
+        path = path.resolve()
+        if path in seen:
+            raise ValueError(f"Circular Waybar stylesheet import: {path}")
+        return re.sub(r'''@import\s+["']([^"']+)["']\s*;''',
+                      lambda match: inline(path.parent / match[1], (*seen, path)), path.read_text())
+
+    # Imported light/base rules must be scaled together; their relative paths
+    # would otherwise resolve against the generated runtime directory.
+    return re.sub(r"(?<![\w.])([0-9]+(?:\.[0-9]+)?)px", lambda m: f"{float(m[1]) * scale:g}px", inline(style))
+
+
 def run_application(args):
     if not args:
         raise ValueError("run requires an application")
@@ -420,13 +500,15 @@ def run_application(args):
     _, _, light = prepare_theme()
     raw = executable(app)
     if app == "walker":
-        rest = ["--theme", "desktop-rounded", *rest]
+        if not any(x in ("-t", "--theme") or x.startswith("--theme=") for x in rest):
+            rest = ["--theme", "desktop-rounded", *rest]
     elif app == "mako":
         source = (CONFIG / "mako/config").read_text().replace("~/.local/state/desktop", str(STATE))
         target = RUNTIME / "mako.conf"; atomic_write(target, source)
         rest = ["--config", str(target), *rest]
     elif app == "swayosd-server":
         css = (STATE / "theme/swayosd.css").read_text() + (CONFIG / "swayosd/style.css").read_text()
+        css += "\nlabel { font-family: " + json.dumps(selected_font()) + "; }\n"
         target = RUNTIME / "swayosd.css"; atomic_write(target, css)
         rest = ["--style", str(target), *rest]
     elif app == "btop":
@@ -466,11 +548,6 @@ def run_application(args):
                 if alternate.exists():
                     style = alternate
             text = re.sub(r'("NordVPN"\s*:\s*")[^"]*(")', lambda m: m[1] + ("nordvpn-tray-black" if light else "nordvpn-tray-white") + m[2], text)
-            if scale != 1.0:
-                css = re.sub(r"(?<![\w.])([0-9]+(?:\.[0-9]+)?)px", lambda m: f"{float(m[1]) * scale:g}px", style.read_text())
-                scaled_style = RUNTIME / ("waybar-" + style.name)
-                atomic_write(scaled_style, css)
-                style = scaled_style
             target = RUNTIME / ("waybar-" + source.name); atomic_write(target, text)
             filtered = []
             skip = False
@@ -480,13 +557,46 @@ def run_application(args):
                 if arg in ("-c", "--config", "-s", "--style"):
                     skip = True; continue
                 filtered.append(arg)
-            rest = ["--config", str(target), "--style", str(style), *filtered]
+            css = bar_stylesheet(style, scale) + "\n* { font-family: " + json.dumps(selected_font()) + ", 'Symbols Nerd Font'; }\n"
+            if state().get("desktopTheme"):
+                c = colors(theme_path(selected_theme()))
+                css += "\n".join(f"@define-color {key} {value};" for key, value in {
+                    "text": c["foreground"], "subtext": c["color7"], "blue": c["accent"],
+                    "mauve": c["color5"], "green": c["color2"], "red": c["color1"],
+                    "yellow": c["color3"], "base": c["background"],
+                }.items()) + "\n"
+            runtime_style = RUNTIME / ("waybar-" + style.name)
+            atomic_write(runtime_style, css)
+            rest = ["--config", str(target), "--style", str(runtime_style), *filtered]
     os.execv(raw, [raw, *rest])
 
 
 def launcher(args):
+    if any(args[i] in ("-m", "--modules") and args[i + 1] == "clipboard" for i in range(len(args) - 1)):
+        return clipboard(args)
     run(["systemctl", "--user", "start", "desktop-elephant.service", "desktop-walker.service"], check=False)
     run_application(["walker", "--width", "644", "--maxheight", "300", "--minheight", "300", *args])
+
+
+def clipboard(args):
+    width, height = 1000, 520
+    try:
+        monitors = json.loads(run(["hyprctl", "-j", "monitors"], capture=True, check=False).stdout)
+        monitor = next((m for m in monitors if m.get("focused")), monitors[0] if monitors else {})
+        scale = max(float(monitor.get("scale", 1)), 0.1)
+        w, h = monitor.get("width", 1920), monitor.get("height", 1080)
+        if monitor.get("transform", 0) in (1, 3, 5, 7):
+            w, h = h, w
+        width, height = min(width, int(w / scale) - 80), min(height, int(h / scale) - 160)
+    except (OSError, ValueError, TypeError):
+        pass
+    compact = width < 900 or height < 460
+    width, height = max(360, width), max(300, height)
+    run(["systemctl", "--user", "start", "desktop-elephant.service", "desktop-walker.service"], check=False)
+    modules = [] if any(x in args for x in ("-m", "--modules")) else ["-m", "clipboard"]
+    run_application(["walker", "--theme", "desktop-clipboard-compact" if compact else "desktop-clipboard",
+                     "--width", str(width), "--height", str(height),
+                     *modules, *args])
 
 
 def toggle(args):
@@ -641,7 +751,7 @@ def lock_worker(args):
         if shutil.which("1password"):
             background(["1password", "--lock"])
         run(["hyprctl", "switchxkblayout", "all", "0"], check=False)
-        source = (CONFIG / "hypr/hyprlock.conf").read_text().replace("~/.local/state/desktop", str(STATE))
+        source = lock_config()
         target = RUNTIME / "hyprlock.conf"; atomic_write(target, source)
         child = subprocess.Popen(["hyprlock", "--config", str(target)])
         if "--only" not in args:
@@ -827,18 +937,132 @@ def reminder(args):
              f"--on-active={minutes * 60}s", "notify-send", "Reminder", message])
 
 
+def edit_config(args):
+    choices = {
+        "Hyprland": "hypr/.config/hypr/looknfeel.lua", "Keybindings": "hypr/.config/hypr/bindings.lua",
+        "Input": "hypr/.config/hypr/input.lua", "Monitors": "hypr/.config/hypr/monitors.lua",
+        "Hypridle": "hypr/.config/hypr/hypridle.conf", "Hyprlock": "hypr/.config/hypr/hyprlock.conf",
+        "Night light": "hypr/.config/hypr/hyprsunset.conf", "Walker": "walker/.config/walker/config.toml",
+        "Waybar": "waybar/.config/waybar/config.jsonc", "Desktop menu": "desktop-settings/.config/desktop/menus.json",
+    }
+    if len(args) != 1 or args[0] not in choices:
+        raise ValueError("config: " + ", ".join(choices))
+    root = expand(os.environ.get("DOTFILES", HOME / "nixos-config/dotfiles")).resolve()
+    if args[0] == "Monitors":
+        host = socket.gethostname()
+        path = root.parent / "hosts" / (host if host in ("lambda", "desktop") else "desktop") / "monitors.lua"
+    else:
+        path = root / choices[args[0]]
+    if not path.is_file() or str(root).startswith("/nix/store/"):
+        raise ValueError("Open an editable nixos-config checkout and set DOTFILES to its dotfiles directory")
+    launch(["editor", str(path)])
+
+
+def lock_config():
+    source = (CONFIG / "hypr/hyprlock.conf").read_text().replace("~/.local/state/desktop", str(STATE))
+    source = re.sub(r"(?m)^(\s*font_family\s*=).*$", lambda m: m[1] + " " + selected_font(), source)
+    image = state().get("lockBackground")
+    if image and expand(image).is_file():
+        atomic_link(STATE / "lock-background", expand(image).resolve())
+        source = source.replace(str(STATE / "background"), str(STATE / "lock-background"))
+    return source
+
+
+def appearance(args):
+    if args[:1] == ["terminal-colors"] and args[1:] in (["personal"], ["desktop"]):
+        with state_lock():
+            value = state(); value["terminalTheme"] = args[1] == "desktop"; save_state(value)
+            prepare_theme()
+        run(["pkill", "-USR2", "-u", str(os.getuid()), "-x", "ghostty"], check=False)
+        restart("theme")
+    elif args == ["lock-background", "reset"]:
+        with state_lock():
+            value = state(); value.pop("lockBackground", None); save_state(value)
+    elif args[:1] == ["lock-background"]:
+        if len(args) > 1:
+            image = expand(args[1]).resolve()
+        else:
+            result = run(["zenity", "--file-selection", "--title=Choose lock screen background", "--file-filter=Images | *.png *.jpg *.jpeg *.webp"], capture=True, check=False)
+            if result.returncode or not result.stdout.strip():
+                return
+            image = expand(result.stdout.strip()).resolve()
+        if not image.is_file() or image.suffix.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
+            raise ValueError("Choose an existing PNG, JPEG or WebP image")
+        with state_lock():
+            value = state(); value["lockBackground"] = str(image); save_state(value)
+    else:
+        raise ValueError("appearance: terminal-colors personal|desktop, or lock-background [IMAGE|reset]")
+
+
+def screensaver(args):
+    action = args[0] if args else "start"
+    name = state().get("screensaver", "naruto")
+    if action == "current":
+        print(name)
+    elif action == "set" and len(args) == 2:
+        if args[1] not in ("naruto", "tomoe-sharingan", "matrix", "custom"):
+            raise ValueError("Unknown screensaver")
+        if args[1] == "custom" and not (STATE / "screensaver.txt").is_file():
+            raise ValueError("Use screensaver edit to create your artwork first")
+        with state_lock():
+            value = state(); value["screensaver"] = args[1]; save_state(value)
+    elif action == "edit":
+        target = STATE / "screensaver.txt"
+        if target.is_symlink():
+            raise ValueError("Custom screensaver artwork must be a writable state file, not a link")
+        if not target.exists():
+            atomic_write(target, (DATA / "screensavers/naruto.txt").read_text())
+        screensaver(["set", "custom"])
+        launch(["editor", str(target)])
+    elif action == "start":
+        command = [sys.executable, __file__, "screensaver-worker"] if name != "matrix" else ["cmatrix", "-ab"]
+        os.execvp("ghostty", ["ghostty", "--class=org.desktop.screensaver", "--fullscreen=true", "--background-opacity=1",
+                             "--font-size=18", "--window-padding-x=0", "--window-padding-y=0", "-e", *command])
+    else:
+        raise ValueError("screensaver: start, current, set NAME, or edit")
+
+
+def screensaver_worker(args):
+    # Own only this child: leaving the saver never kills unrelated TTE processes.
+    import select
+    import termios
+    import tty
+    name = state().get("screensaver", "naruto")
+    path = STATE / "screensaver.txt" if name == "custom" else DATA / "screensavers" / (name + ".txt")
+    if not path.is_file():
+        raise ValueError(f"Missing screensaver artwork: {path}")
+    previous = termios.tcgetattr(sys.stdin)
+    child = None
+    try:
+        tty.setcbreak(sys.stdin.fileno())
+        while True:
+            child = subprocess.Popen(["tte", "-i", str(path), "--frame-rate", "30", "--canvas-width", "0", "--canvas-height", "0",
+                                      "--anchor-canvas", "c", "--anchor-text", "c", "--random-effect", "--exclude-effects", "dev_worm", "--no-eol"],
+                                     stdin=subprocess.DEVNULL)
+            while child.poll() is None:
+                if select.select([sys.stdin], [], [], .2)[0]:
+                    return
+                try:
+                    active = json.loads(run(["hyprctl", "-j", "activewindow"], capture=True, check=False).stdout)
+                    if active.get("class") != "org.desktop.screensaver":
+                        return
+                except (OSError, ValueError):
+                    return
+            if child.returncode:
+                raise ValueError("Screensaver animation exited unsuccessfully")
+    finally:
+        if child is not None and child.poll() is None:
+            child.terminate()
+            try:
+                child.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                child.kill(); child.wait()
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, previous)
+        print("\033[?25h", end="", flush=True)
+
+
 def menu(args):
     group = args[0] if args else "main"
-    menus = {
-        "main": {"Applications": ["launcher"], "Themes": ["menu", "theme"], "Wallpapers": ["wallpaper", "grid"], "Capture": ["menu", "capture"], "Toggle": ["menu", "toggle"], "Hardware": ["menu", "hardware"], "System": ["menu", "system"]},
-        "system": {"Lock": ["lock"], "Sleep": ["power", "suspend"], "Log out": ["power", "logout"], "Restart": ["power", "reboot"], "Shut down": ["power", "poweroff"]},
-        "capture": {"Screenshot": ["capture", "screenshot"], "Region": ["capture", "screenshot", "region"], "Window": ["capture", "screenshot", "windows"], "Full output": ["capture", "screenshot", "fullscreen"], "Edit last screenshot": ["capture", "edit-latest"], "Record / stop": ["capture", "record"], "Extract text": ["capture", "ocr"]},
-        "screenrecord": {"Choose output/window with audio / stop": ["capture", "record"], "Record selected region / stop": ["capture", "record", "region"], "Record silently / stop": ["capture", "record", "screen", "--silent"], "Record desktop and microphone / stop": ["capture", "record", "screen", "--microphone"]},
-        "toggle": {x.title(): ["toggle", x] for x in ["bar", "idle", "nightlight", "notifications", "gaps", "square", "touchpad"]},
-        "hardware": {"Wi-Fi": ["launch", "wifi"], "Bluetooth": ["launch", "bluetooth"], "Audio": ["launch", "audio"]},
-        "share": {"LocalSend": ["exec", "localsend"], "Send to iPhone": ["exec", "send-to-iphone"], "Files from iPhone": ["iphone-folder"]},
-        "theme": {**{p.name: ["theme", "set", p.name] for d in theme_directories() if d.exists() for p in d.iterdir() if p.is_dir()}, "Generate from wallpaper…": ["theme", "generate"]},
-    }
     if group == "background":
         wallpaper(["grid"]); return
     if group == "reminder-set":
@@ -848,15 +1072,42 @@ def menu(args):
             if not message.returncode:
                 reminder([delay.stdout.strip(), message.stdout.strip()])
         return
-    if group not in menus:
-        raise ValueError(f"Unknown menu: {group}")
     prepare_theme()
-    choices = menus[group]
-    result = run([executable("walker"), "--theme", "desktop-rounded", "--dmenu", "--width", "295", "--minheight", "1", "--maxheight", "630", "--placeholder", group.title()],
-                 input="\n".join(choices) + "\n", check=False, capture=True)
-    selected = result.stdout.strip()
-    if not result.returncode and selected in choices:
-        return dispatch(*choices[selected][:1], choices[selected][1:])
+    menus = read_json(CONFIG / "desktop/menus.json")
+    stack = []
+    while True:
+        choices = dict(menus.get(group, {}).get("items", {}))
+        if group == "theme":
+            names = sorted({p.name for d in theme_directories() if d.is_dir() for p in d.iterdir() if p.is_dir()})
+            choices = {("●  " if name == selected_theme() else "○  ") + name.replace("-", " ").title(): ["theme", "set", name] for name in names}
+            choices["󰸌  Generate from wallpaper…"] = ["theme", "generate"]
+        elif group == "font":
+            families = run(["fc-list", ":spacing=mono", "--format", "%{family[0]}\n"], capture=True).stdout.splitlines()
+            choices = {("●  " if family == selected_font() else "○  ") + family: ["font", "set", family] for family in sorted(set(families))}
+        elif group == "config":
+            choices = {name: ["config", name] for name in ["Hyprland", "Keybindings", "Input", "Monitors", "Hypridle", "Hyprlock", "Night light", "Walker", "Waybar", "Desktop menu"]}
+        elif group == "power-profile":
+            result = run(["powerprofilesctl", "list"], capture=True, check=False)
+            choices = {name.replace("-", " ").title(): ["exec", "powerprofilesctl", "set", name] for name in ("power-saver", "balanced", "performance") if re.search(r"(?m)^\s*\*?\s*" + name + r":", result.stdout)}
+        if not choices:
+            raise ValueError(f"No choices available for menu: {group}")
+        if stack:
+            choices["󰁍  Back"] = ["back"]
+        result = run([executable("walker"), "--theme", "desktop-menu", "--dmenu", "--width", "350", "--minheight", "1", "--maxheight", "630", "--placeholder", menus.get(group, {}).get("title", group.replace("-", " ").title() + "…")],
+                     input="\n".join(choices) + "\n", check=False, capture=True)
+        selected = result.stdout.strip()
+        if result.returncode or selected not in choices:
+            if not stack:
+                return
+            group = stack.pop()
+            continue
+        command, *rest = choices[selected]
+        if command == "back":
+            group = stack.pop()
+        elif command == "menu" and rest[0] not in ("background", "reminder-set"):
+            stack.append(group); group = rest[0]
+        else:
+            return dispatch(command, rest)
 
 
 def transcode(args):
@@ -996,7 +1247,9 @@ def dispatch(command, args):
     functions = {"theme": theme, "wallpaper": wallpaper, "terminal": terminal, "launch": launch, "run": run_application,
                  "launcher": launcher, "toggle": toggle, "display": display, "brightness": brightness, "osd": osd,
                  "lock": lock, "lock-worker": lock_worker, "idle-worker": idle_worker, "capture": capture, "reminder": reminder, "menu": menu,
-                 "transcode": transcode, "session": session, "monitor-watch": monitor_watch}
+                 "transcode": transcode, "session": session, "monitor-watch": monitor_watch,
+                 "font": font, "appearance": appearance, "config": edit_config, "clipboard": clipboard,
+                 "screensaver": screensaver, "screensaver-worker": screensaver_worker}
     if command in functions:
         return functions[command](args)
     if command == "prepare":
@@ -1061,8 +1314,11 @@ def dispatch(command, args):
             run(["systemctl", args[0]])
         else:
             raise ValueError("power: suspend, reboot, poweroff, or logout")
-    elif command == "screensaver":
-        terminal(["--app-id", "org.desktop.screensaver", "cmatrix", "-ab"])
+    elif command == "about":
+        terminal(["--shell", "fastfetch; read -r -n 1 -s"])
+    elif command == "guide":
+        root = expand(os.environ.get("DOTFILES", HOME / "nixos-config/dotfiles")).resolve().parent
+        launch(["editor", str(root / "docs/DESKTOP-MENUS.md")])
     elif command == "exec" and args:
         os.execvp(args[0], args)
     else:
@@ -1072,7 +1328,7 @@ def dispatch(command, args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", help="theme, wallpaper, launcher, menu, launch, terminal, capture, reminder, toggle, lock, session, prepare, or path")
+    parser.add_argument("command", help="theme, font, appearance, wallpaper, clipboard, launcher, menu, launch, terminal, capture, reminder, toggle, lock, screensaver, config, session, prepare, or path")
     parser.add_argument("args", nargs=argparse.REMAINDER)
     parsed = parser.parse_args(argv)
     try:

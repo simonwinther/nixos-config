@@ -11,6 +11,7 @@
   jq,
   libnotify,
   fontconfig,
+  power-profiles-daemon,
   glib,
   dconf,
   nautilus,
@@ -60,6 +61,7 @@ stdenvNoCC.mkDerivation {
           jq
           libnotify
           fontconfig
+          power-profiles-daemon
           glib
           dconf
         ]

@@ -6,6 +6,22 @@ All builds run in an isolated checkout and Docker Nix store. The reference Arch 
 
 ## Current-source results
 
+### Menu and clipboard followup — 2026-10-22
+
+The `feat/nixos-menus-theme-clipboard` worktree adds the menu organization, appearance controls and clipboard changes described in [DESKTOP-MENUS.md](DESKTOP-MENUS.md), layered on `027f1fa` and its integrated Rust Desktop Ring, monitor profiles, scaling and sleep coordination. All edits stayed in this task's own worktree; the other worktrees were untouched.
+
+- The patched Walker 2.17.0 and Elephant 2.22.0 packages build. Walker's two launch-context tests and Elephant's two new clipboard regressions pass. The latter cover burst trimming, pinned-entry retention, distinct image files and mode-0600 image permissions.
+- `desktop-behavior` passes all **37** isolated tests, including Matugen integration, menu navigation/cancellation, arbitrary-input rejection, every terminal palette, font persistence, lock-background fallback, scaled clipboard sizing and imported light-bar CSS scaling. The existing capture/transcode, sleep coordination and Hendrix tests also pass.
+- `portable-syntax` passes with 172 scripts, 745 unique text targets, all 260 package decisions and all locked editor sources. `hyprland-config` reports `config ok` with the pinned compositor/plugin and a disposable home. `ring-integration` also passes with the combined configuration.
+- `walker-layout` passes six GTK render cases: the menu; dark clipboard text and image previews; stacked clipboard at 880 and 480 logical pixels; and the light clipboard palette. CSS parses and the requested window dimensions hold. Its Nix output contains preview PNGs. The minimal display has no accessibility-bus service; that test-session warning is not a target accessibility assessment.
+- Packaged Ghostty 1.3.1 accepts the initial personal configuration and all **21** generated palette configurations in a disposable Stow home. The actual scaled Ghostty configuration from the combined Home Manager generation also validates with personal colors and the desktop light palette.
+- The actual packaged Walker connects to an isolated Elephant fixture provider, renders the custom text preview and wraps a long URL. The native check exposed and corrected Walker's cancellation of fixed wrapper dimensions when scroll min/max flags are also provided. Its final preview is 1000 × 520 on a disposable 1280 × 800 X display. Upstream Wayland-layer-shell calls emit warnings in this X-only smoke test; it does not establish Wayland focus/input acceptance.
+- The complete desktop Home Manager environment builds successfully with the combined controls, templates, scaling, sleep integration and patched native packages. Its activation script was not run. Evaluation and build were separated to release evaluation memory.
+
+Evidence is under this worktree's `.work/build/`: `components.{json,log}`, `terminal-check.log`, `native-smoke.log`, `native-{walker,elephant}.log`, `native-clipboard.png`, `integrated-checks.{json,log}`, `integrated-home-manager-eval.log`, `integrated-home-manager.{json,log}` and `integrated-ghostty.log`. Extracted GTK renders are in `.work/qa-integrated/`. All history entries are synthetic; the reference clipboard and desktop services were untouched. Real Wayland copy/edit/filter actions, terminal reloads, screensaver interaction and multi-monitor appearance remain target-session checks. This worktree performed no ISO build, activation, private-state transfer or installation.
+
+### Recorded baseline
+
 | Check | Result and scope |
 | --- | --- |
 | Reference inventory | All 260 explicit package names and versions still match the recorded inventory. Every package has an installation, service, replacement or exclusion decision. |

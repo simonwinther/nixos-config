@@ -27,6 +27,9 @@ font-feature = "liga"
 # Keep color values in the theme files so they do not override switching.
 theme = light:SimonLight,dark:SimonDark
 
+# Interactive font/theme choices are generated outside Home Manager's links.
+config-file = ?~/.local/state/desktop/theme/ghostty.conf
+
 # Make Ghostty UI/chrome follow the active appearance too.
 window-theme = auto
 
