@@ -21,6 +21,11 @@ in
 })
 // {
   desktop-tools = tools;
+  obs-font = pkgs.callPackage ./obs-font.nix { };
+  obs-studio = import ./obs-studio.nix {
+    inherit pkgs;
+    obs-studio = unstable.obs-studio;
+  };
   desktop-ring = pkgs.callPackage ./desktop-ring.nix { rustPlatform = unstable.rustPlatform; };
   uipro = pkgs.callPackage ./uipro { };
   background-grid = pkgs.callPackage ./background-grid.nix { hyprland = compositor; };

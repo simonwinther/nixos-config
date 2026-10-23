@@ -14,6 +14,7 @@
     ./services.nix
     ./desktop-ring.nix
     ./applications.nix
+    ./obs.nix
     ./appearance.nix
     ./hendrix.nix
     ./rebuild.nix

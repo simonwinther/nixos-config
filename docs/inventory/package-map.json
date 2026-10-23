@@ -930,8 +930,7 @@
   {
     "arch": "obs-studio",
     "referenceVersion": "32.2.2-1",
-    "kind": "package",
-    "source": "stable",
+    "kind": "custom",
     "attribute": "obs-studio",
     "group": "applications"
   },
