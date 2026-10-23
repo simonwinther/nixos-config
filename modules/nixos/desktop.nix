@@ -162,6 +162,9 @@ in
       polkitPolicyOwners = [ "simon" ];
     };
     services.flatpak.enable = true;
+    # Home Manager waits for the initial Flatpak downloads. Android Studio alone
+    # can exceed its upstream five-minute activation deadline.
+    systemd.services.home-manager-simon.serviceConfig.TimeoutStartSec = lib.mkForce "30min";
     services.udev.packages = [ pkgs.brightnessctl ];
     programs.ydotool.enable = true;
     users.users.simon.extraGroups = [ config.programs.ydotool.group ];
