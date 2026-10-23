@@ -76,6 +76,7 @@ in
       tesseract
       imagemagick
       ffmpeg
+      sox
       gpu-screen-recorder
       playerctl
       wireplumber
