@@ -104,12 +104,14 @@ test("request errors reveal HTTP status without logging session or response cont
 test("background forwards only top-frame snapshots to the native host and reports native failures", async () => {
   let listener;
   let completed;
+  let installed;
   const sent = [];
   const badges = [];
   const refreshes = [];
   const chrome = {
     runtime: {
       onMessage: { addListener: (value) => { listener = value; } },
+      onInstalled: { addListener: (value) => { installed = value; } },
       sendNativeMessage: async (...args) => { sent.push(args); return { ok: true }; },
     },
     action: {
@@ -118,7 +120,9 @@ test("background forwards only top-frame snapshots to the native host and report
     },
     tabs: {
       sendMessage: async (...args) => { refreshes.push(args); }, onUpdated: { addListener: () => {} },
+      query: async () => [{ id: 7 }],
     },
+    scripting: { executeScript: async (value) => { sent.push(["inject", value]); } },
     webRequest: { onCompleted: { addListener: (value) => { completed = value; } } },
   };
   vm.runInNewContext(readFileSync(new URL("background.js", root), "utf8"), { chrome });
@@ -130,6 +134,11 @@ test("background forwards only top-frame snapshots to the native host and report
   const reply = await new Promise((resolve) => assert.equal(listener(message, sender, resolve), true));
   assert.equal(reply.ok, true);
   assert.equal(sent[0][0], "com.desktop.project_picker");
+  await new Promise((resolve) => listener({ type: "project-picker-error", code: "http_403", error: "HTTP 403" }, sender, resolve));
+  assert.equal(sent[1][1].action, "status");
+  assert.equal(sent[1][1].code, "http_403");
+  await installed();
+  assert.deepEqual(plain(sent[2][1].files), ["api.js", "content.js"]);
   chrome.runtime.sendNativeMessage = async () => { throw new Error("No native host"); };
   assert.equal((await new Promise((resolve) => listener(message, sender, resolve))).ok, false);
   assert.equal(badges.at(-1).text, "!");
@@ -159,6 +168,7 @@ function contentApp() {
     setInterval: (callback, delay) => { intervals.push({ callback, delay }); },
     ProjectPickerAPI: {
       requester: () => () => {},
+      errorCode: api.errorCode,
       collect: async (options) => { collections.push(options); return collector ? collector(options) : { complete: true }; },
     },
     chrome: { runtime: {
@@ -172,7 +182,8 @@ function contentApp() {
   install();
   return {
     timers, intervals, sent, collections, install,
-    focus(value) { focused = value; events[value ? "focus" : "blur"](); },
+    focus(value) { focused = value; events[value ? "focus" : "blur"]?.(); },
+    visibility(value) { document.visibilityState = value; events.visibilitychange(); },
     advance(value) { clock += value; },
     refresh() { handler({ type: "project-picker-refresh" }); },
     collect(callback) { collector = callback; },
@@ -186,19 +197,27 @@ function contentApp() {
   };
 }
 
-test("content sync is installed once and refreshes only while the page is focused", async () => {
+test("visible pages sync even when the picker takes keyboard focus", async () => {
   const app = contentApp();
   app.install();
   assert.equal(app.intervals.length, 1);
   assert.equal(app.intervals[0].delay, 300000);
   app.focus(false);
+  await app.tick();
+  assert.equal(app.collections.length, 1);
+  assert.equal(app.sent[0].type, "project-picker-status");
+  assert.equal(app.sent[1].type, "project-picker-snapshot");
+});
+
+test("hidden tabs stop scheduling requests until made visible", async () => {
+  const app = contentApp();
+  app.visibility("hidden");
   assert.equal(app.timers.size, 0);
   app.intervals[0].callback();
   assert.equal(app.timers.size, 0);
-  app.focus(true);
+  app.visibility("visible");
   await app.tick();
   assert.equal(app.collections.length, 1);
-  assert.equal(app.sent[0].type, "project-picker-snapshot");
   app.advance(300000);
   app.intervals[0].callback();
   await app.tick();
@@ -210,6 +229,7 @@ test("content coalesces mutations during a fetch into one follow-up refresh", as
   let release;
   app.collect(() => new Promise((resolve) => { release = resolve; }));
   const pending = app.tick();
+  await new Promise(setImmediate);
   app.refresh();
   app.refresh();
   release({ complete: true });
@@ -221,18 +241,24 @@ test("content coalesces mutations during a fetch into one follow-up refresh", as
   assert.equal(app.timers.size, 0);
 });
 
-test("focus loss aborts the old request and refocusing schedules a replacement", async () => {
+test("opening the picker or changing tabs does not discard an in-flight sync", async () => {
   const app = contentApp();
-  app.collect(({ signal }) => new Promise((resolve, reject) => {
-    signal.addEventListener("abort", () => reject(signal.reason), { once: true });
-  }));
+  let release;
+  app.collect(() => new Promise((resolve) => { release = resolve; }));
   const pending = app.tick();
+  await new Promise(setImmediate);
   app.focus(false);
-  app.focus(true);
+  app.visibility("hidden");
+  release({ complete: true });
   await pending;
-  assert.equal(app.collections[0].signal.aborted, true);
-  assert.equal(app.sent.length, 0);
-  app.collect(() => ({ complete: true }));
+  assert.equal(app.collections[0].signal.aborted, false);
+  assert.equal(app.sent.at(-1).type, "project-picker-snapshot");
+});
+
+test("content reports failure codes so the picker can display the cause", async () => {
+  const app = contentApp();
+  app.collect(() => { throw Object.assign(new Error("HTTP 403"), { code: "http_403" }); });
   await app.tick();
-  assert.equal(app.sent.length, 1);
+  assert.equal(app.sent.at(-1).type, "project-picker-error");
+  assert.equal(app.sent.at(-1).code, "http_403");
 });
