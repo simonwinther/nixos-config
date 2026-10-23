@@ -19,6 +19,7 @@
     ./rebuild.nix
     ./credentials.nix
     ./editors.nix
+    ./roblox-dev.nix
     (../../hosts + "/${host}/home.nix")
   ];
   options.desktop.outputs = {

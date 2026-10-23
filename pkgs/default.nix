@@ -15,6 +15,7 @@ let
   compositor = hyprspace.compositor;
 in
 (import ./extra-apps.nix { inherit pkgs unstable; })
+// (pkgs.callPackage ./roblox-dev { })
 // (import ./rust-desktop-tools.nix {
   inherit pkgs;
   hyprland = compositor;

@@ -26,5 +26,19 @@
     "branch": "stable",
     "origin": "flathub",
     "commit": "7b6430c703e8178baa536062099fc5a1e0c7cf213c0789695fa7660b62cb9d26"
+  },
+  {
+    "appId": "org.blender.Blender",
+    "arch": "x86_64",
+    "branch": "stable",
+    "origin": "flathub",
+    "commit": "f97247d9e87dca0bc28c6a01e51cd6425cf8b21c636d28514898b7315b21d521"
+  },
+  {
+    "appId": "org.vinegarhq.Vinegar",
+    "arch": "x86_64",
+    "branch": "stable",
+    "origin": "flathub",
+    "commit": "addf1c36ba534d500952e7dcd310b1afc8253670c85d4f078f0623c43d508f5f"
   }
 ]
