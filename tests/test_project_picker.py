@@ -107,6 +107,30 @@ class ProjectPickerTests(unittest.TestCase):
         self.assertEqual([record["url"] for record in records], [picker.MAIN_PAGE])
         self.assertIn("unreadable", header)
 
+    def test_sync_errors_show_in_the_picker_without_replacing_projects_or_saving_credentials(self):
+        picker.save_status({"code": "http_403", "accessToken": "not-for-disk"})
+        self.assertIn("HTTP 403", picker.entries()[1])
+        self.assertFalse(self.path.exists())
+        self.assertNotIn("not-for-disk", self.path.with_name("status.json").read_text())
+        picker.save_snapshot(snapshot())
+        original = self.path.read_bytes()
+        with patch.object(picker.time, "time", return_value=time.time() + 1):
+            picker.save_status({"code": "invalid_response"})
+        records, header = picker.entries()
+        self.assertEqual(records[1]["id"], FIRST)
+        self.assertIn("unsupported project list", header)
+        self.assertEqual(self.path.read_bytes(), original)
+        with self.assertRaises(ValueError):
+            picker.save_status({"code": "secret-token-or-arbitrary-message"})
+
+    def test_native_status_message_produces_an_actionable_header(self):
+        data = json.dumps({"action": "status", "code": "auth_required"}).encode()
+        destination = io.BytesIO()
+        self.assertEqual(picker.native_host(picker.EXTENSION_ORIGIN,
+                         io.BytesIO(struct.pack("=I", len(data)) + data), destination), 0)
+        self.assertTrue(json.loads(destination.getvalue()[4:])["ok"])
+        self.assertIn("Sign in", picker.entries()[1])
+
     def test_atomic_update_refuses_a_linked_cache(self):
         self.path.parent.mkdir(parents=True)
         target = Path(self.temp.name) / "precious"
