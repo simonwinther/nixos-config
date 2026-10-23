@@ -82,6 +82,7 @@ in
       pulseaudio
       libnotify
       fzf
+      atuin
       fd
       ripgrep
       jq
