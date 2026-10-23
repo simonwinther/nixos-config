@@ -82,7 +82,10 @@ in
   };
   systemd.user.targets.desktop-session.Unit = {
     Description = "Personal Hyprland desktop";
-    Requires = [ "desktop-prepare.service" ];
+    # Home Manager restarts preparation during updates. A Requires dependency
+    # would stop this target and its unchanged services, including the monitor
+    # manager, without bringing them back when preparation starts again.
+    Wants = [ "desktop-prepare.service" ];
     After = [ "desktop-prepare.service" ];
     BindsTo = [ "graphical-session.target" ];
     PartOf = [ "graphical-session.target" ];
