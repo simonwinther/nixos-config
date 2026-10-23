@@ -12,7 +12,10 @@ let
     name = "roblox-globalTypes.d.luau";
     url = "https://luau-lsp.pages.dev/type-definitions/globalTypes.RobloxScriptSecurity.d.luau";
     sha256 = "71698e2454aacef1a144a498ffc1d7ea80654b9593025344672bc9106997bf6a";
-    curlOptsList = [ "--user-agent" "nixos-config-runtime-audit" ];
+    curlOptsList = [
+      "--user-agent"
+      "nixos-config-runtime-audit"
+    ];
   };
   docs = fetchurl {
     name = "roblox-api-docs.json";
@@ -28,7 +31,10 @@ in
       url = "https://github.com/rojo-rbx/rokit/releases/download/v1.2.0/rokit-1.2.0-linux-x86_64.zip";
       sha256 = "951a7f3ec3d2a5e021fd1867d32f69f010ee4c2927f644b759578afc59c65fc0";
     };
-    nativeBuildInputs = [ unzip autoPatchelfHook ];
+    nativeBuildInputs = [
+      unzip
+      autoPatchelfHook
+    ];
     buildInputs = [ stdenv.cc.cc.lib ];
     unpackPhase = ''unzip "$src"'';
     dontBuild = true;

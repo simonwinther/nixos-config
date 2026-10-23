@@ -1,4 +1,10 @@
-{ config, lib, pkgs, packages, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  packages,
+  ...
+}:
 let
   data = "${config.xdg.dataHome}/roblox-dev";
   vinegar = "${config.home.homeDirectory}/.var/app/org.vinegarhq.Vinegar";
@@ -6,15 +12,22 @@ let
 in
 {
   config = lib.mkIf config.desktop.fullApplications {
-    home.packages = [ packages.rokit pkgs.vulkan-tools ];
+    home.packages = [
+      packages.rokit
+      pkgs.vulkan-tools
+    ];
     home.file = {
-      ".local/share/roblox-dev/globalTypes.d.luau".source = "${packages.roblox-editor-resources}/globalTypes.d.luau";
-      ".local/share/roblox-dev/api-docs.json".source = "${packages.roblox-editor-resources}/api-docs.json";
-      ".local/share/roblox-dev/nvim/parser/luau.so".source = "${packages.roblox-editor-resources}/parser/luau.so";
+      ".local/share/roblox-dev/globalTypes.d.luau".source =
+        "${packages.roblox-editor-resources}/globalTypes.d.luau";
+      ".local/share/roblox-dev/api-docs.json".source =
+        "${packages.roblox-editor-resources}/api-docs.json";
+      ".local/share/roblox-dev/nvim/parser/luau.so".source =
+        "${packages.roblox-editor-resources}/parser/luau.so";
     };
     services.flatpak.overrides.settings = {
       "org.vinegarhq.Vinegar".Context.filesystems = [
-        "!xdg-documents" "!xdg-pictures"
+        "!xdg-documents"
+        "!xdg-pictures"
         "${config.home.homeDirectory}/dev/roblox"
         "${config.home.homeDirectory}/roblox-builds"
       ];
