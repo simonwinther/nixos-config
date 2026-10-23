@@ -115,6 +115,7 @@ in
     ++ [ unstable.hyprland-preview-share-picker ]
     ++ (with packages; [
       desktop-tools
+      project-picker-tui
       background-grid
       hyprspace
       walker

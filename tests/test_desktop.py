@@ -44,6 +44,25 @@ class DesktopTests(unittest.TestCase):
         self.globals.stop()
         self.temp.cleanup()
 
+    def test_native_host_integration_registers_both_helpers_without_overwriting_links(self):
+        directory = self.config / "desktop"
+        directory.mkdir(exist_ok=True)
+        for template, name in [("native-host.json", "audio"), ("project-picker-native-host.json", "projects")]:
+            (directory / template).write_text(json.dumps({"name": name, "type": "stdio"}))
+        linked = self.config / "chromium/NativeMessagingHosts/projects.json"
+        linked.parent.mkdir(parents=True)
+        precious = self.home / "precious"
+        precious.write_text("preserve")
+        linked.symlink_to(precious)
+        with patch.object(ctl, "seed_preferences"), patch.object(ctl, "seed_application_preferences"), \
+                patch.object(ctl.shutil, "which", side_effect=lambda name: "/mock/bin/" + name):
+            ctl.integrate()
+        self.assertEqual(precious.read_text(), "preserve")
+        self.assertEqual(json.loads((self.config / "google-chrome/NativeMessagingHosts/projects.json").read_text())["path"],
+                         "/mock/bin/project-picker-host")
+        self.assertEqual(json.loads((linked.parent / "audio.json").read_text())["path"],
+                         "/mock/bin/chatgpt-dictate-audio-duck-host")
+
     def test_application_defaults_preserve_existing_dconf_and_seed_once(self):
         target = self.config / "desktop/applications.json"
         target.parent.mkdir(parents=True, exist_ok=True)

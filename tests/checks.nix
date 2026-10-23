@@ -223,7 +223,9 @@
     pkgs.runCommand "desktop-behavior"
       {
         nativeBuildInputs = [
-          pkgs.python3
+          (pkgs.python3.withPackages (python: [ python.pyte ]))
+          packages.project-picker-tui
+          pkgs.nodejs
           pkgs.matugen
           pkgs.bash
           pkgs.imagemagick
@@ -237,6 +239,7 @@
         export HOME="$TMPDIR/home" PYTHONDONTWRITEBYTECODE=1
         mkdir -p "$HOME"
         python -m unittest discover -s tests -v
+        node --test tests/project-picker.test.mjs
         mkdir -p "$TMPDIR/tools" "$TMPDIR/media"
         export TRANSCODE_TEST_CLIPBOARD="$TMPDIR/clipboard"
         cat > "$TMPDIR/tools/wl-copy" <<'SH'
