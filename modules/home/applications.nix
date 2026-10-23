@@ -27,6 +27,11 @@ in
     x11.enable = true;
   };
   gtk.enable = true;
+  # GTK uses these settings on X11/XWayland and its native text-input protocol
+  # on Wayland, without a global GTK_IM_MODULE override.
+  gtk.gtk2.extraConfig = ''gtk-im-module="fcitx"'';
+  gtk.gtk3.extraConfig.gtk-im-module = "fcitx";
+  gtk.gtk4.extraConfig.gtk-im-module = "fcitx";
   xdg.configFile."desktop/cursor.lua".text = ''
     hl.env("XCURSOR_THEME", ${builtins.toJSON interface.cursor-theme})
     hl.env("XCURSOR_SIZE", ${builtins.toJSON (toString interface.cursor-size)})
@@ -58,7 +63,8 @@ in
     ];
     packages = map (row: {
       appId = "${row.appId}/${row.arch}/${row.branch}";
-      inherit (row) commit;
+      # Inventory commits record the reference installation, but remotes can
+      # prune them. One unavailable downgrade blocks every subsequent app.
       origin = row.origin;
     }) inventory;
   };

@@ -134,7 +134,12 @@ in
     i18n.inputMethod = {
       enable = true;
       type = "fcitx5";
-      fcitx5.addons = [ pkgs.fcitx5-gtk ];
+      fcitx5 = {
+        addons = [ pkgs.fcitx5-gtk ];
+        # Hyprland provides the native Wayland input-method frontend. Global
+        # GTK/QT_IM_MODULE overrides bypass it and trigger Fcitx's warning.
+        waylandFrontend = true;
+      };
     };
     services.printing = {
       enable = true;
