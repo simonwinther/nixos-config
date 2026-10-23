@@ -21,7 +21,7 @@
   file,
   wl-clipboard,
   fd,
-  fzf,
+  project-picker-tui,
 }:
 stdenvNoCC.mkDerivation {
   pname = "desktop-tools";
@@ -34,7 +34,7 @@ stdenvNoCC.mkDerivation {
     cp desktopctl.py project_picker.py transcode.sh "$out/share/desktop-tools/"
     makeWrapper ${python3}/bin/python3 "$out/bin/project-picker" \
       --add-flags "$out/share/desktop-tools/project_picker.py" \
-      --prefix PATH : "${lib.makeBinPath [ fzf ]}:$out/bin"
+      --prefix PATH : "${lib.makeBinPath [ project-picker-tui ]}:$out/bin"
     makeWrapper ${python3}/bin/python3 "$out/bin/project-picker-host" \
       --add-flags "$out/share/desktop-tools/project_picker.py --native-host"
     makeWrapper ${bash}/bin/bash "$out/bin/desktop-transcode" \

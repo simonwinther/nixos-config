@@ -6,7 +6,6 @@ import io
 import json
 import os
 from pathlib import Path
-import shutil
 import struct
 import subprocess
 import sys
@@ -123,6 +122,14 @@ class ProjectPickerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             picker.save_status({"code": "secret-token-or-arbitrary-message"})
 
+    def test_error_diagnostics_allow_only_request_stages_and_error_types(self):
+        picker.save_status({"code": "network", "stage": "projects", "kind": "TypeError",
+                            "error": "must-not-be-stored"})
+        self.assertIn("projects / TypeError", picker.entries()[1])
+        self.assertNotIn("must-not-be-stored", self.path.with_name("status.json").read_text())
+        picker.save_status({"code": "network", "stage": "secret", "kind": "secret"})
+        self.assertNotIn("secret", self.path.with_name("status.json").read_text())
+
     def test_native_status_message_produces_an_actionable_header(self):
         data = json.dumps({"action": "status", "code": "auth_required"}).encode()
         destination = io.BytesIO()
@@ -172,11 +179,27 @@ class ProjectPickerTests(unittest.TestCase):
 
     def test_selection_opens_its_url_without_interpreting_project_names(self):
         picker.save_snapshot(snapshot([project(name="$(not-a-command); `literal`")]))
-        row = "1\t$(not-a-command); `literal`\n"
-        with patch.object(picker.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, row)), \
+        row = FIRST + "\n"
+        with patch.object(picker.shutil, "which", return_value="project-picker-tui"), \
+                patch.object(picker.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, row)), \
                 patch.object(picker, "open_project") as launch:
             picker.choose()
         launch.assert_called_once_with(project()["url"])
+
+    def test_a_deleted_project_cannot_launch_from_an_old_selection(self):
+        value = snapshot()
+        picker.save_snapshot(value)
+
+        def remove_project(*args, **kwargs):
+            picker.save_snapshot({**value, "started_at": value["started_at"] + 1, "projects": []})
+            return subprocess.CompletedProcess([], 0, FIRST + "\n")
+
+        with patch.object(picker.shutil, "which", return_value="project-picker-tui"), \
+                patch.object(picker.subprocess, "run", side_effect=remove_project), \
+                patch.object(picker, "open_project") as launch:
+            with self.assertRaisesRegex(ValueError, "no longer available"):
+                picker.choose()
+        launch.assert_not_called()
 
     def test_web_app_launch_detaches_from_the_picker_terminal(self):
         with patch.object(picker.subprocess, "Popen") as launch:
@@ -186,7 +209,8 @@ class ProjectPickerTests(unittest.TestCase):
 
     def test_cancellation_or_unknown_results_never_launch_a_window(self):
         for result in [subprocess.CompletedProcess([], 130, ""), subprocess.CompletedProcess([], 0, "999\tunknown\n")]:
-            with patch.object(picker.subprocess, "run", return_value=result), \
+            with patch.object(picker.shutil, "which", return_value="project-picker-tui"), \
+                    patch.object(picker.subprocess, "run", return_value=result), \
                     patch.object(picker, "open_project") as launch:
                 if result.returncode:
                     picker.choose()
@@ -194,20 +218,6 @@ class ProjectPickerTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         picker.choose()
                 launch.assert_not_called()
-
-    @unittest.skipUnless(shutil.which("fzf"), "fzf is not installed")
-    def test_real_fzf_search_returns_the_expected_record(self):
-        picker.save_snapshot(snapshot([project(name="Needle"), project(SECOND, "Other")]))
-        real_run = subprocess.run
-
-        def filtered(command, **kwargs):
-            return real_run([*command, "--filter=Needle"], **kwargs)
-
-        with patch.object(picker.subprocess, "run", side_effect=filtered), \
-                patch.object(picker, "open_project") as launch:
-            picker.choose()
-            launch.assert_called_once_with(project()["url"])
-
 
 if __name__ == "__main__":
     unittest.main()

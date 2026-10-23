@@ -6,7 +6,8 @@
 let
   inherit (pkgs) lib;
   dots = ../dotfiles;
-  tools = pkgs.callPackage ./desktop-tools.nix { };
+  projectPicker = pkgs.callPackage ./project-picker.nix { };
+  tools = pkgs.callPackage ./desktop-tools.nix { project-picker-tui = projectPicker; };
   hyprspace = import ./hyprspace { inherit inputs; };
   companions = import ./hyprspace-companions {
     inherit inputs pkgs unstable;
@@ -27,6 +28,7 @@ in
     inherit pkgs;
     obs-studio = unstable.obs-studio;
   };
+  project-picker-tui = projectPicker;
   desktop-ring = pkgs.callPackage ./desktop-ring.nix { rustPlatform = unstable.rustPlatform; };
   uipro = pkgs.callPackage ./uipro { };
   background-grid = pkgs.callPackage ./background-grid.nix { hyprland = compositor; };

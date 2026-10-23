@@ -65,6 +65,21 @@ test("uses the selected workspace rather than silently falling back to personal"
   await assert.rejects(setup([session, { accounts: {} }], { cookie: () => "_account=missing" }).load(), /identify/);
 });
 
+test("the personal account cookie does not require a workspace UUID", async () => {
+  const app = setup([session, page([project("1", "Personal project")]), session], { cookie: () => "_account=personal" });
+  const result = await app.load();
+  assert.equal(result.workspace_id, "personal");
+  assert.equal(app.requests[1].headers["ChatGPT-Account-ID"], undefined);
+  assert.equal(app.requests.length, 3);
+});
+
+test("personal entries can have a null account ID", async () => {
+  const app = setup([session, { accounts: { default: { account: { account_id: null, structure: "personal" } } } },
+    page([]), session], { cookie: () => "_account=default" });
+  assert.equal((await app.load()).workspace_id, "personal");
+  assert.equal(app.requests[2].headers["ChatGPT-Account-ID"], undefined);
+});
+
 test("rejects failed later pages, missing cursors, malformed projects, and cursor loops", async () => {
   const badPages = [{ items: [] }, { items: [{ gizmo: {} }], cursor: null },
     page([{ id: id("1"), display: {} }]), page([{ id: "bad-id", gizmo_type: "snorlax" }])];
@@ -125,7 +140,7 @@ test("background forwards only top-frame snapshots to the native host and report
     scripting: { executeScript: async (value) => { sent.push(["inject", value]); } },
     webRequest: { onCompleted: { addListener: (value) => { completed = value; } } },
   };
-  vm.runInNewContext(readFileSync(new URL("background.js", root), "utf8"), { chrome });
+  vm.runInNewContext(readFileSync(new URL("background.js", root), "utf8"), { chrome, URL });
   const sender = { frameId: 0, url: "https://chatgpt.com/", tab: { id: 7 } };
   const message = { type: "project-picker-snapshot", snapshot: { complete: true } };
   listener(message, { ...sender, url: "https://example.com/" }, () => assert.fail());
@@ -142,10 +157,16 @@ test("background forwards only top-frame snapshots to the native host and report
   chrome.runtime.sendNativeMessage = async () => { throw new Error("No native host"); };
   assert.equal((await new Promise((resolve) => listener(message, sender, resolve))).ok, false);
   assert.equal(badges.at(-1).text, "!");
-  completed({ method: "GET", statusCode: 200, tabId: 7 });
+  completed({ method: "GET", statusCode: 200, tabId: 7, url: "https://chatgpt.com/backend-api/gizmos/snorlax/sidebar" });
   assert.equal(refreshes.length, 0);
-  completed({ method: "PATCH", statusCode: 200, tabId: 7 });
+  completed({ method: "PATCH", statusCode: 200, tabId: 7, url: "https://chatgpt.com/backend-api/gizmos/test" });
   assert.equal(refreshes[0][0], 7);
+  completed({ method: "DELETE", statusCode: 204, tabId: 7, url: "https://chatgpt.com/backend-api/projects/test" });
+  completed({ method: "DELETE", statusCode: 200, tabId: 7, url: "https://chatgpt.com/backend-api/another-route/test" });
+  assert.equal(refreshes.length, 3);
+  completed({ method: "DELETE", statusCode: 403, tabId: 7, url: "https://chatgpt.com/backend-api/projects/test" });
+  completed({ method: "POST", statusCode: 200, tabId: 7, url: "https://chatgpt.com/backend-api/conversation" });
+  assert.equal(refreshes.length, 3);
 });
 
 function contentApp() {
@@ -159,21 +180,25 @@ function contentApp() {
   const sent = [];
   const collections = [];
   const document = { visibilityState: "visible", cookie: "", hasFocus: () => focused,
-    addEventListener: (event, callback) => { events[event] = callback; } };
+    addEventListener: (event, callback) => { events[event] = callback; },
+    removeEventListener: (event) => { delete events[event]; } };
   const context = {
     document, AbortController, fetch: () => assert.fail("Unexpected network access"), Date: { now: () => clock },
-    window: { addEventListener: (event, callback) => { events[event] = callback; } },
+    window: { addEventListener: (event, callback) => { events[event] = callback; },
+      removeEventListener: (event) => { delete events[event]; } },
     setTimeout: (callback, delay) => { const id = Symbol(); timers.set(id, { callback, delay }); return id; },
     clearTimeout: (id) => timers.delete(id),
-    setInterval: (callback, delay) => { intervals.push({ callback, delay }); },
+    setInterval: (callback, delay) => { const timer = { callback, delay }; intervals.push(timer); return timer; },
+    clearInterval: (timer) => { if (timer) timer.cleared = true; },
     ProjectPickerAPI: {
       requester: () => () => {},
       errorCode: api.errorCode,
       collect: async (options) => { collections.push(options); return collector ? collector(options) : { complete: true }; },
     },
     chrome: { runtime: {
+      id: "fixture-extension",
       sendMessage: async (message) => { sent.push(message); return { ok: true }; },
-      onMessage: { addListener: (callback) => { handler = callback; } },
+      onMessage: { addListener: (callback) => { handler = callback; }, removeListener: () => {} },
     } },
   };
   vm.createContext(context);
@@ -187,6 +212,7 @@ function contentApp() {
     advance(value) { clock += value; },
     refresh() { handler({ type: "project-picker-refresh" }); },
     collect(callback) { collector = callback; },
+    invalidate() { context.chrome.runtime.sendMessage = () => { throw new Error("Extension context invalidated."); }; },
     async tick() {
       assert.equal(timers.size, 1);
       const [key, { callback, delay }] = [...timers][0];
@@ -201,7 +227,7 @@ test("visible pages sync even when the picker takes keyboard focus", async () =>
   const app = contentApp();
   app.install();
   assert.equal(app.intervals.length, 1);
-  assert.equal(app.intervals[0].delay, 300000);
+  assert.equal(app.intervals[0].delay, 30000);
   app.focus(false);
   await app.tick();
   assert.equal(app.collections.length, 1);
@@ -261,4 +287,24 @@ test("content reports failure codes so the picker can display the cause", async 
   await app.tick();
   assert.equal(app.sent.at(-1).type, "project-picker-error");
   assert.equal(app.sent.at(-1).code, "http_403");
+});
+
+test("extension reload stops stale timers without an unhandled rejection", async () => {
+  const app = contentApp();
+  app.invalidate();
+  await app.tick();
+  assert.equal(app.collections.length, 0);
+  assert.equal(app.intervals[0].cleared, true);
+  assert.equal(app.timers.size, 0);
+});
+
+
+test("failed requests identify their stage and programming errors are not network failures", async () => {
+  for (const [path, stage] of [["/api/auth/session", "session"],
+    ["/backend-api/accounts/check/v4-2023-04-27", "workspace"],
+    ["/backend-api/gizmos/snorlax/sidebar", "projects"]]) {
+    const request = api.requester(async () => { throw new TypeError("Failed to fetch"); }, new AbortController().signal);
+    await assert.rejects(request(path), (error) => error.stage === stage && api.errorCode(error) === "network");
+  }
+  assert.equal(api.errorCode(new TypeError("Cannot read properties of undefined")), "unexpected");
 });

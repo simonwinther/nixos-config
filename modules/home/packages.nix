@@ -83,6 +83,7 @@ in
       pulseaudio
       libnotify
       fzf
+      atuin
       fd
       ripgrep
       jq
@@ -116,6 +117,7 @@ in
     ++ [ unstable.hyprland-preview-share-picker ]
     ++ (with packages; [
       desktop-tools
+      project-picker-tui
       background-grid
       hyprspace
       walker

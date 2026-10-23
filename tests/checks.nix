@@ -246,8 +246,8 @@
     pkgs.runCommand "desktop-behavior"
       {
         nativeBuildInputs = [
-          pkgs.python3
-          pkgs.fzf
+          (pkgs.python3.withPackages (python: [ python.pyte ]))
+          packages.project-picker-tui
           pkgs.nodejs
           pkgs.matugen
           pkgs.bash
