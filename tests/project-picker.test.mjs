@@ -1,0 +1,238 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import vm from "node:vm";
+
+const root = new URL("../dotfiles/chrome/.local/share/browser-extensions/project-picker/", import.meta.url);
+const source = readFileSync(new URL("api.js", root), "utf8");
+const context = vm.createContext({ URLSearchParams, AbortSignal });
+vm.runInContext(source, context);
+const api = context.ProjectPickerAPI;
+const id = (digit) => `g-p-${digit.repeat(32)}`;
+const project = (digit, name) => ({ id: id(digit), display: { name }, gizmo_type: "snorlax" });
+const session = { user: { id: "user-one" }, accessToken: "in-memory-test-token" };
+const page = (projects, cursor = null) => ({ items: projects.map((gizmo) => ({ gizmo: { gizmo } })), cursor });
+const plain = (value) => JSON.parse(JSON.stringify(value));
+
+function setup(responses, { cookie = () => "", signal } = {}) {
+  const requests = [];
+  const queue = [...responses];
+  return {
+    requests,
+    load: () => api.collect({
+      cookie, signal,
+      request: async (path, headers) => {
+        requests.push({ path, headers });
+        assert.ok(queue.length, `Unexpected request: ${path}`);
+        const next = queue.shift();
+        if (next instanceof Error) throw next;
+        return next;
+      },
+    }),
+  };
+}
+
+test("collects all pages, deduplicates overlaps, and exports only picker metadata", async () => {
+  const app = setup([session, page([project("1", "First")], "next / + cursor"),
+    page([project("1", "Renamed"), project("2", "Second")]), session]);
+  const result = plain(await app.load());
+  assert.deepEqual(result.projects.map((value) => value.name), ["Renamed", "Second"]);
+  assert.equal(result.complete, true);
+  assert.equal(result.projects[0].url, `https://chatgpt.com/g/${id("1")}/project`);
+  assert.match(app.requests[2].path, /cursor=next\+%2F\+%2B\+cursor/);
+  assert.match(app.requests[1].path, /owned_only=false/);
+  assert.equal(app.requests[1].headers.Authorization, "Bearer in-memory-test-token");
+  assert.ok(!JSON.stringify(result).includes("in-memory-test-token"));
+});
+
+test("handles the direct gizmos response and excludes ordinary custom entries", () => {
+  const result = api.page({ gizmos: [project("1", "First"), { id: "g-custom", display: { name: "Other" } }], cursor: null });
+  assert.equal(result.projects.length, 1);
+});
+
+test("an explicitly complete empty list can remove old cached projects", async () => {
+  const app = setup([session, page([]), session]);
+  assert.deepEqual(plain(await app.load()).projects, []);
+});
+
+test("uses the selected workspace rather than silently falling back to personal", async () => {
+  const app = setup([session, { accounts: { work: { account: { account_id: "workspace-one", name: "Work" } } } },
+    page([project("1", "Work project")]), session], { cookie: () => "other=1; _account=work" });
+  const result = await app.load();
+  assert.equal(result.workspace_id, "workspace-one");
+  assert.equal(result.workspace_name, "Work");
+  assert.equal(app.requests[2].headers["ChatGPT-Account-ID"], "workspace-one");
+  await assert.rejects(setup([session, { accounts: {} }], { cookie: () => "_account=missing" }).load(), /identify/);
+});
+
+test("rejects failed later pages, missing cursors, malformed projects, and cursor loops", async () => {
+  const badPages = [{ items: [] }, { items: [{ gizmo: {} }], cursor: null },
+    page([{ id: id("1"), display: {} }]), page([{ id: "bad-id", gizmo_type: "snorlax" }])];
+  for (const bad of badPages) {
+    await assert.rejects(setup([session, page([project("1", "First")], "next"), bad]).load());
+  }
+  await assert.rejects(setup([session, page([], "loop"), page([], "loop")]).load(), /repeated/);
+  await assert.rejects(setup([session, page([], "next"), new Error("Offline")]).load(), /Offline/);
+});
+
+test("rejects expired login and account or workspace switches during enumeration", async () => {
+  await assert.rejects(setup([{ user: { id: "user-one" } }]).load(), /Sign in/);
+  await assert.rejects(setup([session, page([]), { ...session, user: { id: "user-two" } }]).load(), /changed/);
+  let calls = 0;
+  const app = setup([session, page([]), session], { cookie: () => calls++ ? "_account=work" : "" });
+  await assert.rejects(app.load(), /changed/);
+});
+
+test("aborting an enumeration never produces a snapshot", async () => {
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(setup([session], { signal: controller.signal }).load(), { name: "AbortError" });
+});
+
+test("request errors reveal HTTP status without logging session or response content", async () => {
+  let options;
+  const request = api.requester(async (path, value) => {
+    options = value;
+    return { ok: false, status: 401, body: { cancel: async () => {} } };
+  }, new AbortController().signal);
+  await assert.rejects(request("/example", { Authorization: "secret" }), /HTTP 401/);
+  assert.equal(options.credentials, "include");
+  assert.equal(options.redirect, "error");
+  assert.equal(options.cache, "no-store");
+});
+
+test("background forwards only top-frame snapshots to the native host and reports native failures", async () => {
+  let listener;
+  let completed;
+  const sent = [];
+  const badges = [];
+  const refreshes = [];
+  const chrome = {
+    runtime: {
+      onMessage: { addListener: (value) => { listener = value; } },
+      sendNativeMessage: async (...args) => { sent.push(args); return { ok: true }; },
+    },
+    action: {
+      setBadgeText: async (value) => { badges.push(value); }, setTitle: async () => {},
+      onClicked: { addListener: () => {} },
+    },
+    tabs: {
+      sendMessage: async (...args) => { refreshes.push(args); }, onUpdated: { addListener: () => {} },
+    },
+    webRequest: { onCompleted: { addListener: (value) => { completed = value; } } },
+  };
+  vm.runInNewContext(readFileSync(new URL("background.js", root), "utf8"), { chrome });
+  const sender = { frameId: 0, url: "https://chatgpt.com/", tab: { id: 7 } };
+  const message = { type: "project-picker-snapshot", snapshot: { complete: true } };
+  listener(message, { ...sender, url: "https://example.com/" }, () => assert.fail());
+  listener(message, { ...sender, frameId: 1 }, () => assert.fail());
+  assert.equal(sent.length, 0);
+  const reply = await new Promise((resolve) => assert.equal(listener(message, sender, resolve), true));
+  assert.equal(reply.ok, true);
+  assert.equal(sent[0][0], "com.desktop.project_picker");
+  chrome.runtime.sendNativeMessage = async () => { throw new Error("No native host"); };
+  assert.equal((await new Promise((resolve) => listener(message, sender, resolve))).ok, false);
+  assert.equal(badges.at(-1).text, "!");
+  completed({ method: "GET", statusCode: 200, tabId: 7 });
+  assert.equal(refreshes.length, 0);
+  completed({ method: "PATCH", statusCode: 200, tabId: 7 });
+  assert.equal(refreshes[0][0], 7);
+});
+
+function contentApp() {
+  let focused = true;
+  let clock = 100000;
+  let handler;
+  let collector;
+  const timers = new Map();
+  const intervals = [];
+  const events = {};
+  const sent = [];
+  const collections = [];
+  const document = { visibilityState: "visible", cookie: "", hasFocus: () => focused,
+    addEventListener: (event, callback) => { events[event] = callback; } };
+  const context = {
+    document, AbortController, fetch: () => assert.fail("Unexpected network access"), Date: { now: () => clock },
+    window: { addEventListener: (event, callback) => { events[event] = callback; } },
+    setTimeout: (callback, delay) => { const id = Symbol(); timers.set(id, { callback, delay }); return id; },
+    clearTimeout: (id) => timers.delete(id),
+    setInterval: (callback, delay) => { intervals.push({ callback, delay }); },
+    ProjectPickerAPI: {
+      requester: () => () => {},
+      collect: async (options) => { collections.push(options); return collector ? collector(options) : { complete: true }; },
+    },
+    chrome: { runtime: {
+      sendMessage: async (message) => { sent.push(message); return { ok: true }; },
+      onMessage: { addListener: (callback) => { handler = callback; } },
+    } },
+  };
+  vm.createContext(context);
+  const source = readFileSync(new URL("content.js", root), "utf8");
+  const install = () => vm.runInContext(source, context);
+  install();
+  return {
+    timers, intervals, sent, collections, install,
+    focus(value) { focused = value; events[value ? "focus" : "blur"](); },
+    advance(value) { clock += value; },
+    refresh() { handler({ type: "project-picker-refresh" }); },
+    collect(callback) { collector = callback; },
+    async tick() {
+      assert.equal(timers.size, 1);
+      const [key, { callback, delay }] = [...timers][0];
+      timers.delete(key);
+      clock += delay;
+      await callback();
+    },
+  };
+}
+
+test("content sync is installed once and refreshes only while the page is focused", async () => {
+  const app = contentApp();
+  app.install();
+  assert.equal(app.intervals.length, 1);
+  assert.equal(app.intervals[0].delay, 300000);
+  app.focus(false);
+  assert.equal(app.timers.size, 0);
+  app.intervals[0].callback();
+  assert.equal(app.timers.size, 0);
+  app.focus(true);
+  await app.tick();
+  assert.equal(app.collections.length, 1);
+  assert.equal(app.sent[0].type, "project-picker-snapshot");
+  app.advance(300000);
+  app.intervals[0].callback();
+  await app.tick();
+  assert.equal(app.collections.length, 2);
+});
+
+test("content coalesces mutations during a fetch into one follow-up refresh", async () => {
+  const app = contentApp();
+  let release;
+  app.collect(() => new Promise((resolve) => { release = resolve; }));
+  const pending = app.tick();
+  app.refresh();
+  app.refresh();
+  release({ complete: true });
+  await pending;
+  assert.equal(app.timers.size, 1);
+  app.collect(() => ({ complete: true }));
+  await app.tick();
+  assert.equal(app.collections.length, 2);
+  assert.equal(app.timers.size, 0);
+});
+
+test("focus loss aborts the old request and refocusing schedules a replacement", async () => {
+  const app = contentApp();
+  app.collect(({ signal }) => new Promise((resolve, reject) => {
+    signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+  }));
+  const pending = app.tick();
+  app.focus(false);
+  app.focus(true);
+  await pending;
+  assert.equal(app.collections[0].signal.aborted, true);
+  assert.equal(app.sent.length, 0);
+  app.collect(() => ({ complete: true }));
+  await app.tick();
+  assert.equal(app.sent.length, 1);
+});
