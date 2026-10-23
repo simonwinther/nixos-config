@@ -754,10 +754,13 @@
     },
     {
       "reference": ".config/obs-studio",
-      "disposition": "private_or_mutable_application_state",
-      "detail": "Preserve in the independent encrypted full-home backup. Review and selectively restore settings/databases; authenticate independently where needed. No file contents imported by this inventory.",
+      "disposition": "reviewed_defaults_with_private_runtime",
+      "detail": "Desktop scenes, profiles, six audio filters, countdown and backgrounds are captured under dotfiles/obs. Home Manager materializes writable settings with private backups. Credentials and portal grants remain private runtime state; see docs/OBS.md.",
       "managedTargets": [],
-      "seedSources": []
+      "seedSources": [
+        "dotfiles/obs/.local/share/obs-defaults/config",
+        "dotfiles/obs/.local/share/obs-defaults/assets"
+      ]
     },
     {
       "reference": ".config/obsidian",

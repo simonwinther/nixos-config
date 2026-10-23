@@ -6,6 +6,30 @@ All builds run in an isolated checkout and Docker Nix store. The reference Arch 
 
 ## Current-source results
 
+### OBS settings restoration — 2026-10-23
+
+The OBS task worktree captures the stationary desktop's preserved configuration,
+including all five scenes, six audio filters, output profile, countdown and both
+backgrounds. Scene properties match the original after path/portal conversion;
+the images and Lua script match byte for byte. See [OBS.md](OBS.md).
+
+The OBS 32.2.2 package and original Bookman font build with the locked inputs.
+Eight isolated migration checks pass, including credentials, private backups,
+preservation of UI edits across Nix-store/portable source locations, and refusal
+to overwrite a running OBS or managed links. Native desktop validation verifies
+all 97 profile parameters, seven scene-item transforms, both audio inputs and
+all six filter settings in order. The three private screen-sharing grants were
+converted from compact IDs to the UUID format required by portal 1.20.4; all
+three captures negotiate 1920 × 1080. A muted countdown recording passes H.264
+1920 × 1080 at 60 fps and AAC 48 kHz stereo inspection. No stream was started.
+
+The complete desktop Home Manager environment also builds without activation.
+Only the OBS runtime files, launcher, font and private grants were restored on
+the stationary desktop. Its previous OBS configuration has a private backup.
+The reference laptop, other application configuration and installation media
+were not activated or changed. Evidence is retained in the OBS worktree's
+`.work/obs-check.*`, `.work/home-manager*` and `.work/runtime-verified.json`.
+
 ### Complete submenu audit — 2026-10-22
 
 The followup compares every reference menu definition against the NixOS port. Install/Remove/Update stay absent; the resulting behavior and deliberate differences are listed in [DESKTOP-MENUS.md](DESKTOP-MENUS.md). Clipboard/file/folder sharing, visible reminder messages, About artwork, screensaver image/reset/automatic controls, declarative defaults and missing configuration entries are restored. Hardware menus omit absent touchpads and describe the supported display controls accurately. The Spotify focus shortcut, bounded input-only udev lookup and picker-workspace exclusions match the reference. No background service was added.

@@ -48,6 +48,29 @@
     pkgs.runCommand "storage-integration" { } ''
       touch "$out"
     '';
+  obs-integration =
+    let
+      home = self.nixosConfigurations.desktop.config.home-manager.users.simon;
+    in
+    assert builtins.hasAttr "obsDefaults" home.home.activation;
+    assert !(builtins.hasAttr ".config/obs-studio/basic/scenes/Untitled.json" home.home.file);
+    pkgs.runCommand "obs-integration"
+      {
+        nativeBuildInputs = [
+          pkgs.python3
+          pkgs.fontconfig
+          pkgs.bash
+        ];
+        FONTCONFIG_FILE = pkgs.makeFontsConf { fontDirectories = [ packages.obs-font ]; };
+      }
+      ''
+        export HOME="$TMPDIR/home" PYTHONDONTWRITEBYTECODE=1
+        mkdir -p "$HOME"
+        python ${../.}/tests/test_obs.py
+        test "$(fc-match --format '%{family[0]}' 'URW Bookman:style=Demi')" = 'URW Bookman'
+        ${packages.obs-studio}/bin/obs --version
+        touch "$out"
+      '';
   walker-layout =
     pkgs.runCommand "walker-layout"
       {
