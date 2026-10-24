@@ -128,10 +128,12 @@
             ninja
             python3
             git
+            fd
           ];
           buildInputs = with pkgs; [
             gtk4
             gtk4-layer-shell
+            sqlite
             libcanberra
             wayland
             pipewire
@@ -146,6 +148,7 @@
             [
               gtk4
               gtk4-layer-shell
+              sqlite
               libcanberra
               wayland
               pipewire

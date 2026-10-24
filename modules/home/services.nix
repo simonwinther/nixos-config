@@ -40,9 +40,9 @@ let
         ConditionPathExists = "!${config.xdg.stateHome}/desktop/toggles/waybar-off";
       };
     };
-  warmPicker = pdf: {
+  pickerTerminal = {
     Unit = {
-      Description = if pdf then "Prepare the PDF picker" else "Prepare the file picker";
+      Description = "Prepare the windowless file and PDF picker terminal";
       PartOf = [ "desktop-session.target" ];
       StartLimitIntervalSec = 60;
       StartLimitBurst = 3;
@@ -51,7 +51,7 @@ let
     Service = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${packages.file-picker}/bin/file-picker --warm${lib.optionalString pdf " --pdf"}";
+      ExecStart = "${packages.file-picker}/bin/file-picker --prepare-terminal";
       Environment = environment;
       TimeoutStartSec = 20;
       Restart = "on-failure";
@@ -91,8 +91,7 @@ in
     PartOf = [ "graphical-session.target" ];
   };
   systemd.user.services = {
-    desktop-file-picker = warmPicker false;
-    desktop-pdf-picker = warmPicker true;
+    desktop-file-picker = pickerTerminal;
     desktop-prepare = {
       Unit = {
         Description = "Prepare writable appearance and browser integration";

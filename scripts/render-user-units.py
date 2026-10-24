@@ -42,8 +42,7 @@ services={
  'desktop-hypridle':('Idle and suspend coordination','%h/.local/bin/desktopctl idle-worker','exec','Restart=on-failure'),
  'desktop-fcitx5':('Keyboard input method','fcitx5 --disable notificationitem','exec','Restart=on-failure'),
  'desktop-wallpaper':('Restore wallpapers','%h/.local/bin/desktopctl wallpaper restore','oneshot',''),
- 'desktop-file-picker':('Prepare file picker','%h/.local/bin/file-picker --warm','oneshot','RemainAfterExit=yes\nTimeoutStartSec=20'),
- 'desktop-pdf-picker':('Prepare PDF picker','%h/.local/bin/file-picker --warm --pdf','oneshot','RemainAfterExit=yes\nTimeoutStartSec=20'),
+ 'desktop-file-picker':('Prepare windowless file and PDF picker terminal','%h/.local/bin/file-picker --prepare-terminal','oneshot','RemainAfterExit=yes\nTimeoutStartSec=20'),
 }
 if a.laptop:services['desktop-waybar-minimal']=('Minimal bar','%h/.local/bin/desktopctl run waybar -- --config %h/.config/waybar/config-minimal.jsonc --style %h/.config/waybar/style-minimal.css','exec','Restart=on-failure')
 for name,(description,command,kind,extra) in services.items():
