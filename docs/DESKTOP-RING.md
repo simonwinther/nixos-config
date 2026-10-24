@@ -81,11 +81,13 @@ an arbitrary different display on the same port to inherit its profile.
 - The theme defaults to the existing desktop palette at menu-open time, read
   from `~/.local/state/desktop/theme/colors.toml`. Set
   `settings.theme.follow_desktop_palette = false` to use declarative
-  background / foreground / accent colors instead. Text font (`font`), symbol font (`icon_font`), logical radius and
+  background / foreground / accent colors instead. The main controls use drawn
+  outline icons; other symbols use the configured fallback font (`icon_font`).
+  Text font (`font`), logical radius and
   animation duration remain declarative. Defaults use Adwaita Sans / Symbols Nerd
-  Font, a 214-pixel radius and 140 ms transitions. The opaque ring, lifted surfaces,
-  accent selection arc and dimmed backdrop keep labels readable over desktop
-  content. Animation callbacks stop once opening / hover transitions finish.
+  Font, a 214-pixel radius and 140 ms transitions. The charcoal gradients, thin
+  sector borders, accent selection arc and deep backdrop keep labels readable
+  over desktop content. Animation callbacks stop once opening / hover transitions finish.
 
 A laptop with one internal panel and one external display offers Left / Right /
 Below. Geometry accounts for transform and scale, centers the touching edges,
