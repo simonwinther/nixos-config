@@ -1,4 +1,4 @@
 [submodule "dotfiles"]
 	path = dotfiles
 	url = https://github.com/simonwinther/dotfiles
-	branch = nixos-portable
+	branch = master

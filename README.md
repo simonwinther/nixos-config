@@ -51,7 +51,7 @@ Do not publish the reference inventory without reviewing its personal paths and 
 
 ## Repository checkout
 
-The `dotfiles/` directory is a Git submodule of `https://github.com/simonwinther/dotfiles`, pinned to the shared `nixos-portable` branch. Home Manager consumes those Stow packages on NixOS.
+The `dotfiles/` directory is a Git submodule of `https://github.com/simonwinther/dotfiles`, pinned to an exact commit from the shared `master` branch. Home Manager consumes those Stow packages on NixOS.
 
 ```sh
 git clone --recurse-submodules https://github.com/simonwinther/nixos-config
