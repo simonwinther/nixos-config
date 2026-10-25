@@ -74,6 +74,24 @@
         "type": "github"
       }
     },
+    "ferry": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792888679,
+        "narHash": "sha256-REwBniLSoRXIg4lUrFoYH30sxbxOcaqQp9MC93tVsPY=",
+        "ref": "main",
+        "rev": "14ec1449740c3fc2c82a3760485105a3aec088b7",
+        "revCount": 1,
+        "type": "git",
+        "url": "ssh://git@github.com/simonwinther/ferry"
+      },
+      "original": {
+        "ref": "main",
+        "rev": "14ec1449740c3fc2c82a3760485105a3aec088b7",
+        "type": "git",
+        "url": "ssh://git@github.com/simonwinther/ferry"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -526,6 +544,7 @@
       "inputs": {
         "breakd": "breakd",
         "disko": "disko",
+        "ferry": "ferry",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
         "hyprspace": "hyprspace",

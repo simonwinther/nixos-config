@@ -3,6 +3,10 @@
 
   inputs = {
     self.submodules = true;
+    ferry = {
+      url = "git+ssh://git@github.com/simonwinther/ferry?ref=main&rev=14ec1449740c3fc2c82a3760485105a3aec088b7";
+      flake = false;
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager = {

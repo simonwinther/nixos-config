@@ -203,6 +203,8 @@ in
         breakd
         canvas-mcp
         hendrix-vpn
+        ferry
+        waybar-weather
       ]
     )
   );

@@ -31,6 +31,8 @@ in
   project-picker-tui = projectPicker;
   desktop-ring = pkgs.callPackage ./desktop-ring.nix { rustPlatform = unstable.rustPlatform; };
   uipro = pkgs.callPackage ./uipro { };
+  ferry = pkgs.callPackage ./ferry.nix { source = inputs.ferry; };
+  waybar-weather = pkgs.callPackage ./waybar-weather.nix { };
   background-grid = pkgs.callPackage ./background-grid.nix { hyprland = compositor; };
   dictate = pkgs.callPackage ./dictate.nix {
     hyprland = compositor;
