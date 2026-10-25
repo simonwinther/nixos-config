@@ -150,7 +150,6 @@ in
         zip
         cargo-watch
         shellcheck
-        stylua
         shfmt
         black
         isort
