@@ -1,0 +1,129 @@
+--- a/internal/providers/clipboard/types.go
++++ b/internal/providers/clipboard/types.go
+@@ -54,6 +54,7 @@
+ 	ImageEditorCmd string `koanf:"image_editor_cmd" desc:"editor to use for images. use '%FILE%' as placeholder for file path." default:""`
+ 	TextEditorCmd  string `koanf:"text_editor_cmd" desc:"editor to use for text, otherwise default for mimetype. use '%FILE%' as placeholder for file path." default:""`
+ 	Command        string `koanf:"command" desc:"default command to be executed" default:"wl-copy"`
++	PasteCommand   string `koanf:"paste_command" desc:"command run after a successful copy for the paste action" default:""`
+ 	IgnoreSymbols  bool   `koanf:"ignore_symbols" desc:"ignores symbols/unicode" default:"true"`
+ 	PinnedOnTop    bool   `koanf:"pinned_on_top" desc:"put pinned items on top" default:"false"`
+ 	AutoCleanup    int    `koanf:"auto_cleanup" desc:"will automatically cleanup entries entries older than X minutes" default:"0"`
+@@ -68,6 +69,7 @@
+ 	ActionLocalsend  = "localsend"
+ 	ActionUnpause    = "unpause"
+ 	ActionCopy       = "copy"
++	ActionPaste      = "paste"
+ 	ActionEdit       = "edit"
+ 	ActionRemove     = "remove"
+ 	ActionRemoveAll  = "remove_all"
+--- a/internal/providers/clipboard/clipboard.go
++++ b/internal/providers/clipboard/clipboard.go
+@@ -237,6 +237,9 @@
+ 		}
+ 
+ 		actions := []string{ActionCopy, ActionEdit}
++		if config.PasteCommand != "" {
++			actions = append([]string{ActionPaste}, actions...)
++		}
+ 
+ 		if v.Pinned {
+ 			actions = append(actions, ActionUnpin)
+@@ -514,10 +517,15 @@
+ 		currentMode = ActionCombined
+ 		setupModes()
+ 		mu.Unlock()
+-	case ActionCopy:
++	case ActionCopy, ActionPaste:
+ 		cmd := exec.Command("sh", "-c", config.Command)
+ 
++		mu.Lock()
+ 		item := clipboardhistory[identifier]
++		mu.Unlock()
++		if item == nil {
++			return
++		}
+ 		if item.Img != "" {
+ 			f, _ := os.ReadFile(item.Img)
+ 			cmd.Stdin = bytes.NewReader(f)
+@@ -533,17 +541,28 @@
+ 			}
+ 		}
+ 
+-		err := cmd.Start()
+-		if err != nil {
+-			slog.Error("clipboard", "activate", err)
+-			return
+-		} else {
+-			go func() {
+-				cmd.Wait()
+-			}()
+-		}
++		pasteCommand := ""
++		if action == ActionPaste {
++			pasteCommand = config.PasteCommand
++		}
++		go func() {
++			if err := copySelection(cmd, pasteCommand); err != nil {
++				slog.Error(Name, "copy/paste", err)
++			}
++		}()
+ 	default:
+ 		slog.Error(Name, "activate", fmt.Sprintf("unknown action: %s", action))
+ 		return
+ 	}
+ }
++
++func copySelection(cmd *exec.Cmd, pasteCommand string) error {
++	// wl-copy exits after its background process owns the Wayland selection.
++	if err := cmd.Run(); err != nil {
++		return err
++	}
++	if pasteCommand == "" {
++		return nil
++	}
++	return exec.Command("sh", "-c", pasteCommand).Run()
++}
+--- /dev/null
++++ b/internal/providers/clipboard/desktop_paste_test.go
+@@ -0,0 +1,41 @@
++package main
++
++import (
++    "bytes"
++    "fmt"
++    "os"
++    "os/exec"
++    "path/filepath"
++    "testing"
++)
++
++func TestClipboardPasteWaitsForCopyAndCopyOnlyDoesNotPaste(t *testing.T) {
++    for _, paste := range []bool{false, true} {
++        t.Run(fmt.Sprint(paste), func(t *testing.T) {
++            dir := t.TempDir()
++            copied, pasted := filepath.Join(dir, "copied"), filepath.Join(dir, "pasted")
++            payload := []byte{0, 1, 255, '\n'}
++            cmd := exec.Command("sh", "-c", fmt.Sprintf("cat > %q", copied))
++            cmd.Stdin = bytes.NewReader(payload)
++            pasteCommand := ""
++            if paste {
++                pasteCommand = fmt.Sprintf("test -s %q && printf pasted > %q", copied, pasted)
++            }
++            if err := copySelection(cmd, pasteCommand); err != nil { t.Fatal(err) }
++            data, err := os.ReadFile(copied)
++            if err != nil || !bytes.Equal(data, payload) { t.Fatalf("copy changed payload: %v", err) }
++            _, err = os.Stat(pasted)
++            if paste && err != nil { t.Fatal("paste did not run after copy", err) }
++            if !paste && !os.IsNotExist(err) { t.Fatal("copy-only invoked paste") }
++        })
++    }
++}
++
++func TestClipboardFailedCopyNeverPastes(t *testing.T) {
++    pasted := filepath.Join(t.TempDir(), "pasted")
++    cmd := exec.Command("sh", "-c", "exit 1")
++    if err := copySelection(cmd, fmt.Sprintf("printf pasted > %q", pasted)); err == nil {
++        t.Fatal("failed copy reported success")
++    }
++    if _, err := os.Stat(pasted); !os.IsNotExist(err) { t.Fatal("pasted after failed copy") }
++}

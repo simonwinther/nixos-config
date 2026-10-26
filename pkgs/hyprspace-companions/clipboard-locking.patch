@@ -1,0 +1,130 @@
+--- a/internal/providers/clipboard/types.go
++++ b/internal/providers/clipboard/types.go
+@@ -33,7 +33,7 @@
+ 
+ var (
+ 	paused       atomic.Bool
+-	saveFileChan = make(chan struct{})
++	saveFileChan = make(chan struct{}, 1)
+ )
+ 
+ const StateEditable = "editable"
+--- a/internal/providers/clipboard/clipboard.go
++++ b/internal/providers/clipboard/clipboard.go
+@@ -135,7 +135,7 @@
+ 		}
+ 	}
+ 
+-	saveFileChan <- struct{}{}
++	requestSave()
+ }
+ 
+ func updateText(text string) bool {
+@@ -210,7 +210,7 @@
+ 		}
+ 	}
+ 
+-	saveFileChan <- struct{}{}
++	requestSave()
+ 	return true
+ }
+ 
+@@ -468,7 +468,7 @@
+ 				}
+ 			}
+ 
+-			saveToFile()
++			saveToFileLocked()
+ 		}
+ 
+ 		mu.Unlock()
+@@ -478,7 +478,7 @@
+ 		if val, ok := clipboardhistory[identifier]; ok {
+ 			val.Pinned = false
+ 
+-			saveToFile()
++			saveToFileLocked()
+ 		}
+ 
+ 		setupModes()
+@@ -490,7 +490,7 @@
+ 		if val, ok := clipboardhistory[identifier]; ok {
+ 			val.Pinned = true
+ 
+-			saveToFile()
++			saveToFileLocked()
+ 		}
+ 
+ 		if !slices.Contains(availableModes, ActionPinnedOnly) {
+@@ -513,7 +513,7 @@
+ 			}
+ 		}
+ 
+-		saveToFile()
++		saveToFileLocked()
+ 		currentMode = ActionCombined
+ 		setupModes()
+ 		mu.Unlock()
+@@ -566,3 +566,12 @@
+ 	}
+ 	return exec.Command("sh", "-c", pasteCommand).Run()
+ }
++
++// Collection already holds mu; saving must never wait for the writer under it.
++// One queued notification is enough because the writer saves the whole history.
++func requestSave() {
++    select {
++    case saveFileChan <- struct{}{}:
++    default:
++    }
++}
+--- /dev/null
++++ b/internal/providers/clipboard/desktop_locking_test.go
+@@ -0,0 +1,47 @@
++package main
++
++import (
++    "path/filepath"
++    "testing"
++    "time"
++)
++
++func TestClipboardMutatingActionsReleaseHistoryLock(t *testing.T) {
++    oldFile, oldConfig, oldHistory := file, config, clipboardhistory
++    t.Cleanup(func() { file, config, clipboardhistory = oldFile, oldConfig, oldHistory })
++    file = filepath.Join(t.TempDir(), "history.gob")
++    config = &Config{MaxItems: 100}
++    for _, action := range []string{ActionPin, ActionUnpin, ActionRemove, ActionRemoveAll} {
++        t.Run(action, func(t *testing.T) {
++            clipboardhistory = map[string]*Item{"item": {Content: "lock regression"}}
++            done := make(chan struct{})
++            go func() {
++                Activate(false, "item", action, "", "", 0, nil)
++                Query(nil, "", false, false, 0)
++                close(done)
++            }()
++            select {
++            case <-done:
++            case <-time.After(time.Second):
++                t.Fatalf("%s blocked subsequent history queries", action)
++            }
++        })
++    }
++}
++
++func TestClipboardSaveNotificationsNeverBlockCollector(t *testing.T) {
++    old := saveFileChan
++    t.Cleanup(func() { saveFileChan = old })
++    saveFileChan = make(chan struct{}, 1)
++    mu.Lock()
++    defer mu.Unlock()
++    requestSave()
++    done := make(chan struct{})
++    go func() { requestSave(); close(done) }()
++    select {
++    case <-done:
++    case <-time.After(time.Second):
++        t.Fatal("collector blocked while a history save was already queued")
++    }
++    if len(saveFileChan) != 1 { t.Fatal("missing queued history save") }
++}

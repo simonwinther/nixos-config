@@ -256,6 +256,42 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(argv.count("--theme"), 1)
         self.assertEqual(argv[-1], "desktop-clipboard")
 
+    def test_clipboard_paste_waits_for_picker_and_uses_terminal_shortcut(self):
+        ctl.atomic_write(self.runtime / "clipboard-target.json", '{"address":"0x123"}')
+        layers = {"monitor": {"levels": {"3": [{"namespace": "walker"}]}}}
+        replies = [subprocess.CompletedProcess([], 0, json.dumps(layers)),
+                   subprocess.CompletedProcess([], 0, "{}"),
+                   subprocess.CompletedProcess([], 0, '{"address":"0x123","class":"com.mitchellh.ghostty"}'),
+                   subprocess.CompletedProcess([], 0)]
+        with patch.object(ctl, "run", side_effect=replies) as run, patch.object(ctl.time, "sleep") as sleep:
+            ctl.clipboard_paste([])
+        sleep.assert_called_once_with(0.02)
+        self.assertEqual(run.call_args.args[0], ["hyprctl", "eval", 'hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL SHIFT", key = "V", window = "address:0x123" }))'])
+
+    def test_clipboard_paste_uses_ctrl_v_for_gui_and_refuses_changed_focus(self):
+        ctl.atomic_write(self.runtime / "clipboard-target.json", '{"address":"0x123"}')
+        for address in ("0x123", "0x456"):
+            replies = [subprocess.CompletedProcess([], 0, "{}"),
+                       subprocess.CompletedProcess([], 0, json.dumps({"address": address, "class": "chromium"})),
+                       subprocess.CompletedProcess([], 0)]
+            with patch.object(ctl, "run", side_effect=replies) as run:
+                if address == "0x123":
+                    ctl.clipboard_paste([])
+                    self.assertEqual(run.call_args.args[0], ["hyprctl", "eval", 'hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL", key = "V", window = "address:0x123" }))'])
+                else:
+                    with self.assertRaisesRegex(ValueError, "target changed"):
+                        ctl.clipboard_paste([])
+                    self.assertEqual(run.call_count, 2)
+
+    def test_clipboard_paste_timeout_never_sends_keys(self):
+        ctl.atomic_write(self.runtime / "clipboard-target.json", '{"address":"0x123"}')
+        layers = {"monitor": {"levels": {"3": [{"namespace": "walker"}]}}}
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps(layers))) as run, \
+                patch.object(ctl.time, "monotonic", side_effect=[0, 0, 3]), patch.object(ctl.time, "sleep"):
+            with self.assertRaisesRegex(ValueError, "still has focus"):
+                ctl.clipboard_paste([])
+        self.assertEqual(run.call_args.args[0], ["hyprctl", "-j", "layers"])
+
     def test_lock_background_falls_back_when_file_is_missing_or_reset(self):
         target = self.config / "hypr"
         target.mkdir()

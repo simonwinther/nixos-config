@@ -23,6 +23,8 @@ let
     patches = (old.patches or [ ]) ++ [
       (source + "/companion/elephant-2.22.0.patch")
       ./clipboard-history.patch
+      ./clipboard-paste.patch
+      ./clipboard-locking.patch
     ];
     postCheck = (old.postCheck or "") + ''
       go test ./internal/providers/clipboard -run '^TestClipboard' -count=1

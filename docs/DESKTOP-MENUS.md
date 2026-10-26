@@ -1,6 +1,6 @@
 # Desktop menus, appearance and clipboard
 
-Open the desktop menu with **Super + Alt + Space**, the power menu with **Super + Escape**, and clipboard history with **Super + Ctrl + V**. Apps, Learn, Trigger, Style, Setup, About and System retain the familiar organization. Escape returns from a submenu to its parent; opening a submenu directly makes Escape close it. Install, Remove and Update are absent. Packages and system updates remain part of the Nix configuration.
+Open the desktop menu with **Super + Alt + Space**, the power menu with **Super + Escape**, clipboard history with **Alt + V**, and screenshots with **Super + Q**. Print Screen also remains available. Apps, Learn, Trigger, Style, Setup, About and System retain the familiar organization. Escape returns from a submenu to its parent; opening a submenu directly makes Escape close it. Install, Remove and Update are absent. Packages and system updates remain part of the Nix configuration.
 
 ## Appearance
 
@@ -42,21 +42,27 @@ The Spotify focus-or-launch shortcut accepts its original one-argument form and 
 
 ## Clipboard
 
-**Super + Ctrl + V**, **Trigger → Clipboard**, and `desktopctl clipboard` open the same dedicated history view. It has an opaque theme background, selected-row cards, timestamps, pinned markers, and a separate scrollable text/image preview. Long URLs wrap; the original copied content is unchanged. The list summary flattens whitespace, and file entries retain their filenames. Narrow or scaled outputs use a stacked layout; sizing uses the focused output's logical dimensions.
+**Alt + V**, **Trigger → Clipboard**, and `desktopctl clipboard` open the same dedicated history view. It has an opaque theme background, selected-row cards, timestamps, pinned markers, and a separate scrollable text/image preview. Long URLs wrap; the original copied content is unchanged. The list summary flattens whitespace, and file entries retain their filenames. Narrow or scaled outputs use a stacked layout; sizing uses the focused output's logical dimensions.
 
 | Key | Action |
 | --- | --- |
-| Enter | Copy selected item and close |
+| Enter | Copy selected item, close, and paste into the originating app |
+| Ctrl + Enter | Copy selected item and close without pasting |
 | Ctrl + Y | Copy and keep the picker open |
 | Ctrl + P | Pin/unpin |
-| Ctrl + D | Remove an unpinned item |
+| Ctrl + D / Ctrl + U | Page down / up |
+| Delete | Remove an unpinned item |
 | Ctrl + I | Cycle available text/image/pinned filters |
 | Ctrl + O | Edit selected content |
 | Ctrl + Shift + P | Pause/resume collection |
 | Alt + J | Show available actions |
 | Escape | Close |
 
+Autopaste waits for the clipboard copy to succeed and for Walker to release focus. It uses Ctrl + Shift + V for terminals and Ctrl + V for other apps. If the originating window is no longer active, it leaves the item copied without sending keys. Super + V continues to paste normally.
+
 The existing patched Rust Walker renders the UI; Elephant remains the only history collector. There is no additional resident clipboard service or rewrite with a second database. The history limit remains 100, with pinned items protected from eviction; explicitly pinning more than 100 items is an exception to that limit. OCR stays off. Symbols are retained, and pinned entries appear first. A local native patch enforces trimming after a burst of copies and uses unique, mode-0600 image files so rapid copies cannot overwrite each other's originals. The existing history format remains compatible. These changes are not a measured memory or latency benchmark.
+
+History saves reuse the lock already held by pin, unpin and delete actions. Collection coalesces pending save notifications without blocking while holding that lock. This prevents a running collector from becoming unresponsive and leaving Walker's history view blank.
 
 The `$` prefix inside the general app launcher continues to search clipboard history with its general launcher layout. The dedicated shortcut above uses the improved, monitor-sized layout.
 
@@ -66,4 +72,4 @@ Theme/font choices, custom screensaver/About artwork and lock-screen background 
 
 Clipboard history is private runtime state, normally `~/.cache/elephant/clipboard.gob` and `~/.cache/elephant/clipboardimages/`. The collector stores that history on the target; this task does not read or import the laptop's existing history. If retaining it is desired, transfer both together through the private-state backup process with the collector stopped. Do not put them in Git or a Nix derivation.
 
-`desktop-behavior` checks menu navigation/cancellation, all terminal palettes, font persistence, lock-background fallbacks and scaled clipboard sizing without accessing a real display or clipboard. The Elephant package runs native regression tests for trimming and image retention. `walker-layout` renders the actual GTK templates with synthetic history in a disposable X display, checks CSS and geometry, and emits preview PNGs. Physical Wayland focus, real clipboard copy/edit/filter actions, terminal reloads, screensaver interaction and multi-monitor appearance still require target-session acceptance. No live image, activation or installation is part of these checks.
+`desktop-behavior` checks menu navigation/cancellation, all terminal palettes, font persistence, lock-background fallbacks and scaled clipboard sizing without accessing a real display or clipboard. The Elephant package runs native regression tests for trimming, image retention, copy/paste ordering and history locking. `walker-layout` renders the actual GTK templates with synthetic history in a disposable X display, checks CSS and geometry, and emits preview PNGs. Physical Wayland focus, real clipboard copy/edit/filter actions, terminal reloads, screensaver interaction and multi-monitor appearance still require target-session acceptance. No live image, activation or installation is part of these checks.
