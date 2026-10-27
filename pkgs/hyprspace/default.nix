@@ -1,7 +1,7 @@
 { inputs }:
 let
-  # Preserve the current working source, including the Rust launch helper and
-  # uncommitted overview fixes, rather than rebuilding only the last Git commit.
+  # Build the vendored upstream revision recorded in source.json, including
+  # independent spaces and the native Rust launch helper.
   outputs = (import ./source/flake.nix).outputs {
     hyprland = inputs.hyprland;
     self = outputs;

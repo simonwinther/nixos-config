@@ -1,0 +1,25 @@
+{
+  "repository": "https://github.com/simonwinther/hyprspace",
+  "revision": "4de74c8d5e3156b945319a76709e63e695aaddd7",
+  "version": "1.8.0",
+  "capturedOn": "2026-10-27",
+  "directories": [
+    "companion",
+    "contrib",
+    "scripts",
+    "src",
+    "test",
+    "third_party"
+  ],
+  "rootFiles": [
+    ".clang-format",
+    "LICENSE",
+    "Makefile",
+    "NOTICE.md",
+    "README.md",
+    "flake.lock",
+    "flake.nix",
+    "version.txt"
+  ],
+  "localPatches": []
+}

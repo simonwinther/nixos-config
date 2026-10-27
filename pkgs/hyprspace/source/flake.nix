@@ -56,6 +56,7 @@
               fileset = pkgs.lib.fileset.unions [
                 ./Makefile ./src ./scripts/atomic-output.sh
                 ./contrib/launch-helper ./contrib/bindings.conf
+                ./third_party/lucide
               ];
             };
             buildInputs = with pkgs; [ cairo pango gdk-pixbuf librsvg nlohmann_json ];
@@ -77,13 +78,14 @@
               done
               ln -s ../lib/hyprspace-launch "$out/bin/hyprspace-launch"
               install -Dm644 contrib/bindings.conf "$out/share/hyprspace/bindings.conf"
+              install -Dm644 third_party/lucide/LICENSE "$out/share/licenses/hyprspace/lucide-LICENSE"
               runHook postInstall
             '';
             passthru = { inherit compositor supportedRevision launchHelper; };
             meta = {
               description = "Live workspace overview and Alt+Tab switcher for Hyprland";
               homepage = "https://github.com/simonwinther/hyprspace";
-              license = pkgs.lib.licenses.mit;
+              license = with pkgs.lib.licenses; [ mit isc ];
               platforms = [ system ];
             };
           };

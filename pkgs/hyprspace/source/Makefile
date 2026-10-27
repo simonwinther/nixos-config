@@ -22,9 +22,15 @@ endif
 SRCS := \
 	src/main.cpp \
 	src/Config.cpp \
+	src/InputController.cpp \
 	src/Capture.cpp \
 	src/DesktopDb.cpp \
 	src/Focus.cpp \
+	src/Spaces.cpp \
+	src/SpaceStore.cpp \
+	src/SpaceHooks.cpp \
+	src/SpaceSelector.cpp \
+	src/SpaceIcons.cpp \
 	src/Overview.cpp \
 	src/OverviewSession.cpp \
 	src/WindowBoard.cpp \
@@ -32,6 +38,7 @@ SRCS := \
 	src/CompositorHooks.cpp \
 	src/Launch.cpp \
 	src/PassElements.cpp \
+	src/PreviewFilter.cpp \
 	src/Raster.cpp \
 	src/Switcher.cpp \
 	src/Texture.cpp
@@ -54,7 +61,7 @@ override CXXFLAGS += -std=c++2b -fPIC $(EXTRA_FLAGS) -Wall -Wno-narrowing -Wno-u
 override CXXFLAGS += $(shell pkg-config --cflags $(PKGS))
 
 override LDFLAGS += -shared
-LDLIBS   += $(shell pkg-config --libs pangocairo cairo gdk-pixbuf-2.0 librsvg-2.0)
+LDLIBS   += $(shell pkg-config --libs pangocairo cairo gdk-pixbuf-2.0 librsvg-2.0) -pthread
 
 .PHONY: all clean install install-assets assets uninstall check test integration-test integration-fixtures companions format reload release-check dist FORCE
 
@@ -67,11 +74,12 @@ assets: $(LAUNCH_HELPER)
 	bash scripts/atomic-output.sh "$(BUILD_DIR)/hyprspace-launch" install -m 0755 "$(LAUNCH_HELPER)"
 	@for name in uwsm-app uwsm app2unit; do ln -sfn ../hyprspace-launch "$(BUILD_DIR)/launch-bin/$$name"; done
 
-install-assets: assets
+install-assets: assets third_party/lucide/LICENSE
 	mkdir -p "$(PLUGIN_DIR)/launch-bin" "$(PREFIX)/bin"
 	bash scripts/atomic-output.sh "$(PLUGIN_DIR)/hyprspace-launch" install -m 0755 "$(BUILD_DIR)/hyprspace-launch"
 	@for name in uwsm-app uwsm app2unit; do ln -sfn ../hyprspace-launch "$(PLUGIN_DIR)/launch-bin/$$name"; done
 	ln -sfn "$(abspath $(PLUGIN_DIR))/hyprspace-launch" "$(PREFIX)/bin/hyprspace-launch"
+	install -Dm644 third_party/lucide/LICENSE "$(PLUGIN_DIR)/licenses/lucide-LICENSE"
 
 $(TARGET): $(OBJS) scripts/atomic-output.sh
 	bash scripts/atomic-output.sh "$@" $(CXX) $(LDFLAGS) $(OBJS) $(LDLIBS) -o
@@ -143,6 +151,7 @@ test: assets
 	bash test/test_build.sh
 	python3 test/test_launch_helper.py
 	python3 test/test_companion_install.py
+	python3 test/test_render_boundary.py
 	python3 test/test_physical_commands.py
 	python3 test/test_integration_runner.py
 	python3 test/test_integration_artifacts.py

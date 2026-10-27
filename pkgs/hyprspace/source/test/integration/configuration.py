@@ -11,6 +11,23 @@ def contracts(s, wait_for):
         assert value["int"] == expected, (name, value)
     s.check("configuration registers the documented overview and switcher defaults")
 
+    for theme in ("light", "dark", "auto"):
+        s.ctl("keyword", "plugin:hyprspace:spaces:theme", theme)
+        assert json.loads(s.ctl("-j", "getoption", "plugin:hyprspace:spaces:theme"))["str"] == theme
+    s.check("space controls accept and retain light, dark and auto themes, ending with the automatic palette restored")
+
+    filter_option = "plugin:hyprspace:overview:preview_filter"
+    assert json.loads(s.ctl("-j", "getoption", filter_option))["str"] == "sharp"
+    for preview_filter in ("linear", "area", "linear-sharp", "sharp"):
+        s.ctl("keyword", filter_option, preview_filter)
+        assert json.loads(s.ctl("-j", "getoption", filter_option))["str"] == preview_filter
+        assert s.status()["resources"]["preview_filter"]["mode"] == preview_filter
+    # Some compositor ABIs bypass CStringValue's validator for runtime writes.
+    s.ctl("keyword", filter_option, "unknown")
+    assert s.status()["resources"]["preview_filter"]["mode"] == "sharp"
+    s.ctl("keyword", filter_option, "sharp")
+    s.check("preview filtering exposes the comparison modes and defaults to sharp")
+
     def option(name, value):
         s.ctl("keyword", "plugin:hyprspace:" + name, str(value).lower())
 

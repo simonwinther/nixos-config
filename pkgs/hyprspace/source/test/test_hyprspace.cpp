@@ -61,6 +61,11 @@ static void section(const char* name) {
 #include "test_empty_workspace.hpp"
 #include "test_window_views.hpp"
 #include "test_help.hpp"
+#include "test_spaces.hpp"
+#include "test_space_icons.hpp"
+#include "test_space_style.hpp"
+#include "test_render_geometry.hpp"
+#include "test_input_model.hpp"
 
 // ---------------------------------------------------------------- layout ----
 
@@ -509,8 +514,21 @@ static void testDesktopPrecedence() {
             fs::create_directories(path.parent_path());
             std::ofstream(path) << "[Desktop Entry]\n" << content;
         }
+        // Package profiles may export complete application directories as
+        // symlinks. Preserve the exported path in their desktop IDs and stop
+        // cycles without preventing a sibling alias to the same package.
+        fs::create_directories(root / "exported-apps");
+        std::ofstream(root / "exported-apps/tool.desktop") << "[Desktop Entry]\nIcon=linked-app\n";
+        fs::create_directory_symlink(root / "exported-apps", root / "user/applications/linked");
+        fs::create_directory_symlink(root / "exported-apps", root / "user/applications/alias");
+        if (!fs::is_symlink(root / "exported-apps/cycle"))
+            fs::create_directory_symlink(root / "exported-apps", root / "exported-apps/cycle");
+        fs::create_symlink(root / "missing-apps", root / "user/applications/broken");
         CDesktopDb db;
         db.scan();
+        CHECK(db.iconNameForClass("linked-tool") == "linked-app");
+        CHECK(db.iconNameForClass("alias-tool") == "linked-app");
+        CHECK(db.iconNameForClass("linked-cycle-tool").empty());
         CHECK(db.iconNameForClass("same") == "user");
         CHECK(db.iconNameForClass("system-only").empty());
         CHECK(db.iconNameForClass("masked").empty());
@@ -637,8 +655,18 @@ static void testIconResolution() {
         touch(root / "hicolor" / "64x64" / "apps" / ("invalid-scale-" + scale + ".png"));
     }
 
+    // Size directories are often symlinks into exported package trees. Keep
+    // their logical size when selecting a raster, and handle symlink cycles.
+    fs::create_directories(root / "package-icons");
+    touch(root / "package-icons" / "linked.png");
+    fs::create_directory_symlink(root / "package-icons", root / "hicolor" / "64x64" / "apps" / "linked");
+    fs::create_directory_symlink(root, root / "package-icons" / "cycle");
+    fs::create_symlink(root / "missing-icons", root / "broken");
+
     CDesktopDb db;
     db.setIconRoots({root.string(), fallback.string()});
+    const auto linked = db.resolveIconPath("linked", 64);
+    CHECK(linked && linked->ends_with("64x64/apps/linked/linked.png"));
 
     // SVG is preferred because it scales to any tile size.
     const auto vec = db.resolveIconPath("vector", 64);
@@ -743,6 +771,16 @@ static void testTextRaster() {
 
 static void testPlaceholderIcon() {
     section("raster: placeholder icon fallback");
+
+    CHECK(placeholderInitial("firefox") == "F");
+    CHECK(placeholderInitial("éclair") == "É");
+    CHECK(placeholderInitial("æther") == "Æ");
+    CHECK(placeholderInitial("θεωρία") == "Θ");
+    CHECK(placeholderInitial("学校") == "学");
+    CHECK(placeholderInitial("🎮games") == "🎮");
+    for (const auto& name : {std::string{}, std::string(" app"), std::string("\napp"), std::string("\0app", 4), std::string("\xc3"), std::string("\xff"),
+                             std::string("\xc0\xaf")})
+        CHECK(placeholderInitial(name) == "?");
 
     const auto img = placeholderIcon("F", "Sans Bold 32", 64, SRgba{1, 1, 1, 1}, SRgba{0.3, 0.4, 0.9, 1});
     CHECK(img.ok());
@@ -1096,34 +1134,32 @@ static void testPreviewStyle() {
     CHECK_NEAR(windowPreviewOpacity(1.F, false, 0.F), 0.F, 1e-6F);
 
     for (bool anchor : {false, true}) {
-        for (bool selected : {false, true}) {
-            const auto desktop = workspacePreviewStyle(anchor, selected, 0.F);
-            CHECK_NEAR(desktop.visibility, anchor ? 1.F : 0.F, 1e-6F);
-            CHECK_NEAR(desktop.windowVisibility, anchor ? 1.F : 0.F, 1e-6F);
-            CHECK_NEAR(desktop.plateVisibility, 0.F, 1e-6F);
-            CHECK_NEAR(windowPreviewOpacity(0.85F, false, desktop.windowVisibility), anchor ? 0.85F : 0.F, 1e-6F);
+        const auto desktop = workspacePreviewStyle(anchor, 0.F);
+        CHECK_NEAR(desktop.visibility, anchor ? 1.F : 0.F, 1e-6F);
+        CHECK_NEAR(desktop.windowVisibility, anchor ? 1.F : 0.F, 1e-6F);
+        CHECK_NEAR(desktop.plateVisibility, 0.F, 1e-6F);
+        CHECK_NEAR(windowPreviewOpacity(0.85F, false, desktop.windowVisibility), anchor ? 0.85F : 0.F, 1e-6F);
 
-            const auto overview = workspacePreviewStyle(anchor, selected, 1.F);
-            CHECK_NEAR(overview.visibility, 1.F, 1e-6F);
-            CHECK_NEAR(overview.windowVisibility, selected ? 1.F : 0.9F, 1e-6F);
-            CHECK_NEAR(overview.plateVisibility, 1.F, 1e-6F);
+        const auto overview = workspacePreviewStyle(anchor, 1.F);
+        CHECK_NEAR(overview.visibility, 1.F, 1e-6F);
+        CHECK_NEAR(overview.windowVisibility, 1.F, 1e-6F);
+        CHECK_NEAR(overview.plateVisibility, 1.F, 1e-6F);
 
-            auto previous = desktop;
-            for (int step = 1; step <= 1000; ++step) {
-                const auto style = workspacePreviewStyle(anchor, selected, step / 1000.F);
-                CHECK(style.windowVisibility >= 0.F && style.windowVisibility <= 1.F);
-                CHECK(style.plateVisibility >= 0.F && style.plateVisibility <= 1.F);
-                CHECK(std::abs(style.windowVisibility - previous.windowVisibility) < 0.002F);
-                CHECK(std::abs(style.plateVisibility - previous.plateVisibility) < 0.003F);
-                previous = style;
-            }
+        auto previous = desktop;
+        for (int step = 1; step <= 1000; ++step) {
+            const auto style = workspacePreviewStyle(anchor, step / 1000.F);
+            CHECK(style.windowVisibility >= 0.F && style.windowVisibility <= 1.F);
+            CHECK(style.plateVisibility >= 0.F && style.plateVisibility <= 1.F);
+            CHECK(std::abs(style.windowVisibility - previous.windowVisibility) < 0.002F);
+            CHECK(std::abs(style.plateVisibility - previous.plateVisibility) < 0.003F);
+            previous = style;
         }
     }
 
     for (float value : {-1.F, 2.F, std::numeric_limits<float>::infinity(), std::numeric_limits<float>::quiet_NaN()}) {
         const float opacity = windowPreviewOpacity(value, false, value);
         CHECK(std::isfinite(opacity) && opacity >= 0.F && opacity <= 1.F);
-        const auto style = workspacePreviewStyle(true, false, value);
+        const auto style = workspacePreviewStyle(true, value);
         CHECK(std::isfinite(style.windowVisibility) && style.windowVisibility >= 0.F && style.windowVisibility <= 1.F);
         CHECK(std::isfinite(style.plateVisibility) && style.plateVisibility >= 0.F && style.plateVisibility <= 1.F);
     }
@@ -1460,6 +1496,16 @@ int main(int argc, char** argv) {
             testWindowViews();
         else if (group == "help")
             testHelp();
+        else if (group == "spaces")
+            testSpaces();
+        else if (group == "space_icons")
+            testSpaceIcons();
+        else if (group == "space_style")
+            testSpaceStyle();
+        else if (group == "input")
+            testInputModel();
+        else if (group == "render_geometry")
+            testRenderGeometry();
         else if (group == "resources") {
             testImageCache();
             testRasterBounds();
@@ -1514,6 +1560,11 @@ int main(int argc, char** argv) {
     testWindowViews();
 
     testHelp();
+    testSpaces();
+    testSpaceIcons();
+    testSpaceStyle();
+    testRenderGeometry();
+    testInputModel();
 
     std::printf("\n%d checks, %d failures\n", g_checks, g_failures);
     return g_failures == 0 ? 0 : 1;

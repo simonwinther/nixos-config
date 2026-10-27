@@ -8,7 +8,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-const LIMIT: usize = 65_536;
+const LIMIT: usize = 1_048_576;
 
 fn wait(fd: &OwnedFd, events: i16, end: Instant) -> io::Result<()> {
     loop {

@@ -36,6 +36,7 @@ def main():
     for name in ('uwsm-app', 'uwsm', 'app2unit'):
         assert (plugin / 'lib/launch-bin' / name).resolve() == helper
     assert (plugin / 'share/hyprspace/bindings.conf').read_bytes() == (ROOT / 'contrib/bindings.conf').read_bytes()
+    assert (plugin / 'share/licenses/hyprspace/lucide-LICENSE').read_bytes() == (ROOT / 'third_party/lucide/LICENSE').read_bytes()
     helper_env = os.environ.copy()
     for key in ("XDG_RUNTIME_DIR", "HYPRLAND_INSTANCE_SIGNATURE"):
         helper_env.pop(key, None)

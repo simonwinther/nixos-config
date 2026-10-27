@@ -15,7 +15,7 @@
     };
     hyprland.url = "github:hyprwm/Hyprland/efb50993780079460b0cbed1363e2166a2de1d9f";
     hyprspace = {
-      url = "github:simonwinther/hyprspace/2e805c9f9b403c1d13dde384b41da5b806450cc7";
+      url = "github:simonwinther/hyprspace/4de74c8d5e3156b945319a76709e63e695aaddd7";
       inputs.hyprland.follows = "hyprland";
     };
     disko = {
