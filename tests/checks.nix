@@ -4,6 +4,27 @@
   self,
 }:
 {
+  file-picker-integration =
+    let
+      homes = map (host: self.nixosConfigurations.${host}.config.home-manager.users.simon) [
+        "desktop"
+        "lambda"
+      ];
+    in
+    assert builtins.all (
+      home:
+      !(builtins.hasAttr "desktop-pdf-picker" home.systemd.user.services)
+      &&
+        home.systemd.user.services.desktop-file-picker.Service.ExecStart == [
+          "${packages.file-picker}/bin/file-picker --prepare-terminal"
+        ]
+    ) homes;
+    pkgs.runCommand "file-picker-integration" { nativeBuildInputs = [ pkgs.python3 ]; } ''
+      export HOME="$TMPDIR/home" PYTHONDONTWRITEBYTECODE=1
+      mkdir -p "$HOME"
+      python ${./file-picker-smoke.py} ${packages.file-picker}/bin/file-picker-native ${../scripts/render-user-units.py}
+      touch "$out"
+    '';
   storage-integration =
     let
       desktop = self.nixosConfigurations.desktop.config;
@@ -203,13 +224,23 @@
         touch "$out"
       '';
   hyprland-config =
+    let
+      home = self.nixosConfigurations.desktop-live.config.home-manager.users.simon;
+      # The parser reads these exact commands without executing them. Generating
+      # their Lua text does not require building the menu or rebuild executables.
+      generatedLua =
+        name:
+        pkgs.writeText name (
+          builtins.unsafeDiscardStringContext home.xdg.configFile."desktop/${name}".text
+        );
+    in
     pkgs.runCommand "hyprland-config"
       {
         nativeBuildInputs = [
           pkgs.bash
           pkgs.stow
           pkgs.gnugrep
-          packages.desktop-tools
+          pkgs.python3
           (pkgs.lib.getBin packages.hyprspace.compositor)
         ];
       }
@@ -222,17 +253,11 @@
         export HYPRSPACE_PLUGIN=${packages.hyprspace}/lib/libhyprspace.so
         unset HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY DISPLAY
         mkdir -p "$XDG_RUNTIME_DIR"
-        desktopctl theme init
+        python ${../dotfiles/desktop-tools/.local/share/desktop-tools/desktopctl.py} theme init
         mkdir -p "$HOME/.config/desktop"
-        cp ${
-          self.nixosConfigurations.desktop-live.config.home-manager.users.simon.xdg.configFile."desktop/ring-bindings.lua".source
-        } "$HOME/.config/desktop/ring-bindings.lua"
-        cp ${
-          self.nixosConfigurations.desktop-live.config.home-manager.users.simon.xdg.configFile."desktop/cursor.lua".source
-        } "$HOME/.config/desktop/cursor.lua"
-        cp ${
-          self.nixosConfigurations.desktop-live.config.home-manager.users.simon.xdg.configFile."desktop/rebuild-bindings.lua".source
-        } "$HOME/.config/desktop/rebuild-bindings.lua"
+        cp ${generatedLua "ring-bindings.lua"} "$HOME/.config/desktop/ring-bindings.lua"
+        cp ${generatedLua "cursor.lua"} "$HOME/.config/desktop/cursor.lua"
+        cp ${generatedLua "rebuild-bindings.lua"} "$HOME/.config/desktop/rebuild-bindings.lua"
         cp ${../hosts/desktop/monitors.lua} "$HOME/.config/desktop/monitors.lua"
         if ! Hyprland --verify-config --config "$HOME/.config/hypr/hyprland.lua" > "$TMPDIR/hyprland.log" 2>&1; then
           cat "$TMPDIR/hyprland.log"
