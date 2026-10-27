@@ -117,6 +117,7 @@ in
     ++ [ unstable.hyprland-preview-share-picker ]
     ++ (with packages; [
       desktop-tools
+      clipboard-picker
       project-picker-tui
       background-grid
       hyprspace
@@ -150,7 +151,6 @@ in
         zip
         cargo-watch
         shellcheck
-        stylua
         shfmt
         black
         isort

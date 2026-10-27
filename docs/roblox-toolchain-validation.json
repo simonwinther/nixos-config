@@ -1,0 +1,56 @@
+{
+  "recordedAt": "2026-10-24T14:01:58.752994+00:00",
+  "host": "desktop",
+  "os": "NixOS",
+  "status": "activated with owner approval",
+  "configurationRoot": "/home/simon/nixos-config",
+  "changedConfigurationSha256": {
+    "flake.nix": "b53bc5f573dff368bada5c70c332142d1c2f53691720ca00b11464f1b1789531",
+    "pkgs/roblox-dev/default.nix": "2215a8d9b3fd3b7876c347fdb4c16ca12613e0ec71aefa221996ad992c8ef17d",
+    "modules/home/roblox-dev.nix": "fe961602bed9705902f9813f4dedd43c6f438f249b18aff7347adc307e0cdcbc",
+    "modules/home/packages.nix": "1a93c3628b486fadc7b9b77f658da5308d0e436e406bd17f15adb6d477ec11fc"
+  },
+  "toolchainStorePath": "/nix/store/h85nfqdbbh5yvx939fcv1rn4mmkiym1s-roblox-toolchain",
+  "homeManagerGeneration": "/nix/store/x1x6ivkv46240dkbbzpflgf2czz0ysh7-home-manager-generation",
+  "toolVersions": {
+    "rojo": "Rojo 7.7.1",
+    "lune": "lune 0.11.1",
+    "selene": "selene 0.32.0",
+    "luau-lsp": "1.70.1",
+    "stylua": "stylua 2.6.0",
+    "wally": "wally 0.3.2",
+    "rokit": "rokit 1.2.0"
+  },
+  "checks": {
+    "packageBuildAndInstallChecks": "PASS",
+    "homeManagerGenerationBuild": "PASS",
+    "nixfmt": "PASS",
+    "statix": "PASS",
+    "deadnix": "PASS",
+    "gitDiffCheck": "PASS",
+    "configurationSourceValidation": "PASS: 196 scripts, 790 text targets, 260 package decisions, 62 editor plugin locks",
+    "robloxShellDoctor": "PASS",
+    "gameCheck": "PASS after activation: 54 Luau groups, 27 Python tests, format/lint/types and 43-entry audit",
+    "gameBuild": "PASS: 126 current scripts and edit-time map serialized",
+    "enginePlaytest": "NOT RUN in this configuration validation",
+    "focusedCaptureSafety": "PASS: six tests covering native/virtual ownership and rejection",
+    "studioLauncher": "PASS: clean single-instance relaunch after owner killed the buggy session; prefix files preserved",
+    "normalPathDoctor": "PASS after activation: every pinned version and installed Studio launcher found",
+    "homeManagerActivation": "PASS: active/exited, ExecMainStatus=0",
+    "generatedHyprlandLua": "PASS: luac syntax, formatter/static checks, no compositor config errors",
+    "studioSourcePreflight": "PASS: all 126 source hashes before restart; not a Play test",
+    "saveIntegrity": "PASS: read-only SQLite quick_check=ok after restart"
+  },
+  "activationPerformed": true,
+  "wineAndEditorConfigurationChanged": false,
+  "gameBuildSha256": "dda72e0b9755a10e61b51bbecf6806ced3d6505f6b5ead87532023aba1740d31",
+  "gameCheckLogSha256": "864af2a425cbdadb94850ef240442f1c36962ddabfd467e4b8e44222eb570fa2",
+  "gameBuildLogSha256": "1a9c985b43bce7bca25da49374549c82774cb484788f6e73e4e3b49c09c4f6ea",
+  "activeSystem": "/nix/store/v8iavxx44q4ka7r04dql70ir178y8vhv-nixos-system-desktop-26.05.20261015.26f4107",
+  "studioFocusRule": {
+    "class": "robloxstudiobeta.exe (case insensitive)",
+    "focus_on_activate": false,
+    "globalFocusAndCursorOptionsUnchanged": true,
+    "ownerPointerAcceptance": "pending after clean restart"
+  }
+}

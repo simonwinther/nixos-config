@@ -108,6 +108,13 @@
       checks.${system} = import ./tests/checks.nix { inherit pkgs packages self; };
       formatter.${system} = pkgs.nixfmt;
       devShells.${system} = {
+        roblox = pkgs.mkShellNoCC {
+          packages = [
+            packages.roblox-toolchain
+            (pkgs.python3.withPackages (python: [ python.pillow ]))
+          ];
+          SPELL_ROBLOX_TYPES = "${packages.roblox-editor-resources}/globalTypes.d.luau";
+        };
         default = pkgs.mkShell {
           packages = with pkgs; [
             nixfmt

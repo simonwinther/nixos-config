@@ -13,3 +13,4 @@ private/
 **/.env
 **/*.agekey
 **/ku-password
+/build/

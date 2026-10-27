@@ -156,11 +156,6 @@ in
       nssmdns4 = true;
       openFirewall = true;
     };
-    programs._1password.enable = !live;
-    programs._1password-gui = {
-      enable = !live;
-      polkitPolicyOwners = [ "simon" ];
-    };
     services.flatpak.enable = true;
     boot.kernelModules = lib.optional (!live) "ntsync";
     programs.nix-ld.libraries = lib.optionals (!live) [

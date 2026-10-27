@@ -23,6 +23,7 @@ in
 })
 // {
   desktop-tools = tools;
+  clipboard-picker = pkgs.callPackage ./clipboard-picker.nix { hyprland = compositor; };
   obs-font = pkgs.callPackage ./obs-font.nix { };
   obs-studio = import ./obs-studio.nix {
     inherit pkgs;

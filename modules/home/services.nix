@@ -57,7 +57,8 @@ let
       Restart = "on-failure";
       RestartSec = 2;
     };
-    Install.WantedBy = [ "desktop-session.target" ];
+    # Start pickers on demand through their shortcuts instead of preloading at login.
+    Install = { };
   };
 in
 {
@@ -73,6 +74,7 @@ in
     background-grid-native = "${packages.background-grid}/bin/background-grid-native";
     dictation-volume-duck-native = "${packages.dictation-volume-duck}/bin/dictation-volume-duck-native";
     text-picker-native = "${packages.text-picker}/bin/text-picker-native";
+    clipboard-picker-native = "${packages.clipboard-picker}/bin/clipboard-picker-native";
     plot-native = "${packages.formula-plot}/bin/plot-native";
     cluster-native = "${packages.cluster-tools}/bin/cluster-native";
     iphone-transfer-native = "${packages.iphone-transfer}/bin/iphone-transfer-native";

@@ -2,18 +2,14 @@
   {
     "arch": "1password-beta",
     "referenceVersion": "8.12.42_34.BETA-1",
-    "kind": "package",
-    "source": "stable",
-    "attribute": "_1password-gui",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Removed at user request; no longer used."
   },
   {
     "arch": "1password-cli",
     "referenceVersion": "2.41.0-1",
-    "kind": "package",
-    "source": "stable",
-    "attribute": "_1password-cli",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Removed at user request; no longer used."
   },
   {
     "arch": "7zip",

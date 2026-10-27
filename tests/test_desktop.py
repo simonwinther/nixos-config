@@ -44,6 +44,25 @@ class DesktopTests(unittest.TestCase):
         self.globals.stop()
         self.temp.cleanup()
 
+    def test_clipboard_routes_native_picker_to_original_window(self):
+        self.runtime.mkdir(parents=True)
+        (self.runtime / "clipboard-target.json").write_text(json.dumps({"address": "0x123"}))
+        with patch.object(ctl, "remember_clipboard_target") as remember, \
+                patch.object(ctl, "executable", return_value="/mock/clipboard-picker-native"), \
+                patch.object(ctl, "run") as run, patch.object(ctl, "run_application") as launch:
+            ctl.clipboard(["-m", "clipboard"])
+        remember.assert_called_once()
+        run.assert_called_once_with(["systemctl", "--user", "start", "desktop-elephant.service"], check=False)
+        launch.assert_called_once_with(["/mock/clipboard-picker-native", "--target", "0x123"])
+
+    def test_clipboard_keeps_existing_picker_until_native_is_installed(self):
+        with patch.object(ctl, "remember_clipboard_target"), \
+                patch.object(ctl, "executable", side_effect=ValueError("not installed")), \
+                patch.object(ctl, "run", return_value=Mock(stdout="[]")), \
+                patch.object(ctl, "run_application") as launch:
+            ctl.clipboard(["-m", "clipboard"])
+        self.assertEqual(launch.call_args.args[0][0], "walker")
+
     def test_native_host_integration_registers_both_helpers_without_overwriting_links(self):
         directory = self.config / "desktop"
         directory.mkdir(exist_ok=True)
