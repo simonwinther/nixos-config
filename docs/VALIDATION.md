@@ -6,6 +6,30 @@ All builds run in an isolated checkout and Docker Nix store. The reference Arch 
 
 ## Current-source results
 
+### SQLite-cached Ratatui file picker — 2026-10-24
+
+The shared file/PDF picker now loads cached metadata from SQLite and refreshes
+changed, added and removed paths in the background. Both shortcuts use floating
+Ratatui windows on the current workspace. One windowless Ghostty host replaces
+the two prepared windows and their reserved special workspaces. The Nix package
+supplies SQLite and all runtime helpers; Home Manager keeps ownership of links.
+
+The locked Nix package builds with drag support and passes all 33 release tests
+(25 library/TUI/index, six index CLI, two terminal-startup tests). Formatting and
+Clippy with warnings denied also pass. `file-picker-integration` tests the installed
+wrapper with an otherwise empty program path, verifies SQLite integrity, cache
+updates/removals/renames and PDF scope isolation, and checks the rendered portable
+unit. It also asserts the single startup service for both desktop and lambda.
+`portable-syntax` passes 196 scripts, 793 unique text targets, all 260 package
+decisions and 62 locked editor plugins. The pinned Hyprland/plugin parser reports
+`config ok` for the complete staged configuration. Its generated command bindings
+retain their exact Lua text without requiring unrelated executable builds.
+
+Evidence is retained under `.work/file-picker-port/`. These are isolated source,
+package and configuration checks. No configuration was activated or reloaded,
+no host packages were installed and no installation media was built. Actual
+NixOS session focus, clipboard and drag behavior still require runtime acceptance.
+
 ### OBS settings restoration — 2026-10-23
 
 The OBS task worktree captures the stationary desktop's preserved configuration,

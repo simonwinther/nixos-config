@@ -6,8 +6,9 @@
   makeWrapper,
   symlinkJoin,
   gtk4,
+  sqlite,
+  glib,
   fd,
-  fzf,
   zathura,
   ghostty,
   wl-clipboard,
@@ -15,6 +16,8 @@
   coreutils,
   bash,
   hyprland,
+  xdg-utils,
+  xdg-user-dirs,
 }:
 let
   native = rustPlatform.buildRustPackage {
@@ -27,11 +30,18 @@ let
       wrapGAppsHook4
       makeWrapper
     ];
-    buildInputs = [ gtk4 ];
-    nativeCheckInputs = [ fd ];
+    buildInputs = [
+      gtk4
+      sqlite
+    ];
+    nativeCheckInputs = [
+      fd
+      bash
+      coreutils
+    ];
     buildFeatures = [ "drag" ];
     meta = {
-      description = "Prepared file and PDF search with clipboard and drag support";
+      description = "SQLite-cached Ratatui file and PDF search with clipboard and drag support";
       mainProgram = "file-picker";
       platforms = lib.platforms.linux;
     };
@@ -50,7 +60,7 @@ symlinkJoin {
       --prefix PATH : ${
         lib.makeBinPath [
           fd
-          fzf
+          (lib.getBin glib)
           zathura
           ghostty
           wl-clipboard
@@ -58,6 +68,8 @@ symlinkJoin {
           coreutils
           bash
           hyprland
+          xdg-utils
+          xdg-user-dirs
         ]
       }
     makeWrapper "$out/bin/file-picker-native" "$out/bin/file-picker"
