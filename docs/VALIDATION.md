@@ -6,6 +6,41 @@ All builds run in an isolated checkout and Docker Nix store. The reference Arch 
 
 ## Current-source results
 
+### GitHub synchronization and Hyprspace spaces — 2026-10-27
+
+The configuration and dotfiles histories now include the latest shared `main`
+and `master` changes alongside the local native clipboard picker, capture
+shortcuts and password-manager removal. The native picker remains the Alt+V
+action. The newer cached file picker and lambda host configuration are retained.
+Both repositories were pushed to their shared default and `clipboard-shortcuts`
+branches without rewriting history.
+
+Hyprspace is pinned to upstream main commit
+`4de74c8d5e3156b945319a76709e63e695aaddd7`, including independent spaces and the
+newer controls. All 184 vendored files match that revision byte for byte;
+[source.json](../pkgs/hyprspace/source.json) records the import. Existing workspace
+exclusions and native Rust launcher fixes are present in the newer upstream code.
+The root lock changed only the Hyprspace input; the compositor revision is retained.
+
+Validation of source commit `40bc981` passes `desktop-behavior` (81 Python and
+18 browser tests), `portable-syntax` (197 scripts, 808 unique text targets,
+260 package decisions and 62 locked editor plugins), `file-picker-integration`,
+and `hyprland-config` (`config ok` with the packaged plugin).
+The matching Hyprland and Hyprspace 1.8.0 packages build successfully, alongside
+the native clipboard picker. Hyprspace's existing C++ model suite reports
+840,929 checks with zero failures; its Rust launch helper passes both tests.
+The plugin output is `/nix/store/y3c5bci48a7qb8ym74v9rdcb7650mrh9-hyprspace-1.8.0`.
+The imported file-picker package and runtime wrapper build, with all 33 native
+tests passing. The weather helper now reads the portable desktop theme marker through
+`XDG_STATE_HOME`; its package and tests pass. Changed Nix integration files pass
+the pinned formatter, and no compiled output or cache is committed.
+
+Runtime acceptance remains separate: this task has not activated a configuration
+or loaded the new plugin into a running session. No private state was transferred.
+Installation readiness is unchanged; no ISO, installation media or installation
+was built or performed. Local build evidence is under `.work/sync-checks.*` and
+`.work/hyprspace-unit-tests.log`.
+
 ### SQLite-cached Ratatui file picker — 2026-10-24
 
 The shared file/PDF picker now loads cached metadata from SQLite and refreshes
