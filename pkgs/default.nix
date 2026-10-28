@@ -7,11 +7,15 @@ let
   inherit (pkgs) lib;
   dots = ../dotfiles;
   projectPicker = pkgs.callPackage ./project-picker.nix { };
-  tools = pkgs.callPackage ./desktop-tools.nix { project-picker-tui = projectPicker; };
+  transcode = pkgs.callPackage ./desktop-transcode.nix { };
+  tools = pkgs.callPackage ./desktop-tools.nix {
+    project-picker-tui = projectPicker;
+    desktop-transcode = transcode;
+  };
   hyprspace = import ./hyprspace { inherit inputs; };
   companions = import ./hyprspace-companions {
     inherit inputs pkgs unstable;
-    source = ./hyprspace/source;
+    source = inputs.hyprspace;
   };
   compositor = hyprspace.compositor;
 in
@@ -24,6 +28,7 @@ in
 // {
   desktop-tools = tools;
   clipboard-picker = pkgs.callPackage ./clipboard-picker.nix { hyprland = compositor; };
+  desktop-transcode = transcode;
   obs-font = pkgs.callPackage ./obs-font.nix { };
   obs-studio = import ./obs-studio.nix {
     inherit pkgs;

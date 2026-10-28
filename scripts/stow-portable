@@ -1,19 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-target=${1:?Usage: stow-portable TARGET [--apply] (defaults to simulation)}
-mode=${2:---dry-run}
-[[ $mode == --apply || $mode == --dry-run ]] || { echo 'Expected --apply or --dry-run' >&2; exit 2; }
-[[ -d $target ]] || { echo 'Target directory must already exist' >&2; exit 2; }
-if [[ $mode == --apply && -e /etc/NIXOS && $(realpath -- "$target") == "$HOME" ]]; then
-  echo 'Home Manager owns these targets on NixOS. Use nixos-rebuild.' >&2
-  exit 1
-fi
-packages=()
-for path in "$repo"/dotfiles/*; do [[ ! -d $path ]] || packages+=("${path##*/}"); done
-if [[ $mode == --apply ]]; then
-  stow --dir="$repo/dotfiles" --target="$target" --no-folding --simulate --restow "${packages[@]}"
-  stow --dir="$repo/dotfiles" --target="$target" --no-folding --restow "${packages[@]}"
-else
-  stow --dir="$repo/dotfiles" --target="$target" --no-folding --simulate --verbose --restow "${packages[@]}"
-fi
+exec python3 "$repo/dotfiles/deploy.py" "$@"

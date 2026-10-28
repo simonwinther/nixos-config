@@ -4,6 +4,63 @@
   self,
 }:
 {
+  dotfiles-parity =
+    let
+      deployment = import ../lib/dotfiles.nix { };
+      dots = "${../dotfiles}/";
+      homes = pkgs.lib.genAttrs [ "desktop" "lambda" "desktop-live" ] (
+        host:
+        let
+          home = self.nixosConfigurations.${host}.config.home-manager.users.simon;
+        in
+        map (
+          item:
+          let
+            file = home.home.file.${item.target};
+          in
+          {
+            target = file.target;
+            source = pkgs.lib.removePrefix dots (toString file.source);
+          }
+        ) deployment.files
+      );
+      expected = pkgs.writeText "home-manager-dotfiles.json" (builtins.toJSON homes);
+    in
+    pkgs.runCommand "dotfiles-parity"
+      {
+        nativeBuildInputs = [
+          pkgs.python3
+          pkgs.bash
+          pkgs.stow
+          pkgs.nix
+        ];
+      }
+      ''
+        export HOME="$TMPDIR/home" PYTHONDONTWRITEBYTECODE=1
+        mkdir -p "$HOME"
+        python ${../.}/tests/test_dotfiles.py
+        python ${../.}/tests/dotfiles-parity.py ${../.} ${expected}
+        touch "$out"
+      '';
+  rebuild-workflow =
+    pkgs.runCommand "rebuild-workflow"
+      {
+        nativeBuildInputs = with pkgs; [
+          python3
+          git
+          bash
+          coreutils
+          util-linux
+          shellcheck
+        ];
+        REBUILD_SCRIPT = ../scripts/nixos-rebuild-desktop.sh;
+      }
+      ''
+        export PYTHONDONTWRITEBYTECODE=1
+        shellcheck "$REBUILD_SCRIPT"
+        python ${./test_rebuild.py} -v
+        touch "$out"
+      '';
   file-picker-integration =
     let
       homes = map (host: self.nixosConfigurations.${host}.config.home-manager.users.simon) [
@@ -273,11 +330,15 @@
         nativeBuildInputs = [
           (pkgs.python3.withPackages (python: [ python.pyte ]))
           packages.project-picker-tui
+          packages.desktop-transcode
           pkgs.nodejs
           pkgs.matugen
           pkgs.bash
+          pkgs.git
           pkgs.imagemagick
           pkgs.file
+          pkgs.stow
+          pkgs.util-linux
         ];
       }
       ''
@@ -359,6 +420,23 @@
         export TMUX_MIGRATION_CONFIG=${../dotfiles/tmux/.tmux.conf}
         mkdir -p "$HOME"
         timeout --signal=TERM --kill-after=5s 40s bash ${./tmux-startup.sh}
+        touch "$out"
+      '';
+  zsh-startup =
+    pkgs.runCommand "zsh-startup"
+      {
+        nativeBuildInputs = with pkgs; [
+          python3
+          zsh
+          zoxide
+          oh-my-posh
+        ];
+        ZSH_AUTOSUGGESTIONS_FILE = "${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh";
+        ZSH_SYNTAX_HIGHLIGHTING_FILE = "${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh";
+      }
+      ''
+        export PYTHONDONTWRITEBYTECODE=1
+        python -m unittest discover -s ${../dotfiles}/zsh/tests -p 'test_*.py'
         touch "$out"
       '';
   portable-syntax =

@@ -128,12 +128,24 @@ active rules and is not repeatedly retried for the same plan.
 - Hyprland: direct command socket and event socket; startup, hotplug and config
   reload trigger reconciliation. A new compositor instance can be rediscovered
   after EOF. logind `PrepareForSleep(false)` triggers reevaluation after resume.
-- Audio: PipeWire's existing PulseAudio-compatible API via structured `pactl`
-  JSON and its long-lived subscription. Rust invokes argument arrays directly;
-  there is no shell parsing. WirePlumber remains the policy / persistence owner.
+- Audio: one persistent libpulse context connects to PipeWire's existing
+  PulseAudio-compatible API. A dedicated Rust worker owns requests; libpulse's
+  threaded mainloop delivers replies and subscription events under its lock.
+  Discovery, writes and subscriptions launch no external commands. WirePlumber
+  remains the policy / persistence owner. The Nix package links libpulseaudio;
+  portable builds require libpulse 15 or newer.
   Persistent device properties and node names are separate from temporary node
   indices. Input-monitor loopbacks are excluded. Optional existing application
   stream moves use fresh stream indices; they are off by default.
+  Subscription notifications share one pending invalidation, settling for 50 ms
+  of quiet with a 250 ms upper bound. A clean cached snapshot skips discovery
+  before an action; pending changes, discovery errors, and a disconnected
+  subscription require a fresh preflight. Actions always read back state before
+  replying, including failures. Mute toggles query the current native mute value
+  before writing. Its subscription burst joins the readback; changes received
+  during discovery remain pending for a follow-up refresh. The native connection
+  replaces the previous subscription child and four short-lived `pactl`
+  processes per ordinary action.
 - Bluetooth: zbus talks directly to BlueZ ObjectManager, Adapter1 and Device1.
   Paired devices only; no background scanning or pairing agent. Signals update
   the model. Connect and default-audio selection are separate operations; a
@@ -159,6 +171,38 @@ add a backend state / event / action and produce `Menu` / `Entry` values in the
 menu-model builder. GTK rendering and navigation contain no subsystem-specific
 commands. Recursive entries support arbitrary depth.
 
+## Native audio connection
+
+The worker exchanges commands and snapshots with Tokio through channels. The
+[PulseAudio asynchronous API](https://www.freedesktop.org/software/pulseaudio/doxygen/async.html)
+multiplexes commands and events on one context, and its
+[subscription API](https://www.freedesktop.org/software/pulseaudio/doxygen/subscribe.html)
+identifies the changed object. The worker subscribes before the initial
+snapshot, and retains the existing coalescing and readback behavior. This uses
+the existing Pulse-facing device model because
+[PipeWire's Pulse server](https://docs.pipewire.org/page_module_protocol_pulse.html)
+supports libpulse clients. WirePlumber retains policy and persistence.
+
+Connection setup and each discovery/action batch have five-second deadlines.
+Timed-out operations are cancelled and their context discarded; only disconnected
+connections use capped exponential reconnect backoff (1–30 seconds). Native
+objects are destroyed under the mainloop lock before its thread stops. SIGINT
+and SIGTERM remain selectable during backend waits; shutdown wakes the worker
+during connection setup, an operation, or reconnect backoff, and joins it.
+The client never autospawns the audio server. No polling timer runs while a
+healthy connection is idle. Per-device targeted refresh remains a possible
+future optimization; current refreshes deliberately retain full snapshots.
+
+The Rust binding is pinned with a local source patch under
+`dotfiles/desktop-ring/.local/share/desktop-ring/vendor/`. The unmodified 2.30.1
+release loses ownership of callbacks when an operation is cancelled. The patch
+retains that pointer for cancellation and avoids freeing an already completed
+callback again. A regression verifies capture destruction exactly once for
+cancellation, repeated cancellation/drop, and cancellation after completion.
+It fails against the unpatched release. Source provenance and original licenses
+are retained with the dependency; Cargo applies the same source patch on both
+NixOS and other distributions.
+
 ## Diagnostics and validation
 
 `desktop-ring status` prints identities, modes, matched profile, selected
@@ -171,6 +215,16 @@ Build with `nix build .#desktop-ring`. Tests run during the Nix package build;
 `nix develop .#rust-desktop` also supplies cargo / clippy / rustfmt. Flake checks
 include `desktop-ring`, `ring-integration`, the real generated Lua bindings in
 `hyprland-config`, and existing portable / desktop behavior checks.
+Audio integration tests use private daemon and PulseAudio sockets, null speakers
+and microphones, and no session/system D-Bus connection. They exercise volume
+and mute readback, default selection, hotplug, server restarts, setup/operation
+deadlines, worker shutdown and optional playback/recording stream moves. Tests
+reselect an existing default with streams on another device to isolate explicit
+stream moves from the server's own default-change policy. Filter/virtual streams
+are excluded. A `pactl` trap and stable native client index check that the ring
+uses one connection and no audio subprocesses; test controls use `pactl` only
+against the private fixture. They do not access live audio. Timing tests use
+Tokio's paused clock to verify quiet-window and maximum-wait behavior.
 
 Real stationary acceptance includes portrait placement / mode readback, audio
 output and microphone selection, volume / mute round trips with original

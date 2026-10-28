@@ -60,6 +60,121 @@ class MenuTests(unittest.TestCase):
                     self.assertIn(command[1], set(menus) | dynamic)
                 self.assertNotIn(command[0], ("install", "remove", "update", "rebuild"))
 
+    def test_keybindings_use_live_overrides_and_include_generated_bindings(self):
+        source = self.config / "hypr/defaults.lua"
+        source.parent.mkdir()
+        source.write_text('hl.bind("SUPER + CTRL + SPACE", action, { description = "Theme background menu" })\n'
+                          'hl.bind("switch:off:Lid Switch", action, { locked = true })\n'
+                          'hl.bind("PRINT", action, { description = "Screenshot" })\n')
+        bindings = [
+            {"modmask": 68, "key": "SPACE", "description": "Wallpaper grid"},
+            {"modmask": 64, "key": "R", "description": "Desktop control ring"},
+            {"modmask": 76, "key": "M", "description": "Cycle laptop position"},
+            {"modmask": 0, "key": "switch:off:Lid Switch", "description": ""},
+            {"modmask": 0, "key": "PRINT", "description": "Screenshot"},
+        ]
+        replies = [subprocess.CompletedProcess([], 0, json.dumps(bindings)), subprocess.CompletedProcess([], 130)]
+        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run:
+            ctl.keybindings()
+        self.assertEqual(run.call_args_list[0].args[0], ["hyprctl", "-j", "binds"])
+        self.assertTrue(run.call_args_list[0].kwargs["capture"])
+        self.assertEqual(run.call_args.kwargs["input"].splitlines(), [
+            "PRINT  Screenshot",
+            "SUPER + CTRL + ALT + M  Cycle laptop position",
+            "SUPER + CTRL + SPACE  Wallpaper grid",
+            "SUPER + R  Desktop control ring",
+        ])
+        self.assertFalse(run.call_args.kwargs["check"])
+
+    def test_keybindings_preserve_trigger_context_and_multiple_actions(self):
+        bindings = [
+            {"modmask": 0, "key": "F9", "description": "Start dictation"},
+            {"modmask": 0, "key": "F9", "description": "Stop dictation", "release": True},
+            {"modmask": 64, "key": "", "keycode": 10, "description": "Workspace 1"},
+            {"modmask": 64, "key": "mouse:272", "description": "Move window"},
+            {"modmask": 0, "key": "XF86AudioMute", "description": "Mute audio"},
+            {"modmask": 0, "key": "left", "submap": "resize", "description": "Resize left"},
+            {"modmask": 8, "key": "TAB", "description": "Focus next window"},
+            {"modmask": 8, "key": "TAB", "description": "Reveal active window"},
+            {"modmask": 8, "key": "TAB", "description": "Reveal active window"},
+            {"modmask": 0, "key": "Q", "description": "Quit", "longPress": True},
+            {"modmask": 0, "key": "", "catch_all": True, "submap": "resize", "description": "Exit resize"},
+            {"modmask": 255, "key": "K", "description": "All modifiers"},
+        ]
+        replies = [subprocess.CompletedProcess([], 0, json.dumps(bindings)), subprocess.CompletedProcess([], 0)]
+        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run, patch.object(ctl, "dispatch") as dispatch:
+            ctl.keybindings()
+        entries = run.call_args.kwargs["input"].splitlines()
+        self.assertEqual(entries, sorted({
+            "F9  Start dictation",
+            "F9 (release)  Stop dictation",
+            "SUPER + code:10  Workspace 1",
+            "SUPER + mouse:272  Move window",
+            "XF86AudioMute  Mute audio",
+            "[resize] left  Resize left",
+            "ALT + TAB  Focus next window",
+            "ALT + TAB  Reveal active window",
+            "Q (long press)  Quit",
+            "[resize] catchall  Exit resize",
+            "SUPER + CTRL + ALT + SHIFT + CAPS + MOD2 + MOD3 + MOD5 + K  All modifiers",
+        }))
+        dispatch.assert_not_called()
+
+    def test_keybindings_recover_lua_keycodes_from_live_text_by_identity(self):
+        bindings = [
+            {"modmask": 64, "submap": "", "key": "", "keycode": 0,
+             "description": "Desktop display controls", "dispatcher": "__lua", "arg": "10"},
+            {"modmask": 64, "submap": "", "key": "", "keycode": 0,
+             "description": "Desktop display controls", "dispatcher": "__lua", "arg": "11"},
+            {"modmask": 0, "key": "PRINT", "description": "Screenshot"},
+        ]
+        # Reverse the live text records and keep their descriptions identical.
+        text = ('bindd\n\tmodmask: 64\n\tsubmap: \n\tkey: SUPER + code:11\n'
+                '\tkeycode: 0\n\tcatchall: false\n\tdescription: Desktop display controls\n'
+                '\tdispatcher: __lua\n\targ: 11\n\n'
+                'bindd\n\tmodmask: 64\n\tsubmap: \n\tkey: SUPER + code:10\n'
+                '\tkeycode: 0\n\tcatchall: false\n\tdescription: Desktop display controls\n'
+                '\tdispatcher: __lua\n\targ: 10\n\n')
+        replies = [subprocess.CompletedProcess([], 0, json.dumps(bindings)),
+                   subprocess.CompletedProcess([], 0, text), subprocess.CompletedProcess([], 130)]
+        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run:
+            ctl.keybindings()
+        self.assertEqual(run.call_args_list[1].args[0], ["hyprctl", "binds"])
+        self.assertEqual(run.call_args.kwargs["input"].splitlines(), [
+            "PRINT  Screenshot",
+            "SUPER + code:10  Desktop display controls",
+            "SUPER + code:11  Desktop display controls",
+        ])
+
+    def test_keybindings_reject_missing_or_ambiguous_live_keycodes(self):
+        bindings = [{"modmask": 64, "submap": "", "key": "", "keycode": 0,
+                     "description": "Workspace 1", "dispatcher": "__lua", "arg": "10"}]
+        record = ('bindd\n\tmodmask: 64\n\tsubmap: \n\tkey: SUPER + code:10\n'
+                  '\tdescription: Workspace 1\n\tdispatcher: __lua\n\targ: 10\n\n')
+        for text in ("", record.replace("arg: 10", "arg: 11"), record + record.replace("code:10", "code:11")):
+            replies = [subprocess.CompletedProcess([], 0, json.dumps(bindings)), subprocess.CompletedProcess([], 0, text)]
+            with self.subTest(text=text), patch.object(ctl, "run", side_effect=replies) as run, patch.object(ctl, "prepare_theme") as theme:
+                with self.assertRaisesRegex(ValueError, "unambiguous key"):
+                    ctl.keybindings()
+                self.assertEqual(run.call_count, 2)
+                theme.assert_not_called()
+
+    def test_keybindings_do_not_show_stale_sources_when_query_fails_or_is_empty(self):
+        source = self.config / "hypr/stale.lua"
+        source.parent.mkdir()
+        source.write_text('hl.bind("SUPER + Q", action, { description = "Stale shortcut" })')
+        for reply, error in [
+            (subprocess.CalledProcessError(1, ["hyprctl", "-j", "binds"]), subprocess.CalledProcessError),
+            (subprocess.CompletedProcess([], 0, "invalid json"), ValueError),
+            (subprocess.CompletedProcess([], 0, "[]"), ValueError),
+            (subprocess.CompletedProcess([], 0, '[{"key":"switch:off:Lid Switch","description":""}]'), ValueError),
+        ]:
+            with self.subTest(reply=reply), patch.object(ctl, "run", side_effect=[reply]) as run, patch.object(ctl, "prepare_theme") as theme:
+                with self.assertRaises(error):
+                    ctl.keybindings()
+                self.assertEqual(run.call_count, 1)
+                theme.assert_not_called()
+
     def test_focus_shortcut_launches_default_command_or_matches_title_without_case(self):
         with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, "[]")), patch.object(ctl.os, "execvp") as execute:
             ctl.launch(["focus", "spotify"])
@@ -108,7 +223,13 @@ class MenuTests(unittest.TestCase):
         def fake_copy(command, **kwargs):
             kwargs["stdout"].write(b"synthetic image")
             return subprocess.CompletedProcess(command, 0)
-        with patch.object(ctl, "run", side_effect=[subprocess.CompletedProcess([], 0, "image/png\n"), subprocess.CompletedProcess([], 0)]) as run, patch.object(ctl.subprocess, "run", side_effect=fake_copy):
+        def share_run(command, **kwargs):
+            if command[:2] == ["wl-paste", "--list-types"]:
+                return subprocess.CompletedProcess(command, 0, "image/png\n")
+            if command[0] == "wl-paste":
+                return fake_copy(command, **kwargs)
+            return subprocess.CompletedProcess(command, 0)
+        with patch.object(ctl, "run", side_effect=share_run) as run:
             ctl.share(["clipboard"])
         path = Path(run.call_args.args[0][-1])
         self.assertEqual(path.suffix, ".png")

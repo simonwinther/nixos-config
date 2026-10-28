@@ -7,6 +7,7 @@
   gtk4,
   gtk4-layer-shell,
   pulseaudio,
+  libpulseaudio,
   dbus,
   systemd,
   libnotify,
@@ -24,14 +25,17 @@ rustPlatform.buildRustPackage {
   buildInputs = [
     gtk4
     gtk4-layer-shell
+    libpulseaudio
   ];
-  nativeCheckInputs = [ dbus ];
+  nativeCheckInputs = [
+    dbus
+    pulseaudio
+  ];
   preCheck = "export TMPDIR=/tmp";
   cargoTestFlags = [ "--all-targets" ];
   postFixup = ''
     wrapProgram "$out/bin/desktop-ring" --prefix PATH : ${
       lib.makeBinPath [
-        pulseaudio
         systemd
         libnotify
       ]

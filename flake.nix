@@ -146,6 +146,7 @@
             gtk4-layer-shell
             sqlite
             libcanberra
+            libpulseaudio
             wayland
             pipewire
             alsa-lib

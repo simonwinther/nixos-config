@@ -12,9 +12,9 @@ let
   desktop = profile != "recovery";
   live = profile == "live";
   compositor = packages.hyprspace.compositor;
-  # UWSM reads its launcher; the capability wrapper is intentionally execute-only.
+  # Keep UWSM's launcher readable and retain the compositor's capability wrapper.
   sessionLauncher = pkgs.writeShellScriptBin "Hyprland" ''
-    exec /run/wrappers/bin/Hyprland "$@"
+    exec ${compositor}/bin/start-hyprland --path /run/wrappers/bin/Hyprland -- "$@"
   '';
   lockOnLogin = pkgs.writeShellScript "desktop-lock-on-login" ''
     export PATH="${
@@ -77,14 +77,6 @@ in
       };
       pulse.enable = true;
       jack.enable = true;
-      wireplumber.extraConfig."51-soft-mixer" = {
-        "monitor.alsa.rules" = [
-          {
-            matches = [ { "device.name" = "~alsa_card.*"; } ];
-            actions.update-props."api.alsa.soft-mixer" = true;
-          }
-        ];
-      };
     };
     services.pulseaudio.enable = false;
     hardware.graphics = {

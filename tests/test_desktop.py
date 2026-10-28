@@ -1,11 +1,15 @@
 """Exercise state transitions without access to a compositor, system bus, or real HOME."""
+from concurrent.futures import ThreadPoolExecutor
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
+import threading
 import unittest
 from unittest.mock import Mock, patch
 
@@ -13,10 +17,30 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "dotfiles/desktop-tools/.local/share/desktop-tools/desktopctl.py"
 spec = importlib.util.spec_from_file_location("desktopctl_test", SCRIPT)
 ctl = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(ctl)
+with patch.object(sys, "path", [str(SCRIPT.parent), *sys.path]):
+    spec.loader.exec_module(ctl)
 
 
 class DesktopTests(unittest.TestCase):
+    def test_break_reminders_start_without_a_private_coop_invite(self):
+        target = self.config / "breakd/config.toml"
+        target.parent.mkdir()
+        target.write_text('[coop]\nmode = "host"\nroom_token = ""\n'
+                          'relay_url = "ws://example.invalid/ws"\n[other]\nkeep = true\n')
+        ctl.prepare_break_reminders()
+        settings = ctl.tomllib.loads(target.read_text())
+        self.assertEqual(settings["coop"]["mode"], "off")
+        self.assertTrue(settings["other"]["keep"])
+        self.assertEqual(target.stat().st_mode & 0o777, 0o600)
+
+    def test_break_reminders_preserve_an_existing_private_invite(self):
+        target = self.config / "breakd/config.toml"
+        target.parent.mkdir()
+        source = '[coop]\nmode = "guest"\nroom_token = "0123456789abcdef0123456789abcdef"\n'
+        target.write_text(source)
+        ctl.prepare_break_reminders()
+        self.assertEqual(target.read_text(), source)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.home = Path(self.temp.name)
@@ -188,9 +212,15 @@ class DesktopTests(unittest.TestCase):
         self.assertFalse((self.state / "toggles/hypr/internal-display.conf").exists())
 
     def test_duplicate_lock_request_does_not_wait_and_relock_after_unlock(self):
-        with ctl.state_lock("screen-lock"), patch.object(ctl, "prepare_theme") as prepare:
+        with ctl.state_lock("screen-lock"), patch.object(ctl, "prepare_theme") as prepare, \
+                patch.object(ctl, "run") as run, patch.object(ctl, "background") as background, \
+                patch.object(ctl.subprocess, "Popen") as popen, patch.object(ctl, "lock_config") as config:
             ctl.lock_worker(["--only"])
         prepare.assert_not_called()
+        run.assert_not_called()
+        background.assert_not_called()
+        popen.assert_not_called()
+        config.assert_not_called()
 
     def test_idle_toggle_leaves_sleep_coordinator_running(self):
         marker = self.runtime / "idle-enabled"
@@ -232,33 +262,276 @@ class DesktopTests(unittest.TestCase):
         result = subprocess.CompletedProcess([], 1, "")
         freezer = Mock()
         freezer.poll.return_value = None
-        with patch.object(ctl, "run", return_value=result), patch.object(ctl.subprocess, "run") as binary, patch.object(ctl, "background", return_value=freezer), patch.object(ctl.time, "sleep"):
+        with patch.object(ctl, "run", return_value=result) as binary, patch.object(ctl, "background", return_value=freezer), patch.object(ctl.time, "sleep"):
             ctl.capture(["screenshot", "region"])
-        binary.assert_not_called()
-        freezer.terminate.assert_called_once()
+        self.assertEqual(binary.call_count, 1)
+        self.assertEqual(binary.call_args.args[0], ["slurp"])
+        freezer.close.assert_called_once()
         self.assertFalse((self.home / "Pictures").exists())
 
     def test_copy_only_capture_keeps_freeze_until_pixels_are_read(self):
         events = []
         freezer = Mock()
         freezer.poll.return_value = None
-        freezer.terminate.side_effect = lambda: events.append("thaw")
+        freezer.close.side_effect = lambda: events.append("thaw")
         def pixels(*args, **kwargs):
             events.append("pixels")
             return subprocess.CompletedProcess([], 0, b"image bytes")
-        with patch.object(ctl, "background", return_value=freezer), patch.object(ctl.time, "sleep"), patch.object(ctl, "screenshot_geometry", return_value="0,0 100x100"), patch.object(ctl.subprocess, "run", side_effect=pixels), patch.object(ctl, "copy_data") as copy:
+        with patch.object(ctl, "background", return_value=freezer), patch.object(ctl.time, "sleep"), patch.object(ctl, "screenshot_geometry", return_value="0,0 100x100"), patch.object(ctl, "run", side_effect=pixels), patch.object(ctl, "copy_data") as copy:
             ctl.capture(["screenshot", "region", "copy"])
         self.assertEqual(events, ["pixels", "thaw"])
         copy.assert_called_once_with(b"image bytes", "image/png")
         self.assertFalse((self.home / "Pictures").exists())
 
     def test_save_only_capture_uses_reference_names_and_preserves_clipboard(self):
-        with patch.object(ctl, "screenshot_geometry", return_value="0,0 100x100"), patch.object(ctl.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, b"image bytes")), patch.object(ctl, "copy_data") as copy:
+        with patch.object(ctl, "screenshot_geometry", return_value="0,0 100x100"), patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, b"image bytes")), patch.object(ctl, "copy_data") as copy:
             ctl.capture(["screenshot", "fullscreen", "save"])
         images = list((self.home / "Pictures").glob("screenshot-*.png"))
         self.assertEqual(len(images), 1)
         self.assertEqual(images[0].read_bytes(), b"image bytes")
         copy.assert_not_called()
+
+    def test_same_second_captures_preserve_each_image_and_report_unique_paths(self):
+        images = [b"first image", b"second image"]
+        with patch.object(ctl, "screenshot_geometry", return_value="0,0 100x100"), \
+                patch.object(ctl, "run", side_effect=[subprocess.CompletedProcess([], 0, image) for image in images]), \
+                patch.object(ctl.time, "strftime", return_value="screenshot-2026-10-28_12-00-00"), \
+                patch("sys.stdout", new_callable=io.StringIO) as stdout:
+            for _ in images:
+                ctl.capture(["screenshot", "fullscreen", "save"])
+        outputs = [Path(line) for line in stdout.getvalue().splitlines()]
+        self.assertEqual(len(set(outputs)), len(images))
+        self.assertEqual([output.read_bytes() for output in outputs], images)
+        self.assertEqual(set((self.home / "Pictures").iterdir()), set(outputs))
+        for output in outputs:
+            self.assertTrue(output.match("screenshot-*.png"))
+
+    def test_screenshot_collisions_preserve_existing_files_and_symlinks(self):
+        stem = "screenshot-2026-10-28_12-00-00"
+        for kind in ("file", "symlink", "dangling-symlink"):
+            with self.subTest(kind=kind):
+                directory = self.home / kind
+                directory.mkdir()
+                existing = directory / f"{stem}-{'0' * 32}.png"
+                target = self.home / f"{kind}-target"
+                if kind == "file":
+                    existing.write_bytes(b"previous capture")
+                else:
+                    if kind == "symlink":
+                        target.write_bytes(b"keep linked content")
+                    existing.symlink_to(target)
+                with patch.object(ctl.time, "strftime", return_value=stem), \
+                        patch.object(ctl.uuid, "uuid4", side_effect=[ctl.uuid.UUID(int=0), ctl.uuid.UUID(int=1)]):
+                    output = ctl.save_screenshot(directory, b"new capture")
+                self.assertNotEqual(output, existing)
+                self.assertEqual(output.read_bytes(), b"new capture")
+                self.assertEqual(set(directory.iterdir()), {existing, output})
+                if kind == "file":
+                    self.assertEqual(existing.read_bytes(), b"previous capture")
+                else:
+                    self.assertTrue(existing.is_symlink())
+                    self.assertEqual(existing.readlink(), target)
+                    if kind == "symlink":
+                        self.assertEqual(target.read_bytes(), b"keep linked content")
+                    else:
+                        self.assertFalse(target.exists())
+
+    def test_concurrent_screenshots_retry_a_shared_name_without_losing_images(self):
+        directory = self.home / "Pictures"
+        images = [f"capture {i}".encode() for i in range(4)]
+        barrier = threading.Barrier(len(images))
+        attempts = threading.local()
+        random_uuid = ctl.uuid.uuid4
+
+        def colliding_uuid():
+            if not getattr(attempts, "started", False):
+                attempts.started = True
+                barrier.wait(timeout=10)
+                return ctl.uuid.UUID(int=0)
+            return random_uuid()
+
+        with patch.object(ctl.time, "strftime", return_value="screenshot-2026-10-28_12-00-00"), \
+                patch.object(ctl.uuid, "uuid4", side_effect=colliding_uuid), \
+                ThreadPoolExecutor(max_workers=len(images)) as pool:
+            outputs = list(pool.map(lambda image: ctl.save_screenshot(directory, image), images))
+        self.assertEqual(len(set(outputs)), len(images))
+        self.assertEqual([output.read_bytes() for output in outputs], images)
+        self.assertEqual(set(directory.iterdir()), set(outputs))
+
+    def test_screenshot_publication_exposes_only_complete_bytes(self):
+        directory = self.home / "Pictures"
+        image = b"complete screenshot bytes"
+        fsync = ctl.os.fsync
+        link = ctl.os.link
+
+        def sync_before_publication(descriptor):
+            self.assertEqual(list(directory.glob("screenshot-*.png")), [])
+            fsync(descriptor)
+
+        def publish(temporary, output):
+            self.assertEqual(list(directory.glob("screenshot-*.png")), [])
+            self.assertEqual(Path(temporary).read_bytes(), image)
+            link(temporary, output)
+            self.assertEqual(output.read_bytes(), image)
+
+        with patch.object(ctl.os, "fsync", side_effect=sync_before_publication) as synced, \
+                patch.object(ctl.os, "link", side_effect=publish) as published:
+            output = ctl.save_screenshot(directory, image)
+        synced.assert_called_once()
+        published.assert_called_once()
+        self.assertEqual(list(directory.iterdir()), [output])
+
+    def test_failed_screenshot_saves_leave_no_published_or_temporary_files(self):
+        for operation in ("fsync", "link"):
+            with self.subTest(operation=operation):
+                directory = self.home / operation
+                with patch.object(ctl.os, operation, side_effect=OSError("save failed")), \
+                        self.assertRaisesRegex(OSError, "save failed"):
+                    ctl.save_screenshot(directory, b"image bytes")
+                self.assertEqual(list(directory.iterdir()), [])
+
+
+class LockTests(unittest.TestCase):
+    tearDown = DesktopTests.tearDown
+
+    def setUp(self):
+        DesktopTests.setUp(self)
+        target = self.config / "hypr/hyprlock.conf"
+        target.parent.mkdir()
+        target.symlink_to(ROOT / "dotfiles/hypr/.config/hypr/hyprlock.conf")
+        self.child = Mock(args=["hyprlock"], **{"poll.return_value": None, "wait.return_value": 0})
+        self.child.__enter__ = Mock(return_value=self.child)
+        self.child.__exit__ = Mock(return_value=False)
+        for name, mock in [
+            ("run", Mock(return_value=subprocess.CompletedProcess([], 0))),
+            ("background", Mock()),
+            ("brightness", Mock()),
+        ]:
+            setattr(self, name, mock)
+            patcher = patch.object(ctl, name, mock)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        self.popen = self.enterContext(patch.object(ctl, "managed", return_value=self.child))
+        self.sleep = self.enterContext(patch.object(ctl.time, "sleep"))
+        self.enterContext(patch.object(ctl.shutil, "which", return_value=None))
+        self.stderr = self.enterContext(patch("sys.stderr", new_callable=io.StringIO))
+
+    def assert_started(self):
+        self.popen.assert_called_with(["hyprlock", "--config", str(self.runtime / "hyprlock.conf")], operation="lock")
+        self.child.wait.assert_called_with()
+        source = (self.runtime / "hyprlock.conf").read_text()
+        self.assertNotIn("source =", source)
+        for name in ("color", "inner_color", "outer_color", "font_color", "check_color"):
+            self.assertIn(f"${name} = ", source)
+        return source
+
+    def test_login_starts_without_preparing_other_appearance_files(self):
+        with patch.object(ctl, "prepare_theme", side_effect=ValueError("broken appearance")) as prepare, \
+                patch.object(ctl, "state", side_effect=AssertionError("lock must not migrate or recover state")):
+            self.assertEqual(ctl.main(["lock-worker", "--only"]), 0)
+        prepare.assert_not_called()
+        self.assertIn("$color = rgba(0,0,0,1.0)", self.assert_started())
+        self.assertFalse((self.state / "theme").exists())
+        self.sleep.assert_not_called()
+        self.assertNotIn(["hyprctl", "dispatch", "dpms", "off"], [c.args[0] for c in self.run.call_args_list])
+
+    def test_login_falls_back_for_invalid_appearance_state(self):
+        for content in ("{", "[]", "null", '{"theme": "absent"}', '{"theme": 42}',
+                        '{"font": []}', '{"font": ""}', '{"font": "bad\\nfont"}',
+                        '{"font": "bad\\tfont"}', '{"font": "bad\\ud800font"}',
+                        '{"lockBackground": {"path": "invalid"}}'):
+            with self.subTest(state=content):
+                ctl.atomic_write(self.state / "state.json", content)
+                self.assertEqual(ctl.main(["lock-worker", "--only"]), 0)
+                source = self.assert_started()
+                self.assertIn("font_family = JetBrainsMono Nerd Font", source)
+                self.assertIn("$color = rgba(000000ff)", source)
+                self.assertEqual((self.state / "state.json").read_text(), content)
+        self.assertIn("appearance", self.stderr.getvalue())
+
+    def test_selected_theme_font_and_background_work_without_preparation(self):
+        image = self.home / "lock image.png"
+        image.write_bytes(b"image")
+        ctl.save_state({"theme": "catppuccin-latte", "font": "Test Mono", "lockBackground": str(image)})
+        self.assertEqual(ctl.main(["lock-worker", "--only"]), 0)
+        source = self.assert_started()
+        self.assertIn("$color = rgba(eff1f5ff)", source)
+        self.assertIn("font_family = Test Mono", source)
+        self.assertIn(str(self.state / "lock-background"), source)
+        self.assertEqual((self.state / "lock-background").resolve(), image)
+        self.assertFalse((self.state / "theme").exists())
+
+    def test_login_falls_back_for_invalid_settings_and_palette(self):
+        settings = self.config / "desktop/settings.json"
+        settings.unlink()
+        for content in ("{", "[]", '{"defaultFont": null}'):
+            with self.subTest(settings=content):
+                settings.write_text(content)
+                self.assertEqual(ctl.main(["lock-worker", "--only"]), 0)
+                self.assert_started()
+        settings.write_text("{}")
+        palette = self.data / "desktop/themes/broken/colors.toml"
+        palette.parent.mkdir(parents=True)
+        palette.write_text("not valid = [")
+        ctl.save_state({"theme": "broken"})
+        self.assertEqual(ctl.main(["lock-worker", "--only"]), 0)
+        self.assert_started()
+
+    def test_appearance_io_errors_do_not_abort_locking(self):
+        with patch.object(ctl, "theme_path", side_effect=PermissionError("unreadable palette")):
+            self.assertEqual(ctl.main(["lock-worker", "--only"]), 0)
+        self.assert_started()
+        image = self.home / "lock.png"
+        image.write_bytes(b"image")
+        ctl.save_state({"lockBackground": str(image)})
+        precious = self.state / "lock-background"
+        precious.write_text("preserve")
+        self.assertEqual(ctl.main(["lock-worker", "--only"]), 0)
+        self.assertIn(str(self.state / "background"), self.assert_started())
+        self.assertEqual(precious.read_text(), "preserve")
+
+    def test_suspend_request_fallback_locks_even_with_corrupt_state(self):
+        ctl.atomic_write(self.state / "state.json", "{")
+        self.run.return_value = subprocess.CompletedProcess([], 1, "")
+        self.assertEqual(ctl.main(["lock", "--only"]), 0)
+        self.assertEqual(self.run.call_args.args[0], ["systemctl", "--user", "start", "desktop-lock-only.service"])
+        command = self.background.call_args.args[0]
+        self.assertEqual(command[2:], ["lock-worker", "--only"])
+        self.assertEqual(ctl.main(command[2:]), 0)
+        self.assert_started()
+        self.sleep.assert_not_called()
+
+    def test_normal_lock_preserves_display_and_keyboard_power_behavior(self):
+        ctl.atomic_write(self.state / "state.json", "{")
+        self.assertEqual(ctl.main(["lock-worker"]), 0)
+        self.assert_started()
+        self.sleep.assert_called_once_with(3)
+        self.assertEqual([c.args[0] for c in self.run.call_args_list], [
+            ["hyprctl", "switchxkblayout", "all", "0"],
+            ["hyprctl", "dispatch", "dpms", "off"],
+            ["hyprctl", "dispatch", "dpms", "on"],
+        ])
+        self.assertEqual([c.args[0] for c in self.brightness.call_args_list],
+                         [["keyboard", "off"], ["keyboard", "restore"]])
+
+    def test_failed_locker_is_reported_and_does_not_blank_displays(self):
+        self.child.poll.return_value = self.child.wait.return_value = 1
+        self.child.returncode = 1
+        for args in ([], ["--only"]):
+            with self.subTest(args=args):
+                self.assertEqual(ctl.main(["lock-worker", *args]), 1)
+                self.assert_started()
+        self.assertNotIn(["hyprctl", "dispatch", "dpms", "off"], [c.args[0] for c in self.run.call_args_list])
+        self.assertIn("non-zero exit status 1", self.stderr.getvalue())
+
+    def test_locker_launch_and_required_config_failures_are_reported(self):
+        self.popen.side_effect = FileNotFoundError("hyprlock unavailable")
+        self.assertEqual(ctl.main(["lock-worker", "--only"]), 1)
+        self.child.wait.assert_not_called()
+        self.popen.reset_mock()
+        (self.config / "hypr/hyprlock.conf").unlink()
+        self.assertEqual(ctl.main(["lock-worker", "--only"]), 1)
+        self.popen.assert_not_called()
 
 
 if __name__ == "__main__":

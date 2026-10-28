@@ -97,6 +97,7 @@ let
     nativeCheckInputs = [
       pkgs.bash
       pkgs.coreutils
+      pkgs.ripgrep
     ];
     preCheck = "export TMPDIR=/tmp";
     meta.platforms = lib.platforms.linux;
@@ -131,6 +132,7 @@ in
       git
       openssh
       rsync
+      ripgrep
       bash
       coreutils
       findutils

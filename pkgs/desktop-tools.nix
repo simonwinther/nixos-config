@@ -22,6 +22,7 @@
   wl-clipboard,
   fd,
   project-picker-tui,
+  desktop-transcode,
 }:
 stdenvNoCC.mkDerivation {
   pname = "desktop-tools";
@@ -31,17 +32,17 @@ stdenvNoCC.mkDerivation {
   dontBuild = true;
   installPhase = ''
     mkdir -p "$out/share/desktop-tools" "$out/bin"
-    cp desktopctl.py project_picker.py transcode.sh "$out/share/desktop-tools/"
-    makeWrapper ${python3}/bin/python3 "$out/bin/project-picker" \
-      --add-flags "$out/share/desktop-tools/project_picker.py" \
+    cp desktopctl.py desktop_process.py transcode.sh "$out/share/desktop-tools/"
+    makeWrapper ${project-picker-tui}/bin/project-picker-core "$out/bin/project-picker" \
       --prefix PATH : "${lib.makeBinPath [ project-picker-tui ]}:$out/bin"
-    makeWrapper ${python3}/bin/python3 "$out/bin/project-picker-host" \
-      --add-flags "$out/share/desktop-tools/project_picker.py --native-host"
+    makeWrapper ${project-picker-tui}/bin/project-picker-core "$out/bin/project-picker-host" \
+      --add-flags "--native-host"
     makeWrapper ${bash}/bin/bash "$out/bin/desktop-transcode" \
       --add-flags "$out/share/desktop-tools/transcode.sh" \
       --prefix PATH : ${
         lib.makeBinPath [
           bash
+          desktop-transcode
           coreutils
           findutils
           ffmpeg

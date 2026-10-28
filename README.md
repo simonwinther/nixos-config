@@ -59,4 +59,15 @@ cd nixos-config
 git submodule update --init --recursive
 ```
 
-The flake enables submodule fetching, and the rebuild keybind initializes the pinned submodule before building. Commit dotfiles changes in their own repository, push that revision, then commit the updated submodule pointer here. Keep runtime credentials and private state outside both repositories.
+The flake enables submodule fetching. **Super+Ctrl+Alt+N** only builds the clean,
+locked checkout; it never synchronizes source or activates the result. Use
+`nixos-rebuild-desktop sync` separately to initialize or check out the recorded
+submodule revisions. After reviewing a successful build, explicitly run
+`nixos-rebuild-desktop activate` on the approved target to apply that exact output.
+All actions refuse staged, unstaged or untracked file changes, including nested
+submodules, and log the repository revision, lock hash and submodule revisions.
+See [PRIVATE-RUNTIME.md](docs/PRIVATE-RUNTIME.md) for the workflow.
+
+Commit dotfiles changes in their own repository, push that revision, then commit
+the updated submodule pointer here. Keep runtime credentials and private state
+outside both repositories.

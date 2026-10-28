@@ -51,12 +51,37 @@ Additional approved credentials reuse their existing identities:
 Unrelated production SSH identities and browser sessions are not transferred.
 
 The Home Manager `desktop.rebuild` module adds **Super+Ctrl+Alt+N**. It opens
-Ghostty, builds the locked `~/nixos-config` checkout, and applies `desktop-live`
-with `test` in the live session, or the installed host with `switch`. The terminal
-keeps the result visible until Enter is pressed. Private logs are under
-`~/.local/state/nixos-rebuild`; concurrent rebuilds are blocked. This does not
-upgrade inputs, generate an ISO, install NixOS, or write installation media.
-Customize `desktop.rebuild.key` or `.repository` declaratively if needed.
+Ghostty and runs `nixos-rebuild-desktop build` against `~/nixos-config`, without
+activation. The command has three separate actions:
+
+- `nixos-rebuild-desktop sync` initializes or checks out the submodule commits
+  recorded in Git, recursively. It permits clean submodules at different commits,
+  reports the before/after revisions, and never pulls branches or updates inputs.
+- `nixos-rebuild-desktop build` (also the default with no arguments) requires all
+  submodules to match their recorded commits. It builds the selected system
+  toplevel, refuses lock-file updates and writes a result link and source record.
+- `nixos-rebuild-desktop activate` applies that exact recorded output without
+  evaluating or building again. It refuses missing/failed builds, changed source
+  revisions, or a changed result link. It uses `test` for `desktop-live` and
+  `switch` for installed hosts. Run it only on an approved target.
+
+Every action refuses staged, unstaged or untracked file changes in the checkout
+and initialized submodules, including nested ones and changes hidden by Git's
+submodule-ignore settings. Commit or stash changes before proceeding; there is
+no dirty-tree override. A clean submodule revision mismatch must be resolved by
+the separate `sync` action or by committing the intended pointer. Builds also
+check for source changes before recording their result. A failed build leaves
+no output eligible for activation until another build succeeds.
+
+Private logs under `${XDG_STATE_HOME:-~/.local/state}/nixos-rebuild` include the
+repository path and commit, lock SHA256, submodule revisions and all phase output,
+including preflight failures. `last-log` and `last-exit-code` record the latest
+action. Per-target `*-result` links keep successful outputs alive in the Nix
+store, and `*-build` files associate them with their source. Concurrent sync,
+build and activation actions are blocked. The terminal keeps the result visible
+until Enter is pressed. These commands do not generate an ISO, install NixOS or
+write installation media. Customize `desktop.rebuild.key` or `.repository`
+declaratively if needed.
 
 Waybar uses the existing OpenWeatherMap credential at
 `~/.config/desktop/secrets/weather-key` (0600), copied from the reference machine

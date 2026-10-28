@@ -1,6 +1,12 @@
 vim.api.nvim_create_autocmd("VimEnter", { once = true, callback = function()
   vim.defer_fn(function()
     local ok, err = xpcall(function()
+      assert(vim.deep_equal(vim.g.root_spec, { "cwd" }), "Picker roots must follow the working directory")
+      require("lazyvim.config").load("keymaps")
+      for _, key in ipairs({ "/", "sg" }) do
+        local mapping = vim.fn.maparg((vim.g.mapleader or "\\") .. key, "n", false, true)
+        assert(mapping.desc == "Grep (cwd)", "Missing working-directory grep shortcut: " .. key)
+      end
       require("lazy").load({ plugins = { "LuaSnip", "blink.cmp", "nvim-treesitter" } })
       assert(type(require("luasnip")) == "table")
       assert(type(require("blink.cmp")) == "table")

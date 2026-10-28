@@ -20,6 +20,18 @@
 
 The system, packages, service definitions, and portable configuration are declarative. User data and interactive application state have separate lifecycles. Rebuilding NixOS does not restore a deleted database, reset Breakd's interactive preferences, or reinstall a retired marketplace/Flatpak artifact. Preserve those artifacts in the encrypted transfer backup until the new desktop is accepted.
 
+`desktopctl` validates `${XDG_STATE_HOME:-~/.local/state}/desktop/state.json` before using it. Schema version 1 retains the flat object shared with the Rust wallpaper picker and adds `"schemaVersion": 1`. Unversioned files and explicit version 0 migrate under the shared `state.lock`; all valid preferences and unknown extension fields survive. A missing file uses defaults without creating `state.json`. Newer schema versions produce an actionable error and are left unchanged by the coordinator.
+
+| State fields | Schema constraints |
+| --- | --- |
+| `theme` | Lowercase letters, digits, underscores and hyphens, starting with a letter or digit |
+| `font`, `wallpaper`, `lockBackground` | Nonempty strings without control characters |
+| `terminalTheme`, `desktopTheme`, `aboutArt` | JSON booleans |
+| `screensaver` | `naruto`, `tomoe-sharingan`, `matrix` or `custom` |
+| `wallpapers` | Object mapping nonempty output names (including `*`) to nonempty image paths, without control characters |
+
+When state is malformed or violates this schema, the coordinator first saves the exact original bytes in a mode-600 `state.json.invalid-*.json` file beside it. It then atomically publishes recovered state, retaining valid fields and valid per-output wallpaper entries; rejected choices fall back to existing defaults. Diagnostics go to stderr with the state path and failing field or JSON line/column, without printing saved preference values. Invalid UTF-8, duplicate keys, non-finite numbers and excessive nesting are rejected too. Recovery copies are private runtime state, never Git or Nix-store material. I/O failures and state symlinks produce errors instead of silently resetting preferences. Configuration JSON gets diagnostics but is never recovered or rewritten. The schema and migrations live in [desktopctl.py](../dotfiles/desktop-tools/.local/share/desktop-tools/desktopctl.py), with isolated regression coverage in [test_desktop_state.py](../tests/test_desktop_state.py).
+
 The reference worktree changed during preparation. The latest special-workspace visibility setting and tmux modified-Enter settings were carried into this repository. Original files and backups were left untouched. `inventory/reference.json` records the initial snapshot and subsequent imported preferences; this is provenance, not a backup of private application state.
 
 Canvas MCP clients can launch the packaged `canvas-mcp-server` in its default stdio mode and supply private Canvas settings themselves. The optional, manually started `canvas-mcp.service` uses HTTP on `127.0.0.1:8819` and only starts when `~/.config/canvas-mcp/http-environment` exists. That file needs the Canvas URL and HTTP access-key settings described in the [server source documentation](../pkgs/canvas-mcp/source/README.md); its HTTP mode rejects a server-side `CANVAS_API_TOKEN`, because clients supply their own Canvas token. Do not reuse a stdio environment file for HTTP. No Canvas connection or authenticated operation was made during preparation.

@@ -51,8 +51,11 @@ class TerminalTests(unittest.TestCase):
 
     def save(self, projects):
         self.path.write_text(json.dumps({"version": 1, "active": "personal", "contexts": {"personal": {
-            "complete": True, "workspace_name": "Personal", "synced_at": 100,
-            "projects": [{"id": project_id, "name": name} for project_id, name in projects],
+            "version": 1, "complete": True, "account_id": "account-one", "workspace_id": "personal",
+            "workspace_name": "Personal", "started_at": 50, "synced_at": 100,
+            "projects": [{"id": project_id, "name": name,
+                          "url": f"https://chatgpt.com/g/{project_id}/project"}
+                         for project_id, name in projects],
         }}}))
 
     def resize(self, columns, rows):

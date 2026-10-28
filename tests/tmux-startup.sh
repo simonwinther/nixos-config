@@ -30,7 +30,7 @@ done
 [[ "$resurrect" == */scripts/save.sh ]]
 [[ "$continuum" == *continuum_save.sh* ]]
 [[ $(private_tmux show-options -gqv prefix) == C-Space ]]
-[[ $(private_tmux show-options -sqv extended-keys) == always ]]
+[[ $(private_tmux show-options -sqv extended-keys) == on ]]
 
 private_tmux set-option -g @resurrect-dir "$HOME/restore-test"
 private_tmux run-shell "$resurrect quiet"

@@ -1,7 +1,10 @@
 { ... }:
 {
   desktop.outputs = {
-    full = [ "HDMI-A-1" ];
-    minimal = [ "eDP-1" ];
+    full = [
+      "eDP-1"
+      "HDMI-A-1"
+    ];
+    minimal = [ ];
   };
 }

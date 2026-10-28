@@ -2,9 +2,113 @@
 
 Current reference: **2026-10-18**, including the newer Rust tools and dirty Hyprspace/Breakd working trees approved by Simon. Source provenance is in [current-reference.json](inventory/current-reference.json). The previous snapshot-only decision is superseded.
 
-All builds run in an isolated checkout and Docker Nix store. The reference Arch configuration has not been activated or reloaded, and no host packages have been installed. On 2026-10-19 Simon approved building a fresh live image and preparing the Cruzer USB for the stationary desktop. Current media evidence belongs under `.work/usb-2026-10-19/`; the older ISO is historical output. Desktop installation and real-hardware acceptance remain pending.
+Initial validation used an isolated checkout and Docker Nix store. Dated follow-ups record subsequent repository and package checks. The reference Arch configuration has not been activated or reloaded, and no host packages have been installed. On 2026-10-19 Simon approved building a fresh live image and preparing the Cruzer USB for the stationary desktop. Current media evidence belongs under `.work/usb-2026-10-19/`; the older ISO is historical output. Desktop installation and real-hardware acceptance remain pending.
 
 ## Current-source results
+
+### Final source synchronization — 2026-10-28
+
+The latest shared configuration and dotfiles commits were fast-forwarded before
+applying the desktop improvements. The shared native clipboard picker and shell
+reload fix are retained. The deployment manifest includes the clipboard package,
+and Hyprspace uses the shared GitHub revision rather than a laptop-local path.
+
+The combined Python suite passes **169 tests**, with **32 skipped** because the
+optional native test binaries or terminal emulator are unavailable in this check.
+All **16 shell tests** pass. Portable validation checks **227 scripts, 911 unique
+text targets, 260 package decisions and 62 locked editor plugins**. Changed Nix
+files pass formatting. The desktop Home Manager generation and Desktop Ring,
+desktop-tools, transcode, project-picker and Hyprspace package derivations evaluate.
+These are source and evaluation checks; they do not add a new environment build
+or interactive desktop acceptance result. No private state was transferred and
+installation readiness is unchanged. No configuration was activated or reloaded,
+and no ISO or installation media was built. Local evidence is in
+`.work/pre-push-*`.
+
+### File-picker cache waits and shutdown — 2026-10-28
+
+The file/PDF index feed now waits on Linux cache-file notifications, refresh
+process handles, diagnostics and output-pipe closure. It retains the existing
+30-second scan schedule and a 100 ms polling fallback when kernel facilities
+are unavailable or a writer is still publishing its transaction. A nonblocking
+SQLite writer-lock check prevents a WAL notification received before commit
+from leaving the feed asleep with an old snapshot. Refresh diagnostics are
+drained continuously, retained up to 16 KiB, and reported once on failure.
+
+All **51 default-target Rust tests** pass, including watch replacement/loss,
+unavailable process handles, large-error backpressure, concurrent commit
+publication and prompt idle-reader shutdown. Formatting and Clippy with warnings
+denied pass. The native Nix derivation evaluates successfully with the root lock;
+a fresh release build with the GTK drag feature was not run in this final pass.
+
+A controlled one-file fixture recorded **12 → 0 voluntary context switches**
+over 1.2 seconds while the feed was idle. Both samples used less than one CPU
+clock tick at the 10 ms accounting resolution. After its consumer closed, the
+old reader remained live past the 1.5-second observation limit; the new reader
+exited successfully in about **32 ms**, including observer overhead. This
+measures the index feed, not whole-desktop CPU usage or GUI startup time.
+
+The existing truncated-cache recovery test also failed against the captured
+baseline: SQLite changed the original shared-memory sidecar before quarantine.
+Rejecting nonempty files shorter than the 100-byte SQLite header before opening
+SQLite preserves those bytes. The same recovery test passes with the fix.
+
+Evidence and the unchanged baseline source/binary are under
+`.work/file-picker-wait/`. The kernel interfaces are documented by
+[poll](https://man7.org/linux/man-pages/man2/poll.2.html),
+[inotify](https://man7.org/linux/man-pages/man7/inotify.7.html) and
+[pidfd_open](https://man7.org/linux/man-pages/man2/pidfd_open.2.html); the minimum
+header follows [SQLite's file format](https://sqlite.org/fileformat.html#the_database_header).
+
+Source checks and disposable runtime fixtures are complete. Interactive desktop
+acceptance remains separate. No private state was transferred, and installation
+readiness is unchanged. No activation, reload, package installation, ISO build
+or installation-media work was performed.
+
+### Persistent native audio connection — 2026-10-28
+
+Desktop Ring now uses one libpulse connection for discovery, actions and
+subscriptions, replacing its subscription child and four short-lived `pactl`
+processes per ordinary action. The worker has bounded request/connection waits,
+reconnect backoff, cancellation, and joined shutdown on SIGINT/SIGTERM. Source
+and dependency locks are in the portable desktop-ring package; Nix links
+libpulseaudio and provides the private-server test dependencies.
+
+The headless build passes all **37 tests**, including nine audio integration
+tests against private PulseAudio sockets and null devices. They cover volume
+limits, mute/default readback, monitor-source filtering, hotplug, server restart,
+stalled setup/operations, shutdown, optional stream moves and native callback
+ownership. The audio fixture uses no host audio or D-Bus connection. Its trap
+and stable native client index verify no audio subprocesses and context reuse.
+
+The complete GTK Nix package builds and passes all **40 release tests** (ten
+library/geometry, nine audio, twenty behavior, one private BlueZ fixture). The
+installed wrapper's help command loads successfully. Its output store path
+matches evaluation of the current source with the root lock's nixpkgs/unstable
+inputs through the same `callPackage` definition used by the flake. This package
+check does not evaluate or build any system or ISO output.
+
+A cancellation regression fails against the published libpulse-binding 2.30.1
+source because its callback is never freed. The checked-in source patch makes
+cancellation free it exactly once and protects an already completed callback
+from a second free. Original dependency licenses and source provenance remain
+beside it, and the same patch applies to Nix and portable builds.
+
+Rust formatting and Clippy with warnings denied for Desktop Ring pass. The
+vendored upstream binding retains three existing `noop_method_call` warnings;
+they are outside the cancellation patch. Nix formatting passes. Portable source
+validation passes 226 scripts, 904 unique text targets, all 260 package decisions
+and 62 locked editor plugins.
+
+Evidence is under `.work/audio-native/`, including the failing unpatched
+regression, passing reviewed headless tests and final `package-patched.log`.
+These are isolated source/package checks. Runtime acceptance against the actual
+PipeWire/WirePlumber session and physical audio devices is still pending.
+
+No private state was transferred. Installation readiness is unchanged: host
+review and independent backup requirements still apply. No configuration was
+activated or reloaded, no host packages were installed, and no installation
+image or media was built.
 
 ### GitHub synchronization and Hyprspace spaces — 2026-10-27
 
