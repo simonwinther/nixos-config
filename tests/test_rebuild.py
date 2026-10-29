@@ -280,6 +280,19 @@ else:
         self.run_helper("activate", ok=False)
         self.assertEqual([command[0] for command in self.commands()], ["nix", "nix"])
 
+    def test_every_run_appends_its_duration_and_exit_code(self):
+        self.run_helper("build")
+        self.run_helper("build", ok=False, FAKE_BUILD_EXIT="23")
+        rows = [line.split(",") for line in (self.state / "nixos-rebuild/times.csv").read_text().splitlines()]
+        self.assertEqual([(row[1], row[3]) for row in rows], [("build", "0"), ("build", "23")])
+        self.assertRegex(rows[0][0], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
+        self.assertTrue(rows[0][2].isdigit())
+
+    def test_times_without_successful_builds_explains_where_data_lives(self):
+        result = self.run_helper("times", ok=False)
+        self.assertIn("No successful timed builds yet", result.stderr)
+        self.assertEqual(self.commands(), [])
+
     def test_failed_preflight_also_invalidates_previous_build(self):
         self.run_helper("build")
         (self.repo / "flake.nix").write_text("dirty\n")

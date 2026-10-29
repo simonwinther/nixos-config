@@ -18,6 +18,9 @@ let
       pkgs.git
       pkgs.coreutils
       pkgs.util-linux
+      pkgs.gnugrep
+      pkgs.gnuplot
+      pkgs.ncurses
     ];
     text = ''
       repo=${lib.escapeShellArg cfg.repository}

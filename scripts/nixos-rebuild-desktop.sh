@@ -7,17 +7,33 @@ activation_action=${activation_action:?Missing activation action}
 
 usage() {
   cat <<'HELP'
-Usage: nixos-rebuild-desktop [build|sync|activate]
+Usage: nixos-rebuild-desktop [build|sync|activate|times]
   build     Build the clean, pinned checkout without activation (default).
   sync      Initialize/check out recorded submodule revisions; no pull or build.
   activate  Apply the last successful build, only if its source still matches.
+  times     Plot successful build durations by date.
 HELP
+}
+
+plot_times() {
+  if ! grep -q ',build,[0-9]*,0$' "$times" 2>/dev/null; then
+    echo "No successful timed builds yet: $times" >&2
+    return 1
+  fi
+  gnuplot -e "
+    set terminal dumb size $(tput cols 2>/dev/null || echo 100),25;
+    set datafile separator ',';
+    set xdata time; set timefmt '%Y-%m-%dT%H:%M:%SZ'; set format x '%m-%d';
+    set ylabel 'minutes'; set title 'NixOS build time'; unset key;
+    plot \"< grep ',build,[0-9]*,0\$' '$times'\" using 1:(\$3 / 60.0) with linespoints pt '*'
+  "
+  echo "Data: $times"
 }
 
 operation=${1:-build}
 case "$operation" in
   -h|--help) usage; exit 0 ;;
-  build|sync|activate) ;;
+  build|sync|activate|times) ;;
   *) usage >&2; exit 2 ;;
 esac
 if (( $# > 1 )); then usage >&2; exit 2; fi
@@ -26,18 +42,26 @@ umask 077
 runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/nixos-rebuild"
 mkdir -p "$state_dir"
+times="$state_dir/times.csv"
+if [[ "$operation" == times ]]; then
+  plot_times
+  exit
+fi
 exec 9>"$runtime_dir/nixos-rebuild-desktop.lock"
 if ! flock --nonblock 9; then
   echo "Another NixOS source/build/activation action is already running." >&2
   if [[ -t 0 ]]; then read -r -p "Press Enter to close." _ || true; fi
   exit 1
 fi
-log="$state_dir/$(date -u +%Y%m%dT%H%M%SZ)-$$.log"
+started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+SECONDS=0
+log="$state_dir/${started//[-:]/}-$$.log"
 printf '%s\n' "$log" > "$state_dir/last-log"
 finish() {
   status=$?
   trap - EXIT
   printf '%s\n' "$status" > "$state_dir/last-exit-code"
+  printf '%s,%s,%s,%s\n' "$started" "$operation" "$SECONDS" "$status" >> "$times"
   if (( status == 0 )); then
     echo "NixOS $target: $operation completed. Log: $log" | tee -a "$log"
   else
