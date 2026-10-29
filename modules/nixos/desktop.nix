@@ -168,12 +168,11 @@ in
       binfmt = !live;
     };
     programs.nix-ld.enable = !live;
-    qt = {
-      enable = true;
-      platformTheme = "gtk2";
-      style = "adwaita-dark";
-    };
+    # Qt's built-in GTK 3 theme works on Wayland and follows the light/dark
+    # GTK setting; gtk2 needs X11 and crashes Qt apps when it is unavailable.
+    qt.enable = true;
     environment.sessionVariables = {
+      QT_QPA_PLATFORMTHEME = "gtk3";
       NIXOS_OZONE_WL = "1";
       MOZ_ENABLE_WAYLAND = "1";
       NAUTILUS_4_EXTENSION_DIR = "${pkgs.nautilus-python}/lib/nautilus/extensions-4";
