@@ -158,6 +158,13 @@ in
     # Home Manager waits for the initial Flatpak downloads. Android Studio alone
     # can exceed its upstream five-minute activation deadline.
     systemd.services.home-manager-simon.serviceConfig.TimeoutStartSec = lib.mkForce "30min";
+    # Home links persist across reboots. Relinking an already active generation
+    # took ten seconds at every boot while login waited for it.
+    systemd.services.home-manager-simon.serviceConfig.ExecCondition =
+      pkgs.writeShellScript "home-manager-simon-changed" ''
+        [ "$(readlink /home/simon/.local/state/home-manager/gcroots/current-home)" \
+          != ${config.home-manager.users.simon.home.activationPackage} ]
+      '';
     services.udev.packages = [ pkgs.brightnessctl ];
     programs.ydotool.enable = true;
     users.users.simon.extraGroups = [ config.programs.ydotool.group ];

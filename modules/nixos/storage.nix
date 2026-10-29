@@ -33,7 +33,7 @@ in
       configurationLimit = 10;
     };
     efi.canTouchEfiVariables = true;
-    timeout = 5;
+    timeout = 1;
   };
   boot.plymouth = lib.mkIf (!live) {
     enable = true;
