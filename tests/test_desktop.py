@@ -180,6 +180,29 @@ class DesktopTests(unittest.TestCase):
         ctl.seed_preferences()
         self.assertEqual(destination.read_text(), "keep linked content")
 
+    def test_seed_preferences_seeds_home_dotfiles_once(self):
+        source = self.data / "desktop-defaults/home/.claude"
+        source.mkdir(parents=True)
+        (source / "settings.json").write_text('{"theme": "auto"}')
+        ctl.seed_preferences()
+        target = self.home / ".claude/settings.json"
+        self.assertEqual(target.read_text(), '{"theme": "auto"}')
+        target.write_text('{"theme": "light"}')
+        ctl.seed_preferences()
+        self.assertEqual(target.read_text(), '{"theme": "light"}')
+
+    def test_theme_switch_uses_theme_background_unless_one_is_already_chosen(self):
+        backgrounds = ctl.theme_path("catppuccin-latte") / "backgrounds"
+        first = sorted(p.resolve() for p in backgrounds.glob("*") if p.is_file())[0]
+        with patch.object(ctl, "run"), patch.object(ctl, "restart"), patch.object(ctl, "apply_appearance"), \
+                patch.object(ctl, "wallpaper") as wallpaper:
+            ctl.theme(["set", "catppuccin-latte"])
+            wallpaper.assert_called_once_with(["set", str(first)])
+            wallpaper.reset_mock()
+            ctl.save_state({**ctl.state(), "wallpaper": str(first)})
+            ctl.theme(["set", "catppuccin-latte"])
+            wallpaper.assert_not_called()
+
     def test_initial_state_does_not_restore_a_deliberately_removed_toggle(self):
         source = self.data / "desktop-defaults/state/toggles"
         source.mkdir(parents=True)
