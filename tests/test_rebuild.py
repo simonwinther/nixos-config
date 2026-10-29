@@ -236,7 +236,7 @@ else:
         self.run_helper("build")
         self.run_helper("activate")
         self.assertEqual(self.commands()[1], [
-            "nixos-rebuild", "switch", "--store-path", self.env["FAKE_CLOSURE"], "--sudo",
+            "nixos-rebuild", "switch", "--store-path", self.env["FAKE_CLOSURE"], "--sudo", "--no-reexec",
         ])
         self.assertEqual(len(self.commands()), 2)
 

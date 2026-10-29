@@ -187,7 +187,8 @@ main() {
     if [[ "$activation_action" == test ]]; then
       echo 'Live session only; persistent installation is separate.'
     fi
-    nixos-rebuild "$activation_action" --store-path "$closure" --sudo
+    # A prebuilt closure needs no re-exec, which would require <nixpkgs> on NIX_PATH.
+    nixos-rebuild "$activation_action" --store-path "$closure" --sudo --no-reexec
   fi
 }
 
