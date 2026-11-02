@@ -4,7 +4,7 @@
   inputs = {
     self.submodules = true;
     ferry = {
-      url = "git+ssh://git@github.com/simonwinther/ferry?ref=main&rev=14ec1449740c3fc2c82a3760485105a3aec088b7";
+      url = "git+ssh://git@github.com/simonwinther/ferry?ref=main&rev=0ef83bbc5672c553fbc4cc40a3d27a424856d71c";
       flake = false;
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";

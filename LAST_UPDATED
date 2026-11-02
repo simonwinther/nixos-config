@@ -9,7 +9,7 @@
 AGENTS.md: 02/11/2026
 README.md: 02/11/2026
 docs: 02/11/2026
-flake.lock: 27/10/2026
+flake.lock: 02/11/2026
 flake.nix: 02/11/2026
 hosts/desktop: 22/10/2026
 hosts/lambda: 28/10/2026

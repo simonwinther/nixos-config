@@ -77,17 +77,17 @@
     "ferry": {
       "flake": false,
       "locked": {
-        "lastModified": 1792888679,
-        "narHash": "sha256-REwBniLSoRXIg4lUrFoYH30sxbxOcaqQp9MC93tVsPY=",
+        "lastModified": 1793652947,
+        "narHash": "sha256-pGeAedRLTKShVTy0uJQcp4kaQDfGSQHTHFJLPxxRgQY=",
         "ref": "main",
-        "rev": "14ec1449740c3fc2c82a3760485105a3aec088b7",
-        "revCount": 1,
+        "rev": "0ef83bbc5672c553fbc4cc40a3d27a424856d71c",
+        "revCount": 2,
         "type": "git",
         "url": "ssh://git@github.com/simonwinther/ferry"
       },
       "original": {
         "ref": "main",
-        "rev": "14ec1449740c3fc2c82a3760485105a3aec088b7",
+        "rev": "0ef83bbc5672c553fbc4cc40a3d27a424856d71c",
         "type": "git",
         "url": "ssh://git@github.com/simonwinther/ferry"
       }
