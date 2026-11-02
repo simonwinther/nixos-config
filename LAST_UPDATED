@@ -29,7 +29,7 @@ modules/home/roblox-dev.nix: 27/10/2026
 modules/home/services.nix: 02/11/2026
 modules/nixos/base.nix: 02/11/2026
 modules/nixos/default.nix: 22/10/2026
-modules/nixos/desktop.nix: 30/10/2026
+modules/nixos/desktop.nix: 02/11/2026
 modules/nixos/network.nix: 22/10/2026
 modules/nixos/secrets.nix: 18/10/2026
 modules/nixos/storage.nix: 30/10/2026

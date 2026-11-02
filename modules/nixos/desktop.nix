@@ -61,6 +61,12 @@ in
     security.pam.services.sddm.enableGnomeKeyring = true;
     services.gnome.gnome-keyring.enable = true;
     programs.dconf.enable = true;
+    # Keep Chromium running without windows so ChatGPT project windows open
+    # quickly; see desktop-browser.service in the Home Manager services.
+    programs.chromium = {
+      enable = true;
+      extraOpts.BackgroundModeEnabled = true;
+    };
     services.gvfs.enable = true;
     services.udisks2.enable = true;
     services.upower.enable = true;
