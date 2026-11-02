@@ -51,7 +51,10 @@ class ProjectPickerTests(unittest.TestCase):
         self.tools.mkdir()
         self.environment = {**os.environ, "HOME": str(self.root / "home"),
                             "XDG_CACHE_HOME": str(self.path.parents[1]),
-                            "PATH": str(self.tools) + os.pathsep + os.defpath}
+                            "XDG_RUNTIME_DIR": str(self.root / "runtime"),
+                            # Launcher scripts need coreutils, which NixOS keeps outside defpath.
+                            "PATH": os.pathsep.join([str(self.tools), str(Path(shutil.which("dirname")).parent),
+                                                     os.defpath])}
         self.launch = self.root / "launch.json"
         self.tool("desktopctl", f"""import json, os, sys
 from pathlib import Path
@@ -332,6 +335,42 @@ print({FIRST!r})
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.wait_for_launch()["argv"],
                          ["terminal", "--float", "--app-id", "project.picker", "project-picker", "--choose"])
+
+    def notch(self, status):
+        theme = self.root / "runtime/desktop/bar-theme.json"
+        theme.parent.mkdir(parents=True)
+        theme.write_text(json.dumps({"style": "native-motion"}))
+        calls = self.root / "bar.json"
+        self.tool("desktop-bar", f"""import json, sys
+from pathlib import Path
+Path({str(calls)!r}).write_text(json.dumps(sys.argv[1:]))
+raise SystemExit({status})
+""")
+        return calls
+
+    def test_notch_style_opens_the_bar_projects_page(self):
+        calls = self.notch(0)
+        result = self.run_picker()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(calls.read_text()), ["--panel", "projects"])
+        self.assertFalse(self.launch.exists())
+
+    def test_notch_style_falls_back_to_the_terminal_without_a_running_bar(self):
+        calls = self.notch(1)
+        result = self.run_picker()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(calls.exists())
+        self.assertEqual(self.wait_for_launch()["argv"],
+                         ["terminal", "--float", "--app-id", "project.picker", "project-picker", "--choose"])
+
+    def test_catalog_reports_projects_and_sync_state_for_the_bar(self):
+        self.save(snapshot([project(FIRST, "First")]))
+        result = self.run_picker("--catalog")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        catalog = json.loads(result.stdout)
+        self.assertEqual([p["name"] for p in catalog["projects"]], ["Open main page", "First"])
+        self.assertEqual(catalog["projects"][1]["url"], f"https://chatgpt.com/g/{FIRST}/project")
+        self.assertIn("Last synced", catalog["last_synced"])
 
     def test_portable_launchers_find_the_native_core_on_path(self):
         core = self.tools / "project-picker-core"
