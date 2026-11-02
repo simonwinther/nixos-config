@@ -49,7 +49,7 @@ pkgs/editor-extensions: 18/10/2026
 pkgs/extra-apps.nix: 22/10/2026
 pkgs/ferry.nix: 25/10/2026
 pkgs/file-picker.nix: 24/10/2026
-pkgs/hyprspace: unknown
+pkgs/hyprspace: 02/11/2026
 pkgs/neovim: unknown
 pkgs/obs-font.nix: 24/10/2026
 pkgs/obs-studio.nix: 24/10/2026

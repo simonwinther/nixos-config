@@ -1,0 +1,20 @@
+--- a/src/Launch.cpp
++++ b/src/Launch.cpp
+@@ -203,12 +203,15 @@
+                     ws->m_space->algorithm()->removeTarget(target);
+                     ws->m_space->algorithm()->moveTarget(target, point);
+                 }
+-                if (target->floating() && !rules.position && !rules.center.value_or(false)) {
++                if (target->floating() && !rules.position) {
+                     const auto size    = target->position().size();
+                     const auto work    = ws->m_monitor->logicalBoxMinusReserved();
+                     const auto extents = w->getFullWindowReservedArea();
+                     const auto border  = static_cast<double>(w->getRealBorderSize());
+-                    if (const auto box = boundedLaunchPlacement({point.x - size.x / 2, point.y - size.y / 2, size.x, size.y}, {work.x, work.y, work.w, work.h},
++                    // A center rule was resolved on the output the window first
++                    // mapped on; center it on the destination output instead.
++                    const auto origin = rules.center.value_or(false) ? work.middle() : point;
++                    if (const auto box = boundedLaunchPlacement({origin.x - size.x / 2, origin.y - size.y / 2, size.x, size.y}, {work.x, work.y, work.w, work.h},
+                                                                 {std::max(extents.topLeft.x, border), std::max(extents.topLeft.y, border)},
+                                                                 {std::max(extents.bottomRight.x, border), std::max(extents.bottomRight.y, border)}))
+                         g_layoutManager->setTargetGeom({box->x, box->y, box->w, box->h}, target);
