@@ -127,6 +127,7 @@ test("background forwards only top-frame snapshots to the native host and report
     runtime: {
       onMessage: { addListener: (value) => { listener = value; } },
       onInstalled: { addListener: (value) => { installed = value; } },
+      onStartup: { addListener: () => {} },
       sendNativeMessage: async (...args) => { sent.push(args); return { ok: true }; },
       connectNative: () => ({
         onMessage: { addListener: () => {} }, onDisconnect: { addListener: () => {} }, postMessage: () => {},
@@ -184,7 +185,7 @@ test("background shows picked projects in the open ChatGPT app window", async ()
   const listener = { addListener: () => {} };
   const chrome = {
     runtime: {
-      onMessage: listener, onInstalled: listener, sendNativeMessage: async () => ({ ok: true }),
+      onMessage: listener, onInstalled: listener, onStartup: listener, sendNativeMessage: async () => ({ ok: true }),
       connectNative: (host) => {
         assert.equal(host, "com.desktop.project_picker");
         return {
