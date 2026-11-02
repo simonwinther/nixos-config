@@ -12,7 +12,6 @@ let
   environment = [
     "PATH=/run/wrappers/bin:${config.home.profileDirectory}/bin:/run/current-system/sw/bin:/home/simon/.local/bin"
     "HYPRSPACE_PLUGIN=${packages.hyprspace}/lib/libhyprspace.so"
-    "WORKSPACES_SLIDER_CONFIG=/home/simon/.config/desktop/workspaces.json"
     "HENDRIX_VPN_RUNNER=${packages.hendrix-vpn}/bin/ku-vpn"
     "HENDRIX_VPN_ROUTES=${packages.hendrix-vpn}/bin/ku-vpn-routes"
     "DESKTOP_SSH_BIN=${pkgs.openssh}/bin/ssh"
@@ -37,7 +36,7 @@ let
     unit
     // {
       Unit = unit.Unit // {
-        ConditionPathExists = "!${config.xdg.stateHome}/desktop/toggles/waybar-off";
+        ConditionPathExists = "!${config.xdg.stateHome}/desktop/toggles/bar-off";
       };
     };
   pickerTerminal = {
@@ -62,10 +61,12 @@ let
   };
 in
 {
+  # The portable launcher would bypass the package's PATH and GSettings schemas.
+  home.file.".local/bin/desktopctl".source = lib.mkForce "${packages.desktop-tools}/bin/desktopctl";
+  # Menu shortcuts enter the resident Rust process directly.
+  home.file.".local/bin/desktop-bar".source = lib.mkForce "${packages.desktop-bar}/bin/desktop-bar";
   xdg.configFile."desktop/paths.json".text = builtins.toJSON {
-    walker = "${packages.walker}/bin/walker";
-    elephant = "${packages.elephant}/bin/elephant";
-    waybar = "${packages.waybar}/bin/waybar";
+    desktop-search-native = "${packages.desktop-search}/bin/desktop-search";
     dictate = "${packages.dictate}/bin/dictate";
     file-picker-native = "${packages.file-picker}/bin/file-picker-native";
     hyprspace = "${packages.hyprspace}/lib/libhyprspace.so";
@@ -73,12 +74,11 @@ in
     swayosd-server = "${pkgs.swayosd}/bin/swayosd-server";
     background-grid-native = "${packages.background-grid}/bin/background-grid-native";
     dictation-volume-duck-native = "${packages.dictation-volume-duck}/bin/dictation-volume-duck-native";
-    text-picker-native = "${packages.text-picker}/bin/text-picker-native";
     clipboard-picker-native = "${packages.clipboard-picker}/bin/clipboard-picker-native";
     plot-native = "${packages.formula-plot}/bin/plot-native";
     cluster-native = "${packages.cluster-tools}/bin/cluster-native";
     iphone-transfer-native = "${packages.iphone-transfer}/bin/iphone-transfer-native";
-    workspaces-slider-native = "${packages.workspaces-slider}/bin/workspaces-slider";
+    desktop-bar-native = "${packages.desktop-bar}/bin/desktop-bar";
     btop = "${pkgs.btop}/bin/btop";
     desktop-transcode = "${packages.desktop-tools}/bin/desktop-transcode";
   };
@@ -107,24 +107,24 @@ in
         Environment = environment;
       };
     };
-    desktop-elephant = service "Desktop search providers" "${packages.elephant}/bin/elephant";
-    desktop-walker = (service "Application launcher" "${ctl} run walker -- --gapplication-service") // {
-      Unit = {
-        Description = "Application launcher";
-        PartOf = [ "desktop-session.target" ];
-        After = [
-          "desktop-prepare.service"
-          "desktop-elephant.service"
-        ];
-        Requires = [ "desktop-elephant.service" ];
+    desktop-search = service "Desktop search and clipboard providers" "${packages.desktop-search}/bin/desktop-search serve";
+    desktop-bar =
+      let
+        unit = visibleBar (service "Morphing Notch Bar" "${packages.desktop-bar}/bin/desktop-bar");
+      in
+      unit
+      // {
+        Unit = unit.Unit // {
+          After = [
+            "desktop-prepare.service"
+            "desktop-search.service"
+          ];
+          Wants = [ "desktop-search.service" ];
+        };
+        Service = unit.Service // {
+          ExecReload = "${pkgs.coreutils}/bin/kill -USR2 $MAINPID";
+        };
       };
-    };
-    desktop-waybar = visibleBar (
-      service "Main desktop bar" "${ctl} run waybar -- --config /home/simon/.config/waybar/config.jsonc --style /home/simon/.config/waybar/style.css"
-    );
-    desktop-workspaces = visibleBar (
-      service "Workspace slider overlays" "${packages.workspaces-slider}/bin/workspaces-slider"
-    );
     desktop-mako = service "Notifications" "${ctl} run mako";
     desktop-awww = service "Wallpaper daemon" "${pkgs.awww}/bin/awww-daemon --no-cache";
     desktop-swayosd = service "Volume and brightness display" "${ctl} run swayosd-server";
@@ -180,15 +180,6 @@ in
         Environment = environment;
       };
     };
-    desktop-waybar-minimal =
-      (visibleBar (
-        service "Laptop display bar" "${ctl} run waybar -- --config /home/simon/.config/waybar/config-minimal.jsonc --style /home/simon/.config/waybar/style-minimal.css"
-      ))
-      // {
-        Install = lib.mkIf (config.desktop.outputs.minimal != [ ]) {
-          WantedBy = [ "desktop-session.target" ];
-        };
-      };
     breakd = lib.mkIf (profile != "live" && profile != "recovery") (
       service "Break reminders and posture coaching" "${packages.breakd}/bin/breakd daemon"
     );

@@ -1,0 +1,36 @@
+--- a/src/CompositorHooks.cpp
++++ b/src/CompositorHooks.cpp
+@@ -316,7 +316,7 @@
+                     auto& layers = monitor->m_layerSurfaceLayers[level];
+                     for (size_t i = 0; i < layers.size(); ++i) {
+                         const auto layer = layers[i].lock();
+-                        if (!layer || !layer->m_mapped || !layer->m_namespace.starts_with("waybar"))
++                        if (!layer || !layer->m_mapped || !(layer->m_namespace.starts_with("desktop-bar-") || layer->m_namespace.starts_with("waybar")))
+                             continue;
+                         saved.push_back({layer, level, i, layer->m_aboveFullscreen});
+                         promoted.emplace_back(layer);
+@@ -729,13 +729,13 @@
+             // to an active follow lens. Other foreground interfaces do too.
+             if (hit.layerPopupSurfaceAt(pos, &mon->m_layerSurfaceLayers[level], &local, &layer))
+                 return true;
+-            if (hit.layerSurfaceAt(pos, &mon->m_layerSurfaceLayers[level], &local, &layer) && (!ignorePanels || !layer || !layer->m_namespace.starts_with("waybar")))
++            if (hit.layerSurfaceAt(pos, &mon->m_layerSurfaceLayers[level], &local, &layer) && (!ignorePanels || !layer || !(layer->m_namespace.starts_with("desktop-bar-") || layer->m_namespace.starts_with("waybar"))))
+                 return true;
+         }
+         std::vector<PHLLSREF> panels;
+         for (auto level : {ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM, ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND})
+             for (const auto& candidate : mon->m_layerSurfaceLayers[level])
+-                if (candidate && candidate->m_namespace.starts_with("waybar"))
++                if (candidate && (candidate->m_namespace.starts_with("desktop-bar-") || candidate->m_namespace.starts_with("waybar")))
+                     panels.push_back(candidate);
+         if (hit.layerPopupSurfaceAt(pos, &panels, &local, &layer) || (!ignorePanels && hit.layerSurfaceAt(pos, &panels, &local, &layer)))
+             return true;
+@@ -902,7 +902,7 @@
+     void renderPanels(PHLMONITOR monitor) {
+         for (auto level : {ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND, ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM})
+             for (const auto& layer : monitor->m_layerSurfaceLayers[level])
+-                if (layer && layer->m_namespace.starts_with("waybar"))
++                if (layer && (layer->m_namespace.starts_with("desktop-bar-") || layer->m_namespace.starts_with("waybar")))
+                     (g_pHyprRenderer.get()->*member(SRenderLayer{}))(layer.lock(), monitor, Time::steadyNow(), false, false);
+     }
+ 

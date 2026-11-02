@@ -117,29 +117,27 @@ in
     ++ [ unstable.hyprland-preview-share-picker ]
     ++ (with packages; [
       desktop-tools
+      desktop-bar
       clipboard-picker
       project-picker-tui
       background-grid
       hyprspace
-      walker
-      elephant
-      waybar
-      workspaces-slider
+      desktop-search
       dictate
       file-picker
       dictation-volume-duck
-      text-picker
       formula-plot
       cluster-tools
       iphone-transfer
     ])
     ++ lib.optionals config.desktop.fullApplications applications
-    ++ lib.optionals config.desktop.fullApplications [ packages.uipro ]
+    ++ lib.optionals config.desktop.fullApplications [
+      packages.uipro
+      packages.slicer3d
+    ]
     ++ lib.optionals config.desktop.fullApplications (
       with pkgs;
       [
-        alacritty
-        kitty
         nodejs
         jdk
         maven
@@ -204,7 +202,6 @@ in
         canvas-mcp
         hendrix-vpn
         ferry
-        waybar-weather
       ]
     )
   );

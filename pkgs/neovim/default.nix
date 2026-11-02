@@ -8,6 +8,7 @@
   tree-sitter,
   nodejs,
   neovim-unwrapped,
+  luajitPackages,
 }:
 let
   sources = builtins.fromJSON (builtins.readFile ./plugins.json);
@@ -38,6 +39,14 @@ let
       cp target/${stdenv.hostPlatform.rust.rustcTarget}/release/libblink_cmp_fuzzy.so target/release/version "$out/target/release/"
     '';
   };
+  luasnip = runCommand "luasnip-with-jsregexp" { } ''
+    cp -r ${sourcesByName.LuaSnip} "$out"
+    chmod u+w "$out" "$out/lua"
+    mkdir -p "$out/deps"
+    chmod u+w "$out/deps"
+    cp ${luajitPackages.jsregexp}/share/lua/5.1/jsregexp.lua "$out/lua/luasnip-jsregexp.lua"
+    cp ${luajitPackages.jsregexp}/lib/lua/5.1/jsregexp/core.so "$out/deps/luasnip-jsregexp.so"
+  '';
   parserSpecs = builtins.fromJSON (builtins.readFile ./parsers.json);
   parser =
     spec:
@@ -78,8 +87,17 @@ let
     }) parserSpecs
   );
   parsers = builtins.attrValues grammars;
+  queryLanguages = lib.unique (
+    (map (spec: spec.name) parserSpecs)
+    ++ [
+      "ecma"
+      "html_tags"
+      "jsx"
+    ]
+  );
   plugins = sourcesByName // {
     "blink.cmp" = blink;
+    LuaSnip = luasnip;
   };
 in
 runCommand "locked-neovim-plugins"
@@ -96,4 +114,9 @@ runCommand "locked-neovim-plugins"
     )}
     mkdir -p "$out/runtime/parser" "$out/runtime/queries"
     ${lib.concatMapStringsSep "\n" (path: ''ln -s ${path}/parser/* "$out/runtime/parser/"'') parsers}
+    # The main branch ships queries separately from the plugin runtime. Include
+    # inherited query-only languages as well as each compiled parser's queries.
+    ${lib.concatMapStringsSep "\n" (lang: ''
+      cp -r ${sourcesByName."nvim-treesitter"}/runtime/queries/${lang} "$out/runtime/queries/"
+    '') queryLanguages}
   ''

@@ -52,8 +52,9 @@ when any other display is unplugged, including the portrait ASUS alone.
 The portrait display occupies 1080×1920 logical pixels.
 The MSI has been reconnected to the stationary on HDMI-A-2. The full three-screen
 profile was verified against the live compositor: all native modes, positions,
-scales and portrait rotation match the declared layout. Waybar, workspace
-overlays and wallpaper surfaces are present on all three outputs.
+scales and portrait rotation match the declared layout. At that verification,
+the previous bar, workspace overlays and wallpaper surfaces were present on all
+three outputs.
 Only advertised modes are applied. A missing / incompatible member never causes
 an arbitrary different display on the same port to inherit its profile.
 

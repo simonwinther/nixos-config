@@ -52,7 +52,6 @@ class DesktopTests(unittest.TestCase):
         for source, target in [
             ("appearance/.config/desktop/themes", "desktop/themes"),
             ("appearance/.config/desktop/settings.json", "desktop/settings.json"),
-            ("walker/.config/walker/templates", "walker/templates"),
         ]:
             destination = self.config / target
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -68,24 +67,17 @@ class DesktopTests(unittest.TestCase):
         self.globals.stop()
         self.temp.cleanup()
 
-    def test_clipboard_routes_native_picker_to_original_window(self):
-        self.runtime.mkdir(parents=True)
-        (self.runtime / "clipboard-target.json").write_text(json.dumps({"address": "0x123"}))
-        with patch.object(ctl, "remember_clipboard_target") as remember, \
-                patch.object(ctl, "executable", return_value="/mock/clipboard-picker-native"), \
-                patch.object(ctl, "run") as run, patch.object(ctl, "run_application") as launch:
+    def test_clipboard_routes_native_surface_and_remembers_original_window(self):
+        with patch.object(ctl, "remember_clipboard_target") as remember, patch.object(ctl, "run") as run, patch.object(ctl, "run_application") as launch:
             ctl.clipboard(["-m", "clipboard"])
         remember.assert_called_once()
-        run.assert_called_once_with(["systemctl", "--user", "start", "desktop-elephant.service"], check=False)
-        launch.assert_called_once_with(["/mock/clipboard-picker-native", "--target", "0x123"])
+        run.assert_called_once_with(["systemctl", "--user", "start", "desktop-search.service"], check=False)
+        launch.assert_called_once_with(["desktop-bar-native", "--menu", "clipboard"])
 
-    def test_clipboard_keeps_existing_picker_until_native_is_installed(self):
-        with patch.object(ctl, "remember_clipboard_target"), \
-                patch.object(ctl, "executable", side_effect=ValueError("not installed")), \
-                patch.object(ctl, "run", return_value=Mock(stdout="[]")), \
-                patch.object(ctl, "run_application") as launch:
+    def test_clipboard_opens_the_running_bar_without_a_separate_picker(self):
+        with patch.object(ctl, "remember_clipboard_target"), patch.object(ctl, "run"), patch.object(ctl.bar_config, "open_panel", return_value=True), patch.object(ctl, "run_application") as launch:
             ctl.clipboard(["-m", "clipboard"])
-        self.assertEqual(launch.call_args.args[0][0], "walker")
+        launch.assert_not_called()
 
     def test_native_host_integration_registers_both_helpers_without_overwriting_links(self):
         directory = self.config / "desktop"
@@ -131,7 +123,7 @@ class DesktopTests(unittest.TestCase):
                 ctl.theme(["set", theme.name, "--no-reload"])
                 self.assertEqual(ctl.selected_theme(), theme.name)
                 self.assertTrue((self.state / "theme/hyprland.conf").is_file())
-                self.assertTrue((self.runtime / "walker/themes/desktop-rounded/style.css").is_file())
+                self.assertTrue((self.state / "theme/clipboard.css").is_file())
                 self.assertEqual((theme / "colors.toml").read_bytes(), colors_before)
 
     def test_light_marker_tracks_switches(self):
@@ -201,7 +193,7 @@ class DesktopTests(unittest.TestCase):
             wallpaper.reset_mock()
             ctl.save_state({**ctl.state(), "wallpaper": str(first)})
             ctl.theme(["set", "catppuccin-latte"])
-            wallpaper.assert_not_called()
+            wallpaper.assert_called_once_with(["set", str(first)])
 
     def test_initial_state_does_not_restore_a_deliberately_removed_toggle(self):
         source = self.data / "desktop-defaults/state/toggles"
@@ -215,13 +207,27 @@ class DesktopTests(unittest.TestCase):
         self.assertFalse(target.exists())
 
     def test_bar_toggle_preserves_visibility_choice(self):
-        disabled = self.state / "toggles/waybar-off"
+        disabled = self.state / "toggles/bar-off"
         with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0)):
             ctl.toggle(["bar"])
         self.assertTrue(disabled.exists())
         with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 1)):
             ctl.toggle(["bar"])
         self.assertFalse(disabled.exists())
+
+    def test_bar_switch_persists_choice_and_reloads_the_native_service(self):
+        self.assertEqual(ctl.bar_names(), ["native-clean", "native-motion"])
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0)) as run:
+            ctl.bar(["next"])
+        run.assert_called_once_with(["systemctl", "--user", "kill", "--kill-whom=main", "--signal=SIGUSR2", "desktop-bar.service"], check=False)
+        self.assertEqual(ctl.selected_bar(), "native-motion")
+        self.assertEqual(json.loads((self.runtime / "bar-theme.json").read_text())["style"], "native-motion")
+        with self.assertRaises(ValueError), patch.object(ctl, "run") as run:
+            ctl.bar(["set", "missing"])
+        run.assert_not_called()
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0)):
+            ctl.bar(["set", "native-clean"])
+        self.assertEqual(ctl.selected_bar(), "native-clean")
 
     def test_notification_mode_matches_theme_rules(self):
         with patch.object(ctl, "run") as run:

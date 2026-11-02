@@ -1,16 +1,92 @@
-# Desktop menus, appearance and clipboard
+# Morphing Notch Bar, desktop menus and clipboard
 
 Open the desktop menu with **Super + Alt + Space**, the power menu with **Super + Escape**, clipboard history with **Alt + V**, and screenshots with **Super + Q**. Print Screen also remains available. Apps, Learn, Trigger, Style, Setup, About and System retain the familiar organization. Escape returns from a submenu to its parent; opening a submenu directly makes Escape close it. Install, Remove and Update are absent. Packages and system updates remain part of the Nix configuration.
 
 **Super + K** and **Learn → Keybindings** list described bindings from Hyprland's active `hyprctl -j binds` response, including generated Desktop Ring shortcuts and applied overrides. Lua keycodes missing from JSON are recovered from the compositor's `hyprctl binds` output. Undescribed events such as lid switches are omitted. Release and long-press triggers and submaps are labeled; keycodes and mouse bindings retain their Hyprland names. Opening or selecting a row only displays the shortcuts.
 
+Both Clean and Motion use the native Rust **Morphing Notch Bar** menu surface.
+Walker is absent from the package set and user services. Menu shortcuts enter the
+Rust executable directly on NixOS, avoiding Python startup on opening. The launcher includes
+desktop controls as well as installed apps: `bluec` finds Bluetooth controls with
+Nucleo fuzzy matching. The Go menu searches controls too. Large catalogs and
+provider queries run away from rendering; one pending query replaces obsolete
+work without accumulating a queue.
+
+Clean opens these menus at the center of the focused output, above fullscreen
+applications, morphing from a small rounded square into the full menu. Reopening
+during a close reverses the transition immediately. Its workspace group always
+shows 1–9 and 0; Wi-Fi uses an icon with connection details in the tooltip. Motion
+keeps menus attached to the notch.
+
+Launcher prefixes: `/` modes, `.` files, `:` symbols, `=` calculator, `@` web,
+`>` commands, `$` clipboard and `gh ` repositories. Unicode and tasks are also
+available from modes. Ctrl+O opens the selected item's actions and provider
+controls; Ctrl+Y activates while keeping the picker open. Selection dialogs used
+by command-line tools also render here. With the bar stopped or hidden, a
+transient native process opens only the requested menu and exits on dismissal.
+
+## Fast local development
+
+Use `python3 scripts/desktop-bar-dev.py apply` from this checkout while changing
+the Rust bar. Nix supplies the pinned compiler and libraries, while Cargo builds
+incrementally into the user cache. The development profile keeps optimizations
+and skips whole-program link optimization. The first build prepares dependencies;
+later edits reuse them. Applying restarts only the bar through a temporary user
+service override. Managed home links and the search service stay in place.
+
+The same command accepts `check`, `test`, `build` and `preview`. Preview opens an
+additional bar without replacing the running one. `restore` removes only the
+development override and returns to the packaged service. A failed development
+startup also falls back to that service. Service-owned clipboard content is moved
+to an independent owner before a restart.
+
+Batch normal Nix package and configuration verification after a group of changes.
+The development command does not build the system or activate a configuration.
+Restore the packaged service after the approved final activation; the override
+otherwise lasts until logout or reboot.
+
 ## Appearance
 
-**Style → Theme** selects any of the 21 captured palettes or generates a palette from an image with Matugen. The selected palette applies to the launcher, notifications, lock screen, terminal imports, and bar accents. Existing personal wallpapers remain available in **Background**, including the wallpaper grid. A theme change keeps the chosen wallpaper; changing colors does not silently replace a per-monitor background.
+**Style → Theme** selects any of the 21 captured palettes or generates a palette from an image with Matugen. The selected palette applies to the launcher, notifications, lock screen, terminal imports, and bar accents. Theme changes select a matching wallpaper from the theme's `backgrounds` folder or its shared `wallpapers/<theme>` library, including nested folders. TokyoLED starts with the configured default wallpaper. A wallpaper already chosen from the selected theme stays selected; themes without images keep the current wallpaper. Existing personal wallpapers remain available in **Background**, including the wallpaper grid.
 
 Ghostty initially retains SimonDark/SimonLight and follows the system's light/dark mode, matching the personal reference configuration. Selecting a desktop theme enables its terminal palette. **Style → Terminal colors → Personal light/dark** restores the personal Ghostty colors; **Follow desktop theme** enables the palette again. Kitty and Alacritty receive complete generated palette imports, including for themes that only supplied colors rather than terminal-specific files.
 
-**Style → Font** lists installed monospace families. The choice applies to Ghostty, Kitty, Alacritty, Walker, Mako, SwayOSD, Waybar text, Hyprlock and Fontconfig's monospace alias. It persists across session preparation and rebuilds. The workspace slider's own bundled font and application-specific fonts remain their existing preferences. Font/theme reloads are requested on the target when using these controls; a terminal can still require reopening for some font changes.
+Theme changes signal running Ghostty and Kitty instances, including Nix-wrapped processes, and immediately update Neovim's Catppuccin light/dark appearance without waiting for focus. The bar, launcher, notifications and volume display refresh through their existing services. On NixOS, the desktop helper's packaged entry point supplies the tools and GSettings schemas for menu actions as well as service launches.
+
+**Style → Font** lists installed monospace families. The choice applies to Ghostty, Kitty, Alacritty, Mako, SwayOSD, desktop bar text, Hyprlock and Fontconfig's monospace alias. It persists across session preparation and rebuilds. The integrated workspace labels use the selected desktop font; application-specific fonts remain their existing preferences. Font/theme reloads are requested on the target when using these controls; a terminal can still require reopening for some font changes.
+
+**Style → Bar style** switches the Rust desktop bar between **Clean** and **Motion**. The same process renders the workspace slider and tray on every selected output, including the minimal clock where configured. Changing styles signals that process for a live reload. `desktopctl bar next` cycles the two styles. The choice persists in desktop state; theme, font, scale, light mode, and hidden-bar preferences apply to both styles. Retired layout selections fall back to Clean.
+
+Motion uses a compact top-center notch, with numbered workspaces on the left, a clock, quick sound control, Wi-Fi signal and battery, followed by a separator and active system-tray icons. Each monitor shows only its current workspace and occupied local workspaces. General hover or **Super+Ctrl+D** opens the Controls dashboard; the shortcut toggles it closed. Its footer shows CPU, memory and home-filesystem storage usage. A media row appears below the controls when a real track is available, with artwork, track/artist and previous/play/next controls. Paused tracks remain available to resume; no empty player card is shown. Playback follows MPRIS players as they appear, change tracks and disappear, and the dashboard morphs as the row appears or disappears. Artwork downloads and decoding are bounded, cached privately and run off the rendering thread.
+
+Sound, battery and Wi-Fi have direct hover panels. The compact speaker opens output and microphone volume sliders; Sound in the dashboard opens the full mixer. The dashboard gives access to apps, clipboard, themes, wallpapers, sound, Bluetooth, desktop settings and power controls. Tray icons retain their application actions and context menus. A short dwell avoids opening panels while passing across icons. Leaving a hover panel springs it closed without taking keyboard focus. The same persistent surface stays attached to the monitor’s top edge, preserving spring velocity while expanding, collapsing or changing panels.
+
+Workspace 10 is labeled **0** in both styles. Motion keeps its compact resting size;
+status targets span its full height and the gaps belong to the nearest control.
+Hovering preserves the compact bar's resting appearance.
+
+Background data invalidates only the views that display it. Hidden CPU, memory and audio levels do not repaint the compact notch or static catalogs, and its static urgent-workspace marker does not keep an animation loop running. Visible dashboard metrics and status panels continue refreshing. Read-only catalog, thumbnail and artwork helpers have output limits and deadlines; changing providers or preview selection cancels obsolete catalog and thumbnail commands, including their child processes. Image reads and decoded PNG dimensions are bounded before allocating previews.
+
+The closing morph uses the current workspace strip, tray, clock and status values. Updates while a menu is open invalidate its compact snapshot without repainting the hidden notch; opening and closing frames refresh it when visible. Changes during closing retarget the existing springs rather than jumping to an outdated width.
+
+Tray, media and network workers subscribe to the bus signals they use. Playback position and seek-only changes do not refetch track metadata. Media queries and playback actions have a three-second total deadline; network status queries are also bounded. Track changes cancel obsolete artwork helpers so the current cover can load immediately. Wi-Fi status clears when its service disappears and refreshes when it returns. The tray reconnects after a failed connection or disconnect, preserving its current icon color and discarding actions queued during the outage.
+
+Native notification, Bluetooth, Wi-Fi and audio discovery queries have a three-second total deadline and cancel when their panel is replaced. Pairing and authentication actions retain their longer response window. The audio event listener retries a stalled initial connection rather than waiting indefinitely. Opening the system monitor focuses an existing instance or launches it through the independent application scope.
+
+Applications preload on an independent worker and reopen immediately from the in-memory catalog. After one minute, the previous results remain visible during refresh. Icon discovery checks existing search directories once per scan. Static menus such as Go and Style read the shared JSON directly in Rust, preserving item order and literal command arguments; menus that query live system settings still use the controller.
+
+Volume and mute commands share an ordered worker. Consecutive pending slider values for the same device collapse to the newest value; wheel steps, mute toggles and changes between devices retain their order.
+Native audio controls apply the same rule independently to each consecutive slider burst, including bursts after another control or action. Panel generations and non-volume actions remain ordering barriers.
+
+The application catalog, browser and terminal launchers, and custom focus-or-launch commands use independent app scopes so a bar restart leaves their applications running. The launcher prefers UWSM and falls back to a user systemd scope; explicitly scoped commands retain their existing wrapper. Ctrl+Space or Super+Space opens the application launcher; Tab moves between apps, themes, wallpapers, clipboard, controls and bar styles. Ctrl+J/K and arrows navigate while search retains focus; Ctrl+D/U move half a page. The dashboard opens in navigation mode: h/j/k/l move across its tiles, while /, Ctrl+L or clicking search enters text input. Escape leaves search without changing the filter. Keyboard hints are omitted from the footer. Press ? for a compact help view containing only the current page's controls; Escape or ? returns with its state intact. Theme and wallpaper cards show previews. Continuous touchpad movement accumulates before advancing, wheel steps use one event resolution, and stop frames do not navigate. Escape returns through nested panels with their search and selection intact, then closes at the root. An outside click dismisses the whole panel and releases focus.
+
+Super+K opens searchable keybindings and Super+N opens current and historical Mako notifications inside the notch. Enter invokes an active notification; expired notifications open their text. Delete dismisses an active notification. Super+Ctrl+A opens native audio controls with playback, recording, outputs, inputs and profiles. Sliders and Left/Right adjust levels, Enter toggles mute, and Ctrl+Enter chooses a default output or input. Super+Ctrl+B opens Bluetooth devices, radio and discovery controls. Super+Ctrl+W opens Wi-Fi networks, radio and scanning. Authentication and pairing requests use the same surface; passwords remain in memory. Device data refreshes only while its panel is visible, and actions run off the rendering thread.
+
+Static desktop menus, installed fonts, configuration choices, hardware, power profiles and reminder entry open within both styles. Reminder entry accepts minutes followed by the message. Actions that open an application, editor or file chooser retain their application flow. Clean uses the same native menus, including its clipboard grid and device controls.
+
+Super+Ctrl+Alt+Space opens the bar style chooser in either style. Super+Alt+Space retains the main menu and its Style submenu inside Motion. Extra named actions can be declared in `~/.config/desktop/bar-actions.json` using desktopctl argument lists. Native panels can also be opened through `desktopctl bar panel NAME`. The unused Super+Alt+Period snippet shortcut and its wrapper have been removed.
+
+Weather settings live in `~/.config/desktop/weather.json`; the credential remains in `~/.owm-key`. The weather shortcut calls `desktopctl weather`, which prints a reading through the same Rust application.
 
 **Style → Lock screen** chooses a separate background, restores following the wallpaper, or locks immediately. If the chosen image disappears, locking falls back to the wallpaper. The reference menu's “Unlock” edits Arch Plymouth's disk-unlock artwork; it is not a desktop setting. This menu provides Hyprlock controls instead. Boot and disk-unlock appearance belong to the declarative boot configuration and are not changed by a desktop theme selection.
 
@@ -32,7 +108,7 @@ All reference menu definitions were compared read-only with the port; the suppli
 | Share | Clipboard text/image, file or folder through LocalSend, plus existing iPhone actions |
 | Toggle | Screensaver, night light, idle lock, notifications, bar, layout, gaps and window ratio; monitor settings open editable source |
 | Hardware | Desktop Ring display controls and native audio/network/Bluetooth tools; touchpad shown only when detected |
-| Style | Theme, font, background, Hyprland appearance, lock screen, screensaver and About artwork |
+| Style | Theme, font, bar style, background, Hyprland appearance, lock screen, screensaver and About artwork |
 | Setup | Desktop controls, native devices, power profile, monitor/input/bindings, defaults and configuration |
 | System | Screensaver, lock, guarded sleep, log out, restart and shut down |
 
@@ -44,40 +120,67 @@ The Spotify focus-or-launch shortcut accepts its original one-argument form and 
 
 ## Clipboard
 
-**Alt + V**, **Trigger → Clipboard**, and `desktopctl clipboard` open the same dedicated history view. It has an opaque theme background, selected-row cards, timestamps, pinned markers, and a separate scrollable text/image preview. Long URLs wrap; the original copied content is unchanged. The list summary flattens whitespace, and file entries retain their filenames. Narrow or scaled outputs use a stacked layout; sizing uses the focused output's logical dimensions.
+**Alt+V**, **Trigger → Clipboard**, and the Clipboard tab open the native
+four-column history grid in both styles. Motion expands the notch; Clean opens
+at the screen center. The grid starts focused, so p previews immediately. `/`,
+`i`, or clicking search enters text input; Escape returns to the grid. Plain
+h/j/k/l and p remain searchable while editing.
 
 | Key | Action |
 | --- | --- |
-| Enter | Copy selected item, close, and paste into the originating app |
-| Ctrl + Enter | Copy selected item and close without pasting |
-| Ctrl + Y | Copy and keep the picker open |
-| Ctrl + P | Pin/unpin |
-| Ctrl + D / Ctrl + U | Page down / up |
-| Delete | Remove an unpinned item |
-| Ctrl + I | Cycle available text/image/pinned filters |
-| Ctrl + O | Edit selected content |
-| Ctrl + Shift + P | Pause/resume collection |
-| Alt + J | Show available actions |
-| Escape | Close |
+| h/j/k/l or Ctrl+H/J/K/L | Left, down a row, up a row, right |
+| Ctrl+D / Ctrl+U | Half a page down / up |
+| Ctrl+Tab / Ctrl+Shift+Tab | Next / previous clipboard category |
+| Tab / Shift+Tab | Next / previous menu page |
+| Space | Select items in order |
+| p / Ctrl+Space | Toggle full text or image preview |
+| Enter | Paste selected items into the original window |
+| Ctrl+Enter | Copy selection |
+| Ctrl+Shift+Enter | Copy selected images as file links |
+| Ctrl+A / Ctrl+Shift+A | Select filtered items / clear selection |
+| Ctrl+P / Delete | Pin or unpin / remove an unpinned item |
+| Ctrl+R | Refresh history |
+| Ctrl+I / Ctrl+T | Filter images / text |
+| ? | Show this page's bindings |
 
-Autopaste waits for the clipboard copy to succeed and for Walker to release focus. It uses Ctrl + Shift + V for terminals and Ctrl + V for other apps. If the originating window is no longer active, it leaves the item copied without sending keys. Super + V continues to paste normally.
+Control navigation also works from search and returns focus to the grid.
+Ctrl+L moves right in the clipboard grid; `/` and `i` enter search.
 
-The existing patched Rust Walker renders the UI; Elephant remains the only history collector. There is no additional resident clipboard service or rewrite with a second database. The history limit remains 100, with pinned items protected from eviction; explicitly pinning more than 100 items is an exception to that limit. OCR stays off. Symbols are retained, and pinned entries appear first. A local native patch enforces trimming after a burst of copies and uses unique, mode-0600 image files so rapid copies cannot overwrite each other's originals. The existing history format remains compatible. These changes are not a measured memory or latency benchmark.
+The bar and standalone GTK picker share the Rust history and guarded paste
+backend. The standalone picker remains available for direct use, with its own
+[documented bindings](../dotfiles/clipboard-picker/README.md). Its palette is
+`theme/clipboard.css`; it requires no launcher templates or legacy frontend.
 
-History saves reuse the lock already held by pin, unpin and delete actions. Collection coalesces pending save notifications without blocking while holding that lock. This prevents a running collector from becoming unresponsive and leaving Walker's history view blank.
+The native desktop-search service collects history directly from Wayland. Full
+payloads stay in private files, bounded previews keep catalog memory predictable,
+and thumbnails preserve the entire image. Decoded previews are released on
+close. The default history limit is 100 entries, with pinned items protected
+from eviction. OCR stays off and password-manager hints are ignored.
 
-The `$` prefix inside the general app launcher continues to search clipboard history with its general launcher layout. The dedicated shortcut above uses the improved, monitor-sized layout.
+Batch paste waits for copying to succeed and the picker to release focus. It
+checks the original destination before each item, uses Ctrl+Shift+V for terminals
+and Ctrl+V for other apps, and stops if focus changes. If the target changed, the
+item remains copied. Super+V continues to paste normally. Image exports use
+private cache files so history eviction cannot invalidate a file-list copy.
+
+SQLite transactions serialize history changes. Selection order is assigned
+before transfers finish, so a slow source cannot reorder newer selections.
+Capture, query cancellation, pause/resume and subscriptions share the same
+backend; no second collector runs alongside it. The `$` launcher prefix also
+searches clipboard history.
 
 ## State and verification
 
-Theme/font choices, custom screensaver/About artwork and lock-screen background choices live under `$XDG_STATE_HOME/desktop` (normally `~/.local/state/desktop`). Complete appearance generations live in its `theme-generations/` directory. The existing `theme/`, Fontconfig and runtime Walker paths point into the current generation; bar/lock launch configurations live under `$XDG_RUNTIME_DIR/desktop`. Home Manager owns the portable source files. Menu actions do not edit the Nix store or perform package installation, system activation, or repository updates.
+The native panels share the same menu definitions. `DESKTOP_MENUS_FILE` can select an alternate JSON file for a session preview while the installed `~/.config/desktop/menus.json` remains managed by Home Manager.
 
-Theme preparation shares the state lock with preference changes. It fingerprints the palette, optional theme files, font, terminal-color preference, Walker templates and generator source, and verifies cached output before reuse. Unchanged launches skip rendering and writes. Changed inputs render privately before one pointer switch publishes all files together; failed rendering preserves the previous generation and preference choices. Runtime Walker links are restored after logout without rerendering. Completed generations remain available for readers that resolve the theme path once before opening multiple files.
+Theme/font choices, custom screensaver/About artwork and lock-screen background choices live under `$XDG_STATE_HOME/desktop` (normally `~/.local/state/desktop`). Complete appearance generations live in its `theme-generations/` directory. The `theme/` and Fontconfig paths point into the current generation; bar/lock launch configurations live under `$XDG_RUNTIME_DIR/desktop`. Home Manager owns the portable source files. Menu actions do not edit the Nix store or perform package installation, system activation, or repository updates.
+
+Theme preparation shares the state lock with preference changes. It fingerprints the palette, optional theme files, font, terminal-color preference and generator source, and verifies cached output before reuse. Unchanged launches skip rendering and writes. Changed inputs render privately before one pointer switch publishes all files together; failed rendering preserves the previous generation and preference choices. Runtime bar configuration is restored after logout without rerendering. Completed generations remain available for readers that resolve the theme path once before opening multiple files.
 
 The lock worker reads only the selected lock-screen appearance and embeds it in its runtime configuration, so login and suspend locking do not require desktop theme preparation. Missing or invalid appearance state falls back to built-in colors and the configured default font, with a diagnostic on stderr. Hyprlock startup and exit failures still report failure.
 
 Recording commands serialize start and stop. The controller verifies the recorder's boot, process start time, owner, executable and exact command before interrupting it through a [Linux process handle](https://docs.python.org/3/library/signal.html#signal.pidfd_send_signal). Stop waits up to 30 seconds for process exit before clearing `recording.json`; a timeout retains that state, and selecting a recording entry again waits without sending another interrupt. Recorder output and session metadata remain private under `$XDG_STATE_HOME/desktop/recordings/`, including failed starts and abandoned sessions. Legacy PID-only or mismatched state refuses signals and stays available for inspection. A stopped process still requires target-session validation of the saved audio/video.
 
-Clipboard history is private runtime state, normally `~/.cache/elephant/clipboard.gob` and `~/.cache/elephant/clipboardimages/`. The collector stores that history on the target; this task does not read or import the laptop's existing history. If retaining it is desired, transfer both together through the private-state backup process with the collector stopped. Do not put them in Git or a Nix derivation.
+Clipboard history and original payloads are private runtime state under `$XDG_STATE_HOME/desktop-search`, normally `~/.local/state/desktop-search`. Directories use mode 0700 and files use mode 0600. The explicit `import-elephant` operation transfers old text, images, pins, saved calculations and tasks while retaining the old state and a private backup. Verify payloads before retiring the old collector. Reference-laptop state transfer remains a separate operation. Never put history or backups in Git or a Nix derivation.
 
-`desktop-behavior` checks menu navigation/cancellation, all terminal palettes, font persistence, login/suspend lock failure paths, lock-background fallbacks and scaled clipboard sizing without accessing a real display or clipboard. The Elephant package runs native regression tests for trimming, image retention, copy/paste ordering and history locking. `walker-layout` renders the actual GTK templates with synthetic history in a disposable X display, checks CSS and geometry, and emits preview PNGs. Physical login/suspend lock confirmation, Wayland focus, real clipboard copy/edit/filter actions, terminal reloads, screensaver interaction and multi-monitor appearance still require target-session acceptance. No live image, activation or installation is part of these checks.
+`desktop-behavior` checks menu navigation/cancellation, terminal palettes, font persistence, login/suspend lock failure paths, lock-background fallbacks and scaled clipboard sizing. The desktop-search package and integration check exercise storage, pins, transfer limits, both wire encodings, provider actions, import and persistence with private fixtures. The bar's private Wayland harness checks nested navigation, quick audio controls, half-page movement, native clipboard copying, fuzzy launcher controls, provider actions and command-line selection dialogs. Physical login/suspend behavior, terminal reloads, screensaver interaction and multi-monitor appearance still require target-session acceptance. These checks do not activate or install a system.

@@ -291,3 +291,162 @@ The builder uses the pinned Nix Docker image, two CPUs and 4 GiB RAM, with `/src
 - Independent backup and sample restore; tested older Nix generation and console/live USB recovery.
 
 No visual parity, hardware support, real account workflow, installation, restore, or rollback has yet been claimed as verified.
+
+## Desktop bar and native search — 2 November 2026
+
+Individual packages built for the bar, search backend, Walker frontend, desktop
+controller and standalone clipboard picker. The bar workspace and search Rust
+tests passed, along with the packaged search integration check. Both desktop and
+lambda Home Manager configurations evaluate with desktop-search replacing the
+old provider service and Walker starting on demand. Portable unit rendering
+preserves the same service dependency and startup policy.
+
+Private Wayland acceptance covered the compact speaker, nested Escape and Back,
+half-page movement, footer rendering, native image/text copying, paused
+collection, protected pins and 120 rapid selections. The patched Walker rendered
+applications, clipboard, calculator, symbols, tasks and repository views against
+the new backend. Warm queries including CLI startup had a 7.6 ms median in this
+fixture; animation duration is separate from that measurement.
+
+The current desktop session uses runtime units and drop-ins. The installed user
+configuration links retained their original targets and contents. The transfer
+verified 100 clipboard payloads, including 43 images, before retiring the old
+collector. Original state and a private migration backup remain available.
+Subsequent checks verified the database, payload hashes, remaining imported
+images against the backup, and the standalone picker's connection. Collection
+continues to rotate unpinned entries at the configured 100-item limit. The actual
+patched Walker executable was verified before leaving its service stopped for
+on-demand use; the old provider compatibility unit has no resident process.
+
+After warming application and history queries, a ten-second idle sample measured
+6402 KiB PSS for search and 12592 KiB for the bar, totaling about 18.5 MiB. The
+previous collector, resident Walker and bar totaled about 60.1 MiB PSS in the
+baseline sample. Search recorded no CPU time during the final sample; the bar
+used 0.1% of one core. These are session measurements, with the fallback frontend
+closed, rather than a guarantee for every workload. Source conversion and this
+runtime acceptance remain separate from full configuration activation and the
+stationary desktop's hardware/install acceptance above.
+
+Keyboard follow-up passed real-input checks in both Clean and Motion: plain
+dashboard h/j/k/l navigation, explicit search with literal navigation letters,
+immediate clipboard p preview, literal p while searching, and page-specific ?
+help that restores selection, search focus and preview state. The new
+Super+Ctrl+D dashboard toggle was exercised in the private compositor and
+registered in the current session. Rendered help and preview views were visually
+checked. The matching optimized package passed its workspace tests and replaced
+only the running bar; the search backend kept its process and managed
+configuration links retained their original contents and targets.
+
+### Native menus and fuzzy search completion
+
+Both Clean and Motion now use Morphing Notch Bar for the remaining launcher
+modes, desktop menu lists and command-line selection dialogs. Home Manager
+evaluation confirms that Walker is absent from packages, services and managed
+configuration. Individual optimized bar, search and controller packages built
+successfully; no full configuration activation was run.
+
+Nucleo matching runs inside the Rust processes with reusable scratch storage.
+The application catalog and Go menu both resolve `bluec` to Bluetooth controls.
+A synthetic optimized benchmark matched and ranked 10,001 entries across 150
+queries with a 2.055 ms median and 2.883 ms 95th percentile. This measures the
+matching function, excluding process startup, provider work and animation; it
+does not establish a universal comparison with other fuzzy finders.
+
+Rust unit tests, controller routing, portable build wrappers, package manifests
+and packaged backend integration passed. Optimized private Wayland checks passed
+in both styles for fuzzy controls, files, commands, symbols, Unicode, web search,
+repositories, tasks, calculator copy without dismissal, literal selection-dialog
+responses, cancellation and the temporary native menu when the bar is hidden.
+Keyboard regression covered dashboard navigation, contextual help and clipboard
+preview. The clipboard collector also passed image and long-text copying, pause,
+pin protection and 120 rapid selections at the 100-item retention limit.
+
+The running session was updated through its existing runtime units and shortcut
+bridge. All 100 current history entries retained their payload hashes and pins;
+managed home links retained their targets and contents. The 22 direct native
+menu shortcuts are registered, and neither Walker nor Elephant has a resident
+process. After warming menus, a ten-second idle sample measured 13,801 KiB PSS
+for the bar and 6,008 KiB for search, about 19.3 MiB combined. CPU usage was 0.1%
+and 0% of one core respectively. These are current-session observations, separate
+from persistent configuration activation and hardware acceptance.
+
+### Clean placement and incremental development
+
+Clean now keeps all ten workspace numbers visible and uses an icon for Wi-Fi.
+Its native launcher, keybindings, notifications and clipboard use centered
+overlay surfaces; drawing and pointer hit areas share that position. Private
+Wayland acceptance covered both styles, native provider modes, fullscreen menu
+visibility, keyboard dismissal and outside clicks. Rendered centered application
+and clipboard views were inspected.
+
+The development helper supplies the pinned Rust dependencies through Nix, then
+uses an optimized incremental Cargo build in the user cache. It updates only a
+temporary bar service override and preserves a service-owned clipboard before
+restarting. Its first dependency build took 202 seconds; a warm recompilation
+took 4.65 seconds. A subsequent source edit compiled in 24.02 seconds. Applying
+the already-built program took 0.46 seconds of Cargo work, followed by the
+service restart. The centered version is running through
+this development override; the final Nix build and activation remain separate.
+
+Clean's opening and closing morph between a small rounded square and the menu.
+The earlier capsule seed was removed after it visibly lingered between openings.
+Close and reopen now commit a painted frame immediately rather than waiting for
+an unchanged surface's next frame callback. Clean closes once the remaining
+geometry is within one pixel of the seed, avoiding a pause while springs settle.
+Keyboard focus belongs to the visible menu; the backdrop only catches clicks.
+Private keyboard acceptance checks Ctrl+K, Escape and Ctrl+K at four delays,
+including an interrupted close, with the pointer over the menu, and verifies
+navigation in the reopened menu. Live checks also verified shortcut opening,
+Escape dismissal and reopening. All 54 Rust bar tests passed. Opening, closing
+and reopening frames were visually checked. Motion retains its existing notch
+dimensions and transition.
+
+### Maintenance tracking and retired frontend cleanup
+
+The root `LAST_UPDATED` covers 70 Nix and repository components. Portable dates
+remain canonical in `dotfiles/LAST_UPDATED`, covering all 36 deployed packages
+and the existing deployment and PDF-picker entries. Coverage, sorting and date
+formats were checked. Recorded dates were retained; 15 pre-existing components
+without reliable dates use `unknown`. Both instruction files define how future
+changes maintain the trackers without treating a read or test as an update.
+
+Unused first-party Walker and Elephant configuration, launcher wrappers,
+templates, companion build patches and the obsolete layout check were removed.
+Theme preparation no longer renders launcher views or creates their runtime
+aliases. The standalone clipboard palette is now `clipboard.css`. History import,
+wire compatibility tests and historical benchmark records remain available;
+private history and backups were not changed.
+
+Clipboard Ctrl+H/L now moves left/right, including from search, alongside
+Ctrl+J/K. `/` and `i` enter clipboard search. Help and documentation reflect the
+change. All 55 Rust bar tests and 122 relevant Python checks passed. Private
+Wayland acceptance covered the control keys, literal search text, preview,
+contextual help, rapid reopening and both bar styles. The bar update is live
+through the development helper; source cleanup awaits the normal Nix build and
+activation. The search service retained its process.
+
+### Compact notch pointer targets — 2026-11-02
+
+Motion retains its compact width, height and icon positions. Its status targets
+span the full notch height and divide the gaps by the nearest control. The
+outer control also gains six pixels of invisible padding. The hover tint was
+removed after the visual trial; the resting appearance stays unchanged. Workspace
+10 is labeled `0` in both styles while retaining its original destination.
+
+All 57 current Rust bar tests passed. Private Wayland acceptance exercised real pointer
+input at the top and bottom edges, the sound/Wi-Fi gap, the Wi-Fi/battery gap and
+the battery's outer padding, with a tray present. Clicking `0` selected workspace
+10. Resting, hover and expanded sound renders were visually checked. The bar
+update is running through the development helper; no full system rebuild or
+activation was performed for this change.
+
+### Clipboard shortcut routing — 2026-11-02
+
+The default Alt+V binding still launched the standalone GTK clipboard picker.
+It now calls the native bar's clipboard menu directly. Keyboard acceptance loads
+the actual portable binding file instead of substituting a test-only shortcut;
+real Alt+V input opened the clipboard in Motion and in Clean over a fullscreen
+window. The live binding was also updated and checked with a real key press,
+without opening the standalone picker. The source correction is saved for the
+next normal Nix configuration activation. The requested hover tint removal is
+live through the bar development update; the wider hit targets remain.

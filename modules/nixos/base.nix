@@ -22,14 +22,18 @@
       "flakes"
     ];
     auto-optimise-store = true;
-    max-jobs = 1;
-    cores = 2;
+    max-jobs = 2;
+    cores = 4;
     extra-substituters = [ "https://hyprland.cachix.org" ];
     extra-trusted-public-keys = [
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
     ];
   };
   nix.gc.automatic = false;
+  programs.nh = {
+    enable = true;
+    flake = "${config.users.users.simon.home}/nixos-config";
+  };
   system.autoUpgrade.enable = false;
   system.stateVersion = "26.05";
   users.groups.simon.gid = 1000;

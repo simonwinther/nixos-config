@@ -44,7 +44,6 @@ def main() -> None:
         config = home / ".config"
         for source, target in (
             ("appearance/.config/desktop/themes", "desktop/themes"),
-            ("walker/.config/walker/templates", "walker/templates"),
         ):
             shutil.copytree(ROOT / "dotfiles" / source, config / target)
         shutil.copy2(ROOT / "dotfiles/appearance/.config/desktop/settings.json", config / "desktop/settings.json")

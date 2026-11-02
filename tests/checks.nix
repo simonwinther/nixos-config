@@ -4,6 +4,20 @@
   self,
 }:
 {
+  desktop-search =
+    pkgs.runCommand "desktop-search-integration"
+      {
+        nativeBuildInputs = [
+          pkgs.python3
+          pkgs.fd
+        ];
+      }
+      ''
+        export PYTHONDONTWRITEBYTECODE=1
+        export DESKTOP_SEARCH_TEST_BINARY=${packages.desktop-search}/bin/desktop-search
+        python ${./test_desktop_search.py} -v
+        touch "$out"
+      '';
   dotfiles-parity =
     let
       deployment = import ../lib/dotfiles.nix { };
@@ -20,7 +34,19 @@
           in
           {
             target = file.target;
-            source = pkgs.lib.removePrefix dots (toString file.source);
+            source =
+              if item.target == ".local/bin/desktopctl" then
+                assert toString file.source == "${packages.desktop-tools}/bin/desktopctl";
+                item.source
+              else if item.target == ".local/bin/desktop-bar" then
+                assert toString file.source == "${packages.desktop-bar}/bin/desktop-bar";
+                item.source
+              else if item.target == ".config/desktop/weather.json" then
+                # NixOS selects the declarative secret path; portable defaults
+                # use ~/.owm-key. Neither configuration contains the credential.
+                item.source
+              else
+                pkgs.lib.removePrefix dots (toString file.source);
           }
         ) deployment.files
       );
@@ -149,46 +175,6 @@
         ${packages.obs-studio}/bin/obs --version
         touch "$out"
       '';
-  walker-layout =
-    pkgs.runCommand "walker-layout"
-      {
-        nativeBuildInputs = [
-          (pkgs.python3.withPackages (p: [ p.pygobject3 ]))
-          pkgs.xvfb-run
-          pkgs.dbus
-        ];
-        GI_TYPELIB_PATH = pkgs.lib.makeSearchPath "lib/girepository-1.0" (
-          map pkgs.lib.getLib (
-            with pkgs;
-            [
-              gtk4
-              pango
-              harfbuzz
-              gdk-pixbuf
-              graphene
-              glib
-              gobject-introspection
-            ]
-          )
-        );
-        LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (
-          with pkgs;
-          [
-            gtk4
-            pango
-            harfbuzz
-            gdk-pixbuf
-            graphene
-          ]
-        );
-        FONTCONFIG_FILE = pkgs.makeFontsConf { fontDirectories = [ pkgs.nerd-fonts.jetbrains-mono ]; };
-      }
-      ''
-        export HOME="$TMPDIR/home" XDG_RUNTIME_DIR="$TMPDIR/runtime" GSK_RENDERER=cairo GDK_BACKEND=x11
-        unset WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE
-        mkdir -p "$HOME" "$XDG_RUNTIME_DIR"
-        xvfb-run -a dbus-run-session --config-file=${pkgs.dbus}/share/dbus-1/session.conf -- python ${./walker-layout.py} ${../.} "$out"
-      '';
   desktop-ring = packages.desktop-ring;
   ring-integration =
     let
@@ -310,18 +296,20 @@
         export HYPRSPACE_PLUGIN=${packages.hyprspace}/lib/libhyprspace.so
         unset HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY DISPLAY
         mkdir -p "$XDG_RUNTIME_DIR"
-        python ${../dotfiles/desktop-tools/.local/share/desktop-tools/desktopctl.py} theme init
         mkdir -p "$HOME/.config/desktop"
         cp ${generatedLua "ring-bindings.lua"} "$HOME/.config/desktop/ring-bindings.lua"
         cp ${generatedLua "cursor.lua"} "$HOME/.config/desktop/cursor.lua"
         cp ${generatedLua "rebuild-bindings.lua"} "$HOME/.config/desktop/rebuild-bindings.lua"
         cp ${../hosts/desktop/monitors.lua} "$HOME/.config/desktop/monitors.lua"
-        if ! Hyprland --verify-config --config "$HOME/.config/hypr/hyprland.lua" > "$TMPDIR/hyprland.log" 2>&1; then
-          cat "$TMPDIR/hyprland.log"
-          exit 1
-        fi
-        cat "$TMPDIR/hyprland.log"
-        grep -F 'config ok' "$TMPDIR/hyprland.log"
+        for theme in "$HOME/.config/desktop/themes/"*; do
+          python "$HOME/.local/share/desktop-tools/desktopctl.py" theme set "$(basename "$theme")" --no-reload
+          if ! Hyprland --verify-config --config "$HOME/.config/hypr/hyprland.lua" > "$TMPDIR/hyprland.log" 2>&1; then
+            echo "Theme configuration failed: $theme"
+            cat "$TMPDIR/hyprland.log"
+            exit 1
+          fi
+          grep -F 'config ok' "$TMPDIR/hyprland.log"
+        done
         touch "$out"
       '';
   desktop-behavior =
@@ -374,6 +362,16 @@
         touch "$out"
       '';
   neovim-startup =
+    let
+      editors = import ../modules/home/editors.nix {
+        config.desktop.fullApplications = false;
+        lib = pkgs.lib;
+        inherit pkgs packages;
+      };
+      nixEnvironment =
+        pkgs.writeText "neovim-nix-env.lua"
+          editors.home.file.".config/nvim/nix-env.lua".text;
+    in
     pkgs.runCommand "neovim-startup"
       {
         nativeBuildInputs = [
@@ -388,15 +386,26 @@
       ''
         export HOME="$TMPDIR/home" NVIM_NIX_PLUGIN_ROOT=${packages.neovim-plugins}
         export NVIM_MIGRATION_PARSER_MANIFEST=${../pkgs/neovim/parsers.json}
+        export NVIM_THEME_SOURCE=${../dotfiles/nvim/.config/nvim/lua/plugins/theme.lua}
+        export XDG_STATE_HOME="$HOME/.local/state"
         export XDG_CACHE_HOME="$(mktemp -d /tmp/nvim-migration.XXXXXX)"
         trap 'rm -rf -- "$XDG_CACHE_HOME"' EXIT
-        mkdir -p "$HOME/.config"
-        ln -s ${../dotfiles/nvim/.config/nvim} "$HOME/.config/nvim"
+        mkdir -p "$HOME/.config/nvim"
+        cp -r ${../dotfiles/nvim/.config/nvim}/. "$HOME/.config/nvim/"
+        chmod u+w "$HOME/.config/nvim"
+        cp ${nixEnvironment} "$HOME/.config/nvim/nix-env.lua"
+        mkdir -p "$HOME/.local/share/nvim/site"
+        cp -rL ${packages.neovim-plugins}/runtime/. "$HOME/.local/share/nvim/site/"
+        chmod u+w "$HOME/.local/share/nvim/site"
         ulimit -c 0
         ulimit -v 3145728
-        timeout --signal=TERM --kill-after=5s 40s nvim --headless -i NONE \
+        # A previously opened terminal can retain the old generation's paths.
+        NVIM_NIX_PLUGIN_ROOT="$HOME/stale-neovim-plugins" \
+          timeout --signal=TERM --kill-after=5s 40s nvim --headless -i NONE \
           --cmd "luafile ${./neovim-pre.lua}" \
           -c "luafile ${./neovim-startup.lua}"
+        timeout --signal=TERM --kill-after=5s 10s nvim --headless -u NONE -i NONE \
+          -c "luafile ${./neovim-theme.lua}"
         touch "$out"
       '';
   tmux-startup =

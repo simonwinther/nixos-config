@@ -69,9 +69,16 @@
     xdg.configFile."desktop/bar-outputs.json".text = builtins.toJSON (
       config.desktop.outputs // { scale = config.desktop.appearance.barScale; }
     );
-    xdg.configFile."desktop/workspaces.json".text = builtins.toJSON {
-      output = config.desktop.outputs.full;
-    };
+    home.file.".config/desktop/weather.json".source = lib.mkForce (
+      pkgs.writeText "desktop-weather.json" (
+        builtins.toJSON (
+          (builtins.fromJSON (builtins.readFile ../../dotfiles/desktop-bar/.config/desktop/weather.json))
+          // {
+            key_file = "${config.xdg.configHome}/desktop/secrets/weather-key";
+          }
+        )
+      )
+    );
     home.activation.desktopStateDirectories = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       run mkdir -p "$HOME/.local/state/desktop" "$HOME/Pictures" "$HOME/Videos" "$HOME/From iPhone"
     '';

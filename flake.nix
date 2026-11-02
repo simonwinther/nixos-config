@@ -65,6 +65,7 @@
               ;
           };
           modules = [
+            { system.configurationRevision = self.rev or self.dirtyRev or null; }
             ./modules/nixos
             (./hosts + "/${host}")
             (./profiles + "/${profile}.nix")

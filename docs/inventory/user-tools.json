@@ -104,7 +104,7 @@
     {
       "referenceCommand": "elephant",
       "kind": "nix_package",
-      "package": "custom.elephant"
+      "package": "custom.desktop-search"
     },
     {
       "referenceCommand": "file-picker",
@@ -125,11 +125,6 @@
       "referenceCommand": "ghui",
       "kind": "nix_package",
       "package": "unstable.ghui"
-    },
-    {
-      "referenceCommand": "globalsnip",
-      "kind": "portable_source",
-      "source": "dotfiles/hypr/.local/bin/globalsnip"
     },
     {
       "referenceCommand": "hendrix-setup",
@@ -158,13 +153,13 @@
     },
     {
       "referenceCommand": "macro-picker",
-      "kind": "portable_source",
-      "source": "dotfiles/hypr/.local/bin/macro-picker"
+      "kind": "removed",
+      "disposition": "Removed with its Super+Alt+M shortcut; not installed"
     },
     {
       "referenceCommand": "notification-menu",
       "kind": "portable_source",
-      "source": "dotfiles/walker/.local/bin/notification-menu"
+      "source": "dotfiles/desktop-tools/.local/bin/notification-menu"
     },
     {
       "referenceCommand": "oh-my-posh",
@@ -243,38 +238,38 @@
     },
     {
       "referenceCommand": "text-picker",
-      "kind": "portable_source",
-      "source": "dotfiles/text-picker/.local/bin/text-picker"
+      "kind": "removed",
+      "disposition": "Removed at user request; not installed"
     },
     {
       "referenceCommand": "text-picker-build",
-      "kind": "portable_source",
-      "source": "dotfiles/text-picker/.local/bin/text-picker-build"
+      "kind": "removed",
+      "disposition": "Removed at user request; not installed"
     },
     {
       "referenceCommand": "walker",
-      "kind": "portable_source",
-      "source": "dotfiles/walker/.local/bin/walker"
+      "kind": "independent_replacement",
+      "replacement": "desktopctl launcher / Morphing Notch Bar"
     },
     {
       "referenceCommand": "waybar",
-      "kind": "portable_source",
-      "source": "dotfiles/waybar/.local/bin/waybar"
+      "kind": "independent_replacement",
+      "replacement": "desktop-bar: one Rust renderer with integrated workspaces and tray"
     },
     {
       "referenceCommand": "waybar-build-tray-fix",
       "kind": "independent_replacement",
-      "replacement": "Declaratively patched Waybar; no runtime rebuild helper"
+      "replacement": "desktop-bar: one Rust renderer with integrated workspaces and tray"
     },
     {
       "referenceCommand": "workspaces-slider",
-      "kind": "portable_source",
-      "source": "dotfiles/waybar/.local/bin/workspaces-slider"
+      "kind": "independent_replacement",
+      "replacement": "desktop-bar: one Rust renderer with integrated workspaces and tray"
     },
     {
       "referenceCommand": "workspaces-slider-launch",
-      "kind": "portable_source",
-      "source": "dotfiles/waybar/.local/bin/workspaces-slider-launch"
+      "kind": "independent_replacement",
+      "replacement": "desktop-bar: one Rust renderer with integrated workspaces and tray"
     }
   ],
   "unresolved": [],

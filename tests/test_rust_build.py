@@ -32,13 +32,12 @@ TOOLS = (
     Tool("chrome", "dictation-volume-duck", ".local/share/dictation-volume-duck", ("dictation-volume-duck-native",)),
     Tool("cluster", "cluster", ".local/share/cluster", ("cluster-native",)),
     Tool("desktop-tools", "desktop-transcode", ".local/share/desktop-transcode", ("desktop-transcode-native",)),
+    Tool("desktop-bar", "desktop-bar", ".local/share/desktop-bar", ("desktop-bar",)),
+    Tool("desktop-search", "desktop-search", ".local/share/desktop-search", ("desktop-search",)),
     Tool("desktop-tools", "project-picker", ".local/share/desktop-tools/project-picker-tui", ("project-picker-core", "project-picker-tui")),
     Tool("dictate", "dictate", ".local/share/dictate", ("dictate", "dictate-overlay")),
     Tool("file-picker", "file-picker", ".local/share/file-picker", ("file-picker-native", "file-picker-drag")),
     Tool("iphone-transfer", "iphone-transfer", ".local/share/iphone-transfer", ("iphone-transfer-native",)),
-    Tool("text-picker", "text-picker", ".local/share/text-picker", ("text-picker-native",)),
-    Tool("waybar", "waybar-weather", ".local/share/waybar-weather", ("waybar-weather-native",)),
-    Tool("waybar", "workspaces-slider", ".config/waybar/workspaces-slider-rs", ("workspaces-slider",)),
 )
 
 
@@ -86,7 +85,7 @@ class RustBuildTests(unittest.TestCase):
                                 for binary in tool.binaries)
             (source / "Cargo.toml").write_text(manifest)
             (source / "Cargo.lock").write_text("version = 4\n")
-            for name in ("src/main.rs", "tests/current.rs", "assets/current.txt",
+            for name in ("src/main.rs", "src/process.rs", "src/fuzzy.rs", "tests/current.rs", "assets/current.txt",
                          ".cargo/config.toml", "dictionary.example.toml"):
                 (source / name).write_text("fixture\n")
             (source / "generation").write_text("v1")
@@ -198,6 +197,29 @@ os.execv({shutil.which("flock")!r}, ["flock", *sys.argv[1:]])
                     if tool.name in ("file-picker", "dictate") and args[0] != "fmt":
                         self.assertEqual(args[args.index("--features") + 1],
                                          "drag" if tool.name == "file-picker" else "overlay")
+
+    def test_native_bar_snapshots_shared_path_dependencies(self):
+        tool = next(tool for tool in TOOLS if tool.name == "desktop-bar")
+        source = self.sources[tool.name]
+        manifest = source / "Cargo.toml"
+        manifest.write_text(manifest.read_text() + '\n[dependencies]\n'
+                            'desktop-weather = { path = "weather" }\n'
+                            'libpulse-binding = { path = "../../../../desktop-ring/.local/share/desktop-ring/vendor/libpulse-binding" }\n')
+        weather = source / "weather"
+        weather.mkdir()
+        (weather / "Cargo.toml").write_text("weather fixture")
+        pulse = self.repo / "desktop-ring/.local/share/desktop-ring/vendor/libpulse-binding"
+        pulse.mkdir(parents=True)
+        (pulse / "Cargo.toml").write_text("pulse fixture")
+        original = tree(source)
+        result = self.run_build(tool.name)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        build = self.cache / "desktop-bar/build"
+        self.assertEqual(tree(build / "weather"), tree(weather))
+        self.assertEqual(tree(build / "deps/libpulse-binding"), tree(pulse))
+        self.assertIn('path = "weather"', (build / "Cargo.toml").read_text())
+        self.assertIn('path = "deps/libpulse-binding"', (build / "Cargo.toml").read_text())
+        self.assertEqual(tree(source), original)
 
     def test_invalid_arguments_never_change_the_cache(self):
         for tool in TOOLS:
@@ -326,13 +348,16 @@ os.execv({shutil.which("mv")!r}, ["mv", *sys.argv[1:]])
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual((self.cache / "cluster/bin/cluster-native").read_text(), "v1")
 
-    def test_slider_launcher_runs_published_copy(self):
-        tool = next(tool for tool in TOOLS if tool.name == "workspaces-slider")
+    def test_bar_launcher_runs_published_copy(self):
+        tool = next(tool for tool in TOOLS if tool.name == "desktop-bar")
         cache = self.seed_cache(tool)
-        binary = cache / "bin/workspaces-slider"
+        binary = cache / "bin/desktop-bar"
         binary.write_text(f'#!{BASH}\nprintf "published\\n"\n')
         binary.chmod(0o755)
-        result = subprocess.run([BASH, DOTS / "waybar/.local/bin/workspaces-slider"],
+        ctl = self.commands / "desktopctl"
+        ctl.write_text(f"#!{BASH}\nexit 1\n")
+        ctl.chmod(0o755)
+        result = subprocess.run([BASH, DOTS / "desktop-bar/.local/bin/desktop-bar"],
                                 env=self.env, capture_output=True, text=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout, "published\n")

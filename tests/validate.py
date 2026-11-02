@@ -49,7 +49,6 @@ assert sorted(reference) == sorted(row["arch"] for row in mapping), "Package inv
 assert all(row["kind"] in ("package", "custom", "module", "excluded") for row in mapping)
 plugins = json.loads((root / "pkgs/neovim/plugins.json").read_text())
 assert all(p.get("hash", "").startswith("sha256-") for p in plugins.values()), "Unpinned editor source"
-assert "sha256-AAAA" not in (root / "pkgs/hyprspace-companions/default.nix").read_text()
 editor_source = root / "pkgs/editor-extensions/sources.json"
 if editor_source.exists():
     editor_sources = json.loads(editor_source.read_text())

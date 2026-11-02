@@ -4,7 +4,6 @@ import argparse
 from pathlib import Path
 p=argparse.ArgumentParser(description=__doc__)
 p.add_argument('target',type=Path)
-p.add_argument('--laptop',action='store_true',help='Include the minimal second bar')
 a=p.parse_args()
 if a.target.exists() and any(a.target.iterdir()):p.error('Use an empty staging directory')
 units=a.target/'desktop-services/.config/systemd/user'
@@ -31,10 +30,8 @@ WantedBy=desktop-session.target
 '''
 services={
  'desktop-prepare':('Prepare writable desktop state','%h/.local/bin/desktopctl prepare','oneshot','RemainAfterExit=yes'),
- 'desktop-elephant':('Search providers','elephant','exec','Restart=on-failure'),
- 'desktop-walker':('Launcher','%h/.local/bin/desktopctl run walker -- --gapplication-service','exec','Restart=on-failure'),
- 'desktop-waybar':('Main bar','%h/.local/bin/desktopctl run waybar -- --config %h/.config/waybar/config.jsonc --style %h/.config/waybar/style.css','exec','Restart=on-failure'),
- 'desktop-workspaces':('Workspace sliders','%h/.local/bin/workspaces-slider','exec','Restart=on-failure'),
+ 'desktop-search':('Search and clipboard providers','%h/.local/bin/desktop-search serve','exec','Restart=on-failure'),
+ 'desktop-bar':('Morphing Notch Bar','%h/.local/bin/desktop-bar','exec','Restart=on-failure\nExecReload=kill -USR2 $MAINPID'),
  'desktop-mako':('Notifications','%h/.local/bin/desktopctl run mako','exec','Restart=on-failure'),
  'desktop-monitor-watch':('Recover disconnected laptop displays','%h/.local/bin/desktopctl monitor-watch','exec','Restart=on-failure'),
  'desktop-awww':('Wallpaper daemon','awww-daemon --no-cache','exec','Restart=on-failure'),
@@ -44,13 +41,13 @@ services={
  'desktop-wallpaper':('Restore wallpapers','%h/.local/bin/desktopctl wallpaper restore','oneshot',''),
  'desktop-file-picker':('Prepare windowless file and PDF picker terminal','%h/.local/bin/file-picker --prepare-terminal','oneshot','RemainAfterExit=yes\nTimeoutStartSec=20'),
 }
-if a.laptop:services['desktop-waybar-minimal']=('Minimal bar','%h/.local/bin/desktopctl run waybar -- --config %h/.config/waybar/config-minimal.jsonc --style %h/.config/waybar/style-minimal.css','exec','Restart=on-failure')
 for name,(description,command,kind,extra) in services.items():
  text=base.format(description=description,command=command,kind=kind,extra=extra)
  if name=='desktop-prepare':text=text.replace('After=desktop-prepare.service','Before=desktop-session.target')
- if name=='desktop-walker':text=text.replace('After=desktop-prepare.service','After=desktop-prepare.service desktop-elephant.service\nRequires=desktop-elephant.service')
+ if name=='desktop-bar':
+  text=text.replace('After=desktop-prepare.service','After=desktop-prepare.service desktop-search.service\nWants=desktop-search.service')
  if name=='desktop-wallpaper':text=text.replace('After=desktop-prepare.service','After=desktop-prepare.service desktop-awww.service\nRequires=desktop-awww.service')
- if name in {'desktop-waybar','desktop-waybar-minimal','desktop-workspaces'}:text=text.replace('PartOf=desktop-session.target','PartOf=desktop-session.target\nConditionPathExists=!%h/.local/state/desktop/toggles/waybar-off')
+ if name == 'desktop-bar':text=text.replace('PartOf=desktop-session.target','PartOf=desktop-session.target\nConditionPathExists=!%h/.local/state/desktop/toggles/bar-off')
  (units/(name+'.service')).write_text(text)
 for name,command in {'desktop-lock':'desktopctl lock-worker','desktop-lock-only':'desktopctl lock-worker --only','desktop-hyprsunset':'hyprsunset'}.items():
  (units/(name+'.service')).write_text('[Unit]\nDescription='+name+'\n\n[Service]\nType=exec\nEnvironment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin\nExecStart='+command+'\n')

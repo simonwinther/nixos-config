@@ -238,10 +238,8 @@
   {
     "arch": "cursor-bin",
     "referenceVersion": "3.24.18-1",
-    "kind": "package",
-    "source": "stable",
-    "attribute": "code-cursor",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "No longer used"
   },
   {
     "arch": "docker",
@@ -962,7 +960,7 @@
     "arch": "omarchy-walker",
     "referenceVersion": "1.0.0-2",
     "kind": "module",
-    "reason": "Pinned Walker/Elephant companions"
+    "reason": "Morphing Notch Bar with native Rust search providers"
   },
   {
     "arch": "openbsd-netcat",
@@ -1718,9 +1716,8 @@
   {
     "arch": "waybar",
     "referenceVersion": "0.15.0-3",
-    "kind": "custom",
-    "attribute": "waybar",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Replaced by the Rust desktop bar with integrated workspaces and tray."
   },
   {
     "arch": "waypaper",

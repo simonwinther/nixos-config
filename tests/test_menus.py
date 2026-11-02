@@ -22,103 +22,53 @@ class MenuTests(unittest.TestCase):
     def install_menus(self):
         (self.config / "desktop/menus.json").symlink_to(ROOT / "dotfiles/desktop-settings/.config/desktop/menus.json")
 
-    def test_menu_returns_to_parent_and_dispatches_only_selected_action(self):
+    def test_menu_routes_to_native_stack_without_dispatching_a_selection(self):
         self.install_menus()
-        replies = [subprocess.CompletedProcess([], 0, "  Style\n"),
-                   subprocess.CompletedProcess([], 130, ""),
-                   subprocess.CompletedProcess([], 0, "󰀻  Apps\n")]
-        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run, patch.object(ctl, "dispatch") as dispatch:
+        with patch.object(ctl.bar_config, "open_panel", return_value=True) as opened, patch.object(ctl, "dispatch") as dispatch:
             ctl.menu([])
-        dispatch.assert_called_once_with("launcher", [])
-        self.assertEqual([c.kwargs["input"].splitlines()[0] for c in run.call_args_list],
-                         ["󰀻  Apps", "󰸌  Theme", "󰀻  Apps"])
+        self.assertEqual(opened.call_args.args[1], "menu/main")
+        dispatch.assert_not_called()
 
-    def test_direct_submenu_cancel_exits_without_dispatch(self):
+    def test_direct_submenu_uses_native_surface_when_bar_is_not_running(self):
         self.install_menus()
-        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 130, "")) as run, patch.object(ctl, "dispatch") as dispatch:
+        with patch.object(ctl, "run_application") as launch, patch.object(ctl, "dispatch") as dispatch:
             ctl.menu(["style"])
-        self.assertEqual(run.call_count, 1)
+        launch.assert_called_once_with(["desktop-bar-native", "--menu", "menu/style"])
         dispatch.assert_not_called()
 
-    def test_menu_does_not_execute_typed_commands(self):
+    def test_unknown_menu_does_not_execute_commands(self):
         self.install_menus()
-        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, "exec unwanted command")), patch.object(ctl, "dispatch") as dispatch:
-            ctl.menu([])
+        with patch.object(ctl, "run_application") as launch, patch.object(ctl, "dispatch") as dispatch:
+            with self.assertRaisesRegex(ValueError, "Unknown menu"):
+                ctl.menu(["exec unwanted command"])
+        launch.assert_not_called()
         dispatch.assert_not_called()
 
-    def test_theme_menu_can_select_a_noncurrent_theme(self):
-        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, "○  Catppuccin Latte\n")), patch.object(ctl, "dispatch") as dispatch:
+    def test_theme_chooser_uses_the_native_carousel(self):
+        with patch.object(ctl, "run_application") as launch:
             ctl.menu(["theme"])
-        dispatch.assert_called_once_with("theme", ["set", "catppuccin-latte"])
+        launch.assert_called_once_with(["desktop-bar-native", "--menu", "themes"])
 
     def test_all_menu_destinations_exist_and_package_mutation_is_absent(self):
         menus = json.loads((ROOT / "dotfiles/desktop-settings/.config/desktop/menus.json").read_text())
-        dynamic = {"background", "reminder-set", "theme", "font", "config", "power-profile"}
+        dynamic = {"background", "reminder-set", "theme", "font", "bar", "config", "power-profile"}
         for group in menus.values():
             for command in group["items"].values():
                 if command[0] == "menu":
                     self.assertIn(command[1], set(menus) | dynamic)
                 self.assertNotIn(command[0], ("install", "remove", "update", "rebuild"))
 
-    def test_keybindings_use_live_overrides_and_include_generated_bindings(self):
-        source = self.config / "hypr/defaults.lua"
-        source.parent.mkdir()
-        source.write_text('hl.bind("SUPER + CTRL + SPACE", action, { description = "Theme background menu" })\n'
-                          'hl.bind("switch:off:Lid Switch", action, { locked = true })\n'
-                          'hl.bind("PRINT", action, { description = "Screenshot" })\n')
-        bindings = [
-            {"modmask": 68, "key": "SPACE", "description": "Wallpaper grid"},
-            {"modmask": 64, "key": "R", "description": "Desktop control ring"},
-            {"modmask": 76, "key": "M", "description": "Cycle laptop position"},
-            {"modmask": 0, "key": "switch:off:Lid Switch", "description": ""},
-            {"modmask": 0, "key": "PRINT", "description": "Screenshot"},
-        ]
-        replies = [subprocess.CompletedProcess([], 0, json.dumps(bindings)), subprocess.CompletedProcess([], 130)]
-        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run:
-            ctl.keybindings()
-        self.assertEqual(run.call_args_list[0].args[0], ["hyprctl", "-j", "binds"])
-        self.assertTrue(run.call_args_list[0].kwargs["capture"])
-        self.assertEqual(run.call_args.kwargs["input"].splitlines(), [
-            "PRINT  Screenshot",
-            "SUPER + CTRL + ALT + M  Cycle laptop position",
-            "SUPER + CTRL + SPACE  Wallpaper grid",
-            "SUPER + R  Desktop control ring",
-        ])
-        self.assertFalse(run.call_args.kwargs["check"])
+    def test_active_keybindings_query_live_overrides_instead_of_source(self):
+        bindings = [{"modmask": 68, "key": "SPACE", "description": "Wallpaper grid"}]
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps(bindings))) as run:
+            self.assertEqual(ctl.active_keybindings(), bindings)
+        run.assert_called_once_with(["hyprctl", "-j", "binds"], capture=True)
 
-    def test_keybindings_preserve_trigger_context_and_multiple_actions(self):
-        bindings = [
-            {"modmask": 0, "key": "F9", "description": "Start dictation"},
-            {"modmask": 0, "key": "F9", "description": "Stop dictation", "release": True},
-            {"modmask": 64, "key": "", "keycode": 10, "description": "Workspace 1"},
-            {"modmask": 64, "key": "mouse:272", "description": "Move window"},
-            {"modmask": 0, "key": "XF86AudioMute", "description": "Mute audio"},
-            {"modmask": 0, "key": "left", "submap": "resize", "description": "Resize left"},
-            {"modmask": 8, "key": "TAB", "description": "Focus next window"},
-            {"modmask": 8, "key": "TAB", "description": "Reveal active window"},
-            {"modmask": 8, "key": "TAB", "description": "Reveal active window"},
-            {"modmask": 0, "key": "Q", "description": "Quit", "longPress": True},
-            {"modmask": 0, "key": "", "catch_all": True, "submap": "resize", "description": "Exit resize"},
-            {"modmask": 255, "key": "K", "description": "All modifiers"},
-        ]
-        replies = [subprocess.CompletedProcess([], 0, json.dumps(bindings)), subprocess.CompletedProcess([], 0)]
-        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run, patch.object(ctl, "dispatch") as dispatch:
+    def test_keybindings_open_native_panel_without_launching_a_picker(self):
+        with patch.object(ctl.bar_config, "open_panel", return_value=True) as opened, patch.object(ctl, "run") as run:
             ctl.keybindings()
-        entries = run.call_args.kwargs["input"].splitlines()
-        self.assertEqual(entries, sorted({
-            "F9  Start dictation",
-            "F9 (release)  Stop dictation",
-            "SUPER + code:10  Workspace 1",
-            "SUPER + mouse:272  Move window",
-            "XF86AudioMute  Mute audio",
-            "[resize] left  Resize left",
-            "ALT + TAB  Focus next window",
-            "ALT + TAB  Reveal active window",
-            "Q (long press)  Quit",
-            "[resize] catchall  Exit resize",
-            "SUPER + CTRL + ALT + SHIFT + CAPS + MOD2 + MOD3 + MOD5 + K  All modifiers",
-        }))
-        dispatch.assert_not_called()
+        self.assertEqual(opened.call_args.args[1], "keybindings")
+        run.assert_not_called()
 
     def test_keybindings_recover_lua_keycodes_from_live_text_by_identity(self):
         bindings = [
@@ -137,14 +87,10 @@ class MenuTests(unittest.TestCase):
                 '\tdispatcher: __lua\n\targ: 10\n\n')
         replies = [subprocess.CompletedProcess([], 0, json.dumps(bindings)),
                    subprocess.CompletedProcess([], 0, text), subprocess.CompletedProcess([], 130)]
-        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run:
-            ctl.keybindings()
+        with patch.object(ctl, "executable", return_value="/mock/desktop-bar-native"), patch.object(ctl, "run", side_effect=replies) as run:
+            bindings = ctl.active_keybindings()
         self.assertEqual(run.call_args_list[1].args[0], ["hyprctl", "binds"])
-        self.assertEqual(run.call_args.kwargs["input"].splitlines(), [
-            "PRINT  Screenshot",
-            "SUPER + code:10  Desktop display controls",
-            "SUPER + code:11  Desktop display controls",
-        ])
+        self.assertEqual([binding.get("display_key") for binding in bindings[:2]], ["SUPER + code:10", "SUPER + code:11"])
 
     def test_keybindings_reject_missing_or_ambiguous_live_keycodes(self):
         bindings = [{"modmask": 64, "submap": "", "key": "", "keycode": 0,
@@ -155,28 +101,21 @@ class MenuTests(unittest.TestCase):
             replies = [subprocess.CompletedProcess([], 0, json.dumps(bindings)), subprocess.CompletedProcess([], 0, text)]
             with self.subTest(text=text), patch.object(ctl, "run", side_effect=replies) as run, patch.object(ctl, "prepare_theme") as theme:
                 with self.assertRaisesRegex(ValueError, "unambiguous key"):
-                    ctl.keybindings()
+                    bindings = ctl.active_keybindings()
                 self.assertEqual(run.call_count, 2)
                 theme.assert_not_called()
 
-    def test_keybindings_do_not_show_stale_sources_when_query_fails_or_is_empty(self):
-        source = self.config / "hypr/stale.lua"
-        source.parent.mkdir()
-        source.write_text('hl.bind("SUPER + Q", action, { description = "Stale shortcut" })')
-        for reply, error in [
-            (subprocess.CalledProcessError(1, ["hyprctl", "-j", "binds"]), subprocess.CalledProcessError),
-            (subprocess.CompletedProcess([], 0, "invalid json"), ValueError),
-            (subprocess.CompletedProcess([], 0, "[]"), ValueError),
-            (subprocess.CompletedProcess([], 0, '[{"key":"switch:off:Lid Switch","description":""}]'), ValueError),
-        ]:
-            with self.subTest(reply=reply), patch.object(ctl, "run", side_effect=[reply]) as run, patch.object(ctl, "prepare_theme") as theme:
+    def test_keybinding_inspection_propagates_live_query_failures(self):
+        for reply, error in [(subprocess.CalledProcessError(1, ["hyprctl"]), subprocess.CalledProcessError),
+                             (subprocess.CompletedProcess([], 0, "invalid json"), ValueError)]:
+            with patch.object(ctl, "run", side_effect=[reply]):
                 with self.assertRaises(error):
-                    ctl.keybindings()
-                self.assertEqual(run.call_count, 1)
-                theme.assert_not_called()
+                    ctl.active_keybindings()
 
     def test_focus_shortcut_launches_default_command_or_matches_title_without_case(self):
-        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, "[]")), patch.object(ctl.os, "execvp") as execute:
+        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, "[]")), \
+                patch.object(ctl.shutil, "which", return_value="uwsm-app"), \
+                patch.object(ctl.os, "execvp") as execute:
             ctl.launch(["focus", "spotify"])
         execute.assert_called_once_with("uwsm-app", ["uwsm-app", "--", "spotify"])
         windows = [{"class": "electron", "title": "Spotify", "address": "0x123"}]
@@ -185,16 +124,18 @@ class MenuTests(unittest.TestCase):
         self.assertIn("address:0x123", run.call_args.args[0][-1])
         execute.assert_not_called()
 
-    def test_hardware_menu_omits_touchpad_on_stationary_desktop(self):
+    def test_hardware_catalog_omits_touchpad_on_stationary_desktop(self):
+        import bar_catalog
+        from unittest.mock import patch
+        import io
+        from contextlib import redirect_stdout
         self.install_menus()
-        replies = [subprocess.CompletedProcess([], 0, '{"mice": []}'), subprocess.CompletedProcess([], 130, "")]
-        with patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl, "run", side_effect=replies) as run:
-            ctl.menu(["hardware"])
-        entries = run.call_args.kwargs["input"]
-        self.assertIn("Display controls", entries)
-        self.assertNotIn("Touchpad", entries)
-        self.assertNotIn("Internal display", entries)
-        self.assertNotIn("Mirror display", entries)
+        result = subprocess.CompletedProcess([], 0, '{"mice": []}')
+        with patch.object(bar_catalog.subprocess, "run", return_value=result), redirect_stdout(io.StringIO()) as output:
+            ctl.bar(["catalog", "menu/hardware"])
+        commands = [entry["command"] for entry in json.loads(output.getvalue())]
+        self.assertNotIn(["toggle", "touchpad"], commands)
+        self.assertIn(["exec", "desktop-ring", "menu"], commands)
 
     def test_reminders_show_messages_and_clear_with_visible_feedback(self):
         with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, "")) as run, patch.object(ctl, "notify") as notify:
@@ -309,17 +250,15 @@ class MenuTests(unittest.TestCase):
             ctl.appearance(["terminal-colors", "personal"])
         self.assertNotIn("theme =", overlay.read_text())
 
-    def test_all_palettes_generate_terminal_imports_and_all_walker_views(self):
+    def test_all_palettes_generate_terminal_imports_and_clipboard_colors(self):
         for source in (self.config / "desktop/themes").iterdir():
             with self.subTest(theme=source.name):
                 ctl.theme(["set", source.name, "--no-reload"])
                 parsed = tomllib.loads((self.state / "theme/alacritty.toml").read_text())
                 self.assertEqual(parsed["colors"]["primary"]["background"], ctl.colors(source)["background"])
                 self.assertIn("font_family JetBrainsMono Nerd Font", (self.state / "theme/kitty.conf").read_text())
-                for view in ("rounded", "menu", "clipboard", "clipboard-compact"):
-                    directory = self.runtime / "walker/themes" / ("desktop-" + view)
-                    self.assertTrue((directory / "style.css").is_file())
-                    ET.parse(directory / "layout.xml")
+                self.assertIn("@define-color text", (self.state / "theme/clipboard.css").read_text())
+                self.assertFalse((self.runtime / "walker").exists())
                 ET.parse(self.state / "fontconfig.conf")
 
     def test_font_choice_survives_prepare_and_never_changes_managed_sources(self):
@@ -340,46 +279,21 @@ class MenuTests(unittest.TestCase):
             ctl.font(["set", "unavailable"])
         self.assertFalse((self.state / "state.json").exists())
 
-    def test_scaled_light_bar_keeps_imported_base_rules_outside_managed_files(self):
-        directory = self.config / "waybar"
-        directory.mkdir()
-        base = directory / "style.css"
-        light = directory / "style-light.css"
-        base.write_text("* { font-size: 13px; padding: 4px; }\n")
-        light.write_text('@import "style.css";\n@define-color text #4c4f69;\n')
-        before = (base.read_bytes(), light.read_bytes())
-        css = ctl.bar_stylesheet(light, 1.5)
-        self.assertIn("font-size: 19.5px", css)
-        self.assertIn("padding: 6px", css)
-        self.assertIn("#4c4f69", css)
-        self.assertNotIn("@import", css)
-        self.assertIn(str(light), ctl.bar_stylesheet(light, 1.0))
-        self.assertEqual((base.read_bytes(), light.read_bytes()), before)
 
-    def test_clipboard_uses_monitor_logical_size_and_keeps_the_existing_binding(self):
-        monitor = {"focused": True, "width": 1920, "height": 1080, "scale": 2}
-        with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps([monitor]))), patch.object(ctl, "run_application") as launch:
+    def test_fallback_clipboard_uses_the_same_native_surface(self):
+        with patch.object(ctl, "remember_clipboard_target"), patch.object(ctl, "run"), patch.object(ctl, "run_application") as launch:
             ctl.launcher(["-m", "clipboard"])
-        argv = launch.call_args.args[0]
-        self.assertIn("desktop-clipboard-compact", argv)
-        self.assertEqual(argv[argv.index("--width") + 1], "880")
-        self.assertEqual(argv[argv.index("--height") + 1], "380")
-        # Walker cancels fixed wrapper sizing when scroll min/max flags appear.
-        self.assertNotIn("--maxheight", argv)
-        self.assertNotIn("--minheight", argv)
-        self.assertNotIn("--maxwidth", argv)
-        self.assertEqual(argv.count("clipboard"), 1)
+        launch.assert_called_once_with(["desktop-bar-native", "--menu", "clipboard"])
 
-    def test_explicit_walker_theme_is_not_shadowed_by_default_theme(self):
-        with patch.object(ctl, "prepare_theme", return_value=(None, {}, False)), patch.object(ctl, "executable", return_value="/mock/walker"), patch.object(ctl.os, "execv") as execute:
-            ctl.run_application(["walker", "--theme", "desktop-clipboard"])
-        argv = execute.call_args.args[1]
-        self.assertEqual(argv.count("--theme"), 1)
-        self.assertEqual(argv[-1], "desktop-clipboard")
+    def test_dmenu_passes_literal_input_to_native_request_response_picker(self):
+        with patch.object(ctl, "run_application") as launch, patch.object(ctl, "remember_clipboard_target") as remember:
+            ctl.launcher(["--dmenu", "--placeholder", "Literal $HOME; title"])
+        launch.assert_called_once_with(["desktop-bar-native", "--dmenu", "--placeholder", "Literal $HOME; title"])
+        remember.assert_not_called()
 
     def test_clipboard_paste_waits_for_picker_and_uses_terminal_shortcut(self):
         ctl.atomic_write(self.runtime / "clipboard-target.json", '{"address":"0x123"}')
-        layers = {"monitor": {"levels": {"3": [{"namespace": "walker"}]}}}
+        layers = {"monitor": {"levels": {"3": [{"namespace": "desktop-bar-panel-eDP-1"}]}}}
         replies = [subprocess.CompletedProcess([], 0, json.dumps(layers)),
                    subprocess.CompletedProcess([], 0, "{}"),
                    subprocess.CompletedProcess([], 0, '{"address":"0x123","class":"com.mitchellh.ghostty"}'),
@@ -406,7 +320,7 @@ class MenuTests(unittest.TestCase):
 
     def test_clipboard_paste_timeout_never_sends_keys(self):
         ctl.atomic_write(self.runtime / "clipboard-target.json", '{"address":"0x123"}')
-        layers = {"monitor": {"levels": {"3": [{"namespace": "walker"}]}}}
+        layers = {"monitor": {"levels": {"3": [{"namespace": "clipboard-picker"}]}}}
         with patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps(layers))) as run, \
                 patch.object(ctl.time, "monotonic", side_effect=[0, 0, 3]), patch.object(ctl.time, "sleep"):
             with self.assertRaisesRegex(ValueError, "still has focus"):

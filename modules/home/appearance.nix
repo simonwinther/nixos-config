@@ -23,7 +23,7 @@ in
     barScale = lib.mkOption {
       type = lib.types.numbers.between 0.75 2.0;
       default = 1.0;
-      description = "Additional Waybar and workspace pill sizing, independent of display scaling.";
+      description = "Desktop bar sizing, independent of display scaling.";
     };
     terminalScale = lib.mkOption {
       type = lib.types.numbers.between 0.75 2.0;
@@ -33,14 +33,8 @@ in
   };
   config = {
     home.file.".config/ghostty/config".source = lib.mkForce (pkgs.writeText "ghostty-config" ghostty);
-    # Also make a size-only rebuild restart the already running bar processes.
-    systemd.user.services.desktop-waybar.Service.Environment = lib.mkAfter [
-      "DESKTOP_BAR_SCALE=${toString cfg.barScale}"
-    ];
-    systemd.user.services.desktop-waybar-minimal.Service.Environment = lib.mkAfter [
-      "DESKTOP_BAR_SCALE=${toString cfg.barScale}"
-    ];
-    systemd.user.services.desktop-workspaces.Service.Environment = lib.mkAfter [
+    # A size-only rebuild must also update the running bar.
+    systemd.user.services.desktop-bar.Service.Environment = lib.mkAfter [
       "DESKTOP_BAR_SCALE=${toString cfg.barScale}"
     ];
   };

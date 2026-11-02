@@ -62,10 +62,10 @@ class ThemeGenerationTests(unittest.TestCase):
         with patch.object(ctl, "_render_theme") as render, \
                 patch.object(ctl, "atomic_write", wraps=ctl.atomic_write) as write, \
                 patch.object(ctl.os, "replace", wraps=ctl.os.replace) as replace, \
-                patch.object(ctl, "executable", return_value="/mock/walker"), \
+                patch.object(ctl, "executable", return_value="/mock/clipboard-picker-native"), \
                 patch.object(ctl.os, "execv"):
             for _ in range(3):
-                ctl.run_application(["walker"])
+                ctl.run_application(["clipboard-picker-native"])
             render.assert_not_called()
             write.assert_not_called()
             replace.assert_not_called()
@@ -92,7 +92,7 @@ class ThemeGenerationTests(unittest.TestCase):
         source = self.local_theme()
         ctl.theme(["set", source.name, "--no-reload"])
         for filename, output, content in (("mako.ini", "mako.ini", "font=Old\n# custom mako\n"),
-                                          ("walker.css", "walker.css", "/* custom walker */\n"),
+                                          ("clipboard.css", "clipboard.css", "/* custom clipboard palette */\n"),
                                           ("btop.theme", "current.theme", 'theme[main_bg]="#010203"\n'),
                                           ("eza.yml", "theme.yml", "filekinds: {}\n"),
                                           ("light.mode", "light.mode", "")):
@@ -109,32 +109,6 @@ class ThemeGenerationTests(unittest.TestCase):
         self.assertFalse((self.state / "theme/theme.yml").exists())
         self.assertFalse((self.state / "theme/light.mode").exists())
 
-    def test_walker_template_additions_edits_and_removals_invalidate_cache(self):
-        templates = self.config / "walker/templates"
-        templates.unlink()
-        shutil.copytree(base.ROOT / "dotfiles/walker/.config/walker/templates", templates)
-        ctl.prepare_theme()
-        previous = self.published()
-        custom = templates / "custom"
-        custom.mkdir()
-        (custom / "style.css").write_text("/* new view */\n")
-        ctl.prepare_theme()
-        self.assertNotEqual(self.published(), previous)
-        runtime_view = self.runtime / "walker/themes/desktop-custom/style.css"
-        self.assertIn("/* new view */", runtime_view.read_text())
-        (custom / "style.css").write_text("/* edited view */\n")
-        ctl.prepare_theme()
-        self.assertIn("/* edited view */", runtime_view.read_text())
-        (custom / "style.css").unlink()
-        ctl.prepare_theme()
-        self.assertFalse(runtime_view.exists())
-        runtime_view.parent.rmdir()
-        ctl.prepare_theme()
-        self.assertTrue(runtime_view.parent.is_dir(), "missing empty views must invalidate the cache")
-        custom.rmdir()
-        ctl.prepare_theme()
-        self.assertFalse(runtime_view.parent.exists())
-
     def test_font_and_terminal_preferences_invalidate_cache(self):
         ctl.theme(["init"])
         personal = self.published()
@@ -144,7 +118,7 @@ class ThemeGenerationTests(unittest.TestCase):
         font_generation = self.published()
         self.assertNotEqual(font_generation, personal)
         self.assertIn("Cache Mono", (self.state / "fontconfig.conf").read_text())
-        self.assertIn("Cache Mono", (self.runtime / "walker/themes/desktop-rounded/style.css").read_text())
+        self.assertIn("Cache Mono", (self.state / "theme/ghostty.conf").read_text())
         with patch.object(ctl, "run"), patch.object(ctl, "restart"):
             ctl.appearance(["terminal-colors", "desktop"])
         self.assertNotEqual(self.published(), font_generation)
@@ -171,7 +145,7 @@ class ThemeGenerationTests(unittest.TestCase):
     def test_missing_or_corrupt_outputs_are_repaired_with_a_new_generation(self):
         ctl.prepare_theme()
         for filename, damage in (("ghostty.conf", "corrupt"),
-                                  ("walker/themes/desktop-rounded/layout.xml", "missing"),
+                                  ("clipboard.css", "missing"),
                                   (".generation.json", "corrupt")):
             with self.subTest(filename=filename):
                 previous = self.published()
@@ -185,7 +159,7 @@ class ThemeGenerationTests(unittest.TestCase):
                 self.assertTrue((self.published() / filename).is_file())
                 self.assertNotEqual((self.published() / filename).read_text(), "damaged")
 
-    def test_runtime_alias_is_restored_on_a_cache_hit(self):
+    def test_runtime_bar_configuration_is_restored_on_a_cache_hit(self):
         ctl.prepare_theme()
         previous = self.published()
         shutil.rmtree(self.runtime)
@@ -193,7 +167,8 @@ class ThemeGenerationTests(unittest.TestCase):
             ctl.prepare_theme()
         render.assert_not_called()
         self.assertEqual(self.published(), previous)
-        self.assertEqual((self.runtime / "walker/themes").resolve(), previous / "walker/themes")
+        self.assertTrue((self.runtime / "bar-theme.json").is_file())
+        self.assertFalse((self.runtime / "walker").exists())
 
     def test_failed_staging_preserves_every_published_file_and_preferences(self):
         ctl.theme(["init"])
@@ -202,15 +177,15 @@ class ThemeGenerationTests(unittest.TestCase):
         preferences = (self.state / "state.json").read_bytes()
         write = ctl.atomic_write
 
-        def fail_walker(path, content, *args, **kwargs):
-            if path.name == "style.css":
-                # The terminal files have been staged, but no public file has changed.
+        def fail_palette(path, content, *args, **kwargs):
+            if path.name == "clipboard.css":
+                # Staging must not change any published file.
                 self.assertEqual(self.snapshot(previous), before)
                 self.assertEqual(self.published(), previous)
                 raise OSError("simulated full filesystem")
             return write(path, content, *args, **kwargs)
 
-        with patch.object(ctl, "atomic_write", side_effect=fail_walker):
+        with patch.object(ctl, "atomic_write", side_effect=fail_palette):
             for change in (lambda: ctl.theme(["set", "catppuccin-latte", "--no-reload"]),
                            lambda: ctl.font(["set", "Cache Mono", "--no-reload"]),
                            lambda: ctl.appearance(["terminal-colors", "desktop"])):
@@ -227,15 +202,11 @@ class ThemeGenerationTests(unittest.TestCase):
         target.mkdir(parents=True)
         (target / "name").write_text("legacy\n")
         (self.state / "fontconfig.conf").write_text("legacy font\n")
-        old_walker = self.runtime / "walker/themes/desktop-rounded/style.css"
-        old_walker.parent.mkdir(parents=True)
-        old_walker.write_text("legacy walker\n")
         publish = ctl._publish_theme_link
 
         def fail_pointer(path, destination):
             if path == target:
                 self.assertEqual((self.state / "fontconfig.conf").read_text(), "legacy font\n")
-                self.assertEqual(old_walker.read_text(), "legacy walker\n")
                 self.assertEqual((target / "name").read_text(), "legacy\n")
                 raise OSError("simulated publication failure")
             publish(path, destination)
@@ -244,12 +215,10 @@ class ThemeGenerationTests(unittest.TestCase):
             ctl.prepare_theme()
         self.assertFalse(target.is_symlink())
         self.assertEqual((self.state / "fontconfig.conf").read_text(), "legacy font\n")
-        self.assertEqual(old_walker.read_text(), "legacy walker\n")
         ctl.prepare_theme()
         self.assertTrue(target.is_symlink())
         self.assertEqual((self.state / "fontconfig.conf").resolve(), self.published() / "fontconfig.conf")
-        self.assertEqual((self.runtime / "walker/themes").resolve(), self.published() / "walker/themes")
-        self.assertNotIn("legacy", old_walker.read_text())
+        self.assertTrue((self.published() / "clipboard.css").is_file())
 
     def test_launch_preparation_waits_for_the_state_transaction(self):
         ctl.prepare_theme()
@@ -264,36 +233,6 @@ class ThemeGenerationTests(unittest.TestCase):
         stdout, stderr = child.communicate(timeout=10)
         self.assertEqual(child.returncode, 0, stderr)
         self.assertEqual(stdout, "done\n")
-
-    def test_interrupted_legacy_copy_can_be_retried_without_publishing_partial_walker_files(self):
-        target = self.state / "theme"
-        target.mkdir(parents=True)
-        (target / "name").write_text("legacy\n")
-        old_walker = self.runtime / "walker/themes/desktop-rounded/style.css"
-        old_walker.parent.mkdir(parents=True)
-        old_walker.write_text("legacy walker\n")
-
-        def interrupted_copy(source, destination, **kwargs):
-            partial = destination / "desktop-rounded"
-            partial.mkdir(parents=True)
-            (partial / "style.css").write_text("incomplete copy")
-            raise OSError("interrupted migration")
-
-        with patch.object(ctl.shutil, "copytree", side_effect=interrupted_copy), self.assertRaises(OSError):
-            ctl.prepare_theme()
-        self.assertEqual(old_walker.read_text(), "legacy walker\n")
-        self.assertFalse(target.is_symlink())
-        publish = ctl._publish_theme_link
-
-        def check_bootstrap(path, destination):
-            if path == target:
-                self.assertEqual(old_walker.read_text(), "legacy walker\n")
-            publish(path, destination)
-
-        with patch.object(ctl, "_publish_theme_link", side_effect=check_bootstrap):
-            ctl.prepare_theme()
-        self.assertTrue(target.is_symlink())
-        self.assertNotIn("incomplete copy", old_walker.read_text())
 
     def test_concurrent_switches_publish_only_complete_immutable_snapshots(self):
         self.local_theme("cache-a")

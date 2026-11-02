@@ -2,7 +2,7 @@
 
 An independent Hyprland desktop built from Simon's current laptop configuration. The first installation target is the stationary desktop; `lambda` remains the reference laptop until its own migration is scheduled. This repository has never been activated on the reference laptop.
 
-The shared configuration retains the Lua bindings, Hyprspace overview, patched Walker/Elephant, patched Waybar tray, workspace sliders, Ghostty, Neovim/LazyVim, personal wallpapers and themes, browser extensions, dictation, file picker, Hendrix, cluster helpers, and iPhone workflows. The former distribution's commands are replaced by `desktopctl`, native applications, and declarative services. Credentials and account databases are deliberately separate.
+The shared configuration retains the Lua bindings, Hyprspace overview, Morphing Notch Bar with native Rust menus, search, workspaces and tray, Ghostty, Neovim/LazyVim, personal wallpapers and themes, browser extensions, dictation, file picker, Hendrix, cluster helpers, and iPhone workflows. The former distribution's commands are replaced by `desktopctl`, native applications, and declarative services. Credentials and account databases are deliberately separate.
 
 On 2026-10-19 Simon approved building the current live image and preparing the 8 GB Cruzer USB for the stationary desktop. See [LIVE-USB.md](docs/LIVE-USB.md) for boot and inventory instructions. Desktop installation still requires its own reviewed hardware inventory, independent backups and explicit target selection. The earlier ISO is historical output; use the fresh build and its verification record.
 
@@ -22,28 +22,33 @@ scripts/                    read-only inventory, disk verification, Stow simulat
 secrets/                    instructions only; private keys and plaintext are excluded
 ```
 
+[LAST_UPDATED](LAST_UPDATED) records local maintenance dates for the Nix projects
+and configuration areas. [dotfiles/LAST_UPDATED](dotfiles/LAST_UPDATED) tracks the
+portable projects. [AGENTS.md](AGENTS.md) defines how changes maintain both;
+these dates do not imply that upstream dependencies are current or runtime
+validation has been completed.
+
 Home Manager links individual files from `dotfiles/` on NixOS. GNU Stow links the same files on another distribution. Mutable choices live in `~/.local/state/desktop`, generated CSS/configuration in `$XDG_RUNTIME_DIR/desktop`, and credentials in private runtime files. Neither theme changes nor helper programs rewrite Nix-managed files. Do not run Stow over Home Manager's targets. Keep the editable checkout at `~/nixos-config`; Neovim's dotfile-search bindings use its `dotfiles/` directory through `DOTFILES`. Change that session variable if you choose another checkout location.
 
 The familiar Apps/Learn/Trigger/Style/Setup/About/System menus, interactive font/theme controls and dedicated clipboard view are documented in [DESKTOP-MENUS.md](docs/DESKTOP-MENUS.md). Open the desktop menu with Super + Alt + Space, clipboard history with Alt + V, and screenshots with Super + Q. Package installation, removal and updates remain declarative.
 
-NixOS 26.05 is the base. Selected applications use the separately pinned unstable input. Hyprland 0.56.2 and Hyprspace are pinned together; Walker 2.17.0 and Elephant 2.22.0 include the matching companion patches. Dependency updates are explicit changes to the lock files. The application map records a decision for every one of the reference system's 260 explicitly installed packages. Arch's base/package-management infrastructure and unused VirtualBox are excluded; their useful system functions are provided by NixOS modules. The six Flatpak applications, including Blender and Roblox Studio through Vinegar, install the current releases from their recorded remotes and branches; historical commits remain in the reference inventory.
+NixOS 26.05 is the base. Selected applications use the separately pinned unstable input. Hyprland 0.56.2 and Hyprspace are pinned together. Morphing Notch Bar and the Rust desktop-search service provide native menus and search without Walker. Dependency updates are explicit changes to the lock files. The application map records a decision for every one of the reference system's 260 explicitly installed packages. Arch's base/package-management infrastructure and unused VirtualBox are excluded; their useful system functions are provided by NixOS modules. The six Flatpak applications, including Blender and Roblox Studio through Vinegar, install the current releases from their recorded remotes and branches; historical commits remain in the reference inventory.
 
 Build without activation from a Nix-capable Linux system:
 
 ```sh
 nix build .#checks.x86_64-linux.desktop-behavior \
-  .#checks.x86_64-linux.walker-layout \
   .#checks.x86_64-linux.hyprland-config \
   .#checks.x86_64-linux.portable-syntax \
   .#checks.x86_64-linux.neovim-startup \
   .#checks.x86_64-linux.tmux-startup
-nix build .#dictate .#file-picker .#workspaces-slider .#hyprspace
+nix build .#dictate .#file-picker .#desktop-bar .#hyprspace
 nix build .#nixosConfigurations.desktop.config.home-manager.users.simon.home.activationPackage
 ```
 
 After completing the host review, run `nix flake check --no-build` as well. It intentionally reports the installed-profile guards while disk/hardware fields are unset. The current flake targets x86_64 Linux.
 
-The recorded baseline covers 25 package outputs, five checks and the complete Home Manager environment without activation. The menu/clipboard followup adds the `walker-layout` check; see the dated validation record for its results and limits. The Home Manager build includes the complete recorded application collection, SDKs, and TeX; it does not activate anything or restore private state. Installed system profiles intentionally fail their installation assertions before the hardware and backups are reviewed. The live profile is approved for the current USB preparation and desktop testing phase.
+The recorded baseline covers 25 package outputs, five checks and the complete Home Manager environment without activation. Native menu and search checks are recorded in the dated validation entries. The Home Manager build includes the complete recorded application collection, SDKs, and TeX; it does not activate anything or restore private state. Installed system profiles intentionally fail their installation assertions before the hardware and backups are reviewed. The live profile is approved for the current USB preparation and desktop testing phase.
 
 For another distribution, first install the programs listed in the package map and use the same pinned compositor/plugin versions. Simulate deployment to an explicit target with `scripts/stow-portable TARGET`; use `--apply` only after resolving all conflicts and backing up that target. No `--adopt`, manual links, or overwrite flags are used. Native tool source and Cargo locks are included; their portable `*-build` helpers build into XDG cache. See [PORTABLE.md](docs/PORTABLE.md) for user services.
 

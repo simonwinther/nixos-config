@@ -32,7 +32,7 @@ stdenvNoCC.mkDerivation {
   dontBuild = true;
   installPhase = ''
     mkdir -p "$out/share/desktop-tools" "$out/bin"
-    cp desktopctl.py desktop_process.py transcode.sh "$out/share/desktop-tools/"
+    cp desktopctl.py desktop_process.py bar_config.py bar_catalog.py transcode.sh "$out/share/desktop-tools/"
     makeWrapper ${project-picker-tui}/bin/project-picker-core "$out/bin/project-picker" \
       --prefix PATH : "${lib.makeBinPath [ project-picker-tui ]}:$out/bin"
     makeWrapper ${project-picker-tui}/bin/project-picker-core "$out/bin/project-picker-host" \

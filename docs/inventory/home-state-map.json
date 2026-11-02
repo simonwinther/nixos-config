@@ -261,13 +261,9 @@
     {
       "reference": ".config/elephant",
       "disposition": "managed_configuration_and_separate_state",
-      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
+      "detail": "Replaced by native desktop-search configuration. Import clipboard payloads, pins, calculator history and tasks privately while the old service is available; preserve its original cache in the independent backup.",
       "managedTargets": [
-        ".config/elephant/calc.toml",
-        ".config/elephant/desktopapplications.toml",
-        ".config/elephant/menus/notifications.lua",
-        ".config/elephant/menus/repositories.lua",
-        ".config/elephant/symbols.toml"
+        ".config/desktop-search/config.toml"
       ],
       "seedSources": []
     },
@@ -881,12 +877,9 @@
     },
     {
       "reference": ".config/text-picker",
-      "disposition": "managed_configuration_and_separate_state",
-      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
-      "managedTargets": [
-        ".config/text-picker/macros.json",
-        ".config/text-picker/snippets.json"
-      ],
+      "disposition": "excluded_retired_application",
+      "detail": "Snippet and macro pickers removed at user request; do not restore their configuration.",
+      "managedTargets": [],
       "seedSources": []
     },
     {
@@ -958,40 +951,16 @@
     },
     {
       "reference": ".config/walker",
-      "disposition": "managed_configuration_and_separate_state",
-      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
-      "managedTargets": [
-        ".config/walker/config.toml",
-        ".config/walker/templates/rounded/item_menus-notifications.xml",
-        ".config/walker/templates/rounded/layout.xml",
-        ".config/walker/templates/rounded/style.css"
-      ],
+      "disposition": "retired_configuration",
+      "detail": "Replaced by Morphing Notch Bar and desktop-search. Do not restore this directory.",
+      "managedTargets": [],
       "seedSources": []
     },
     {
       "reference": ".config/waybar",
-      "disposition": "managed_configuration_and_separate_state",
-      "detail": "Portable source is present; restore only the remaining mutable/private state after comparing managed targets.",
-      "managedTargets": [
-        ".config/waybar/config-minimal.jsonc",
-        ".config/waybar/config.jsonc",
-        ".config/waybar/style-light.css",
-        ".config/waybar/style-minimal-light.css",
-        ".config/waybar/style-minimal.css",
-        ".config/waybar/style.css",
-        ".config/waybar/tray-fix/README.md",
-        ".config/waybar/tray-fix/electron-properties.patch",
-        ".config/waybar/weather.sh",
-        ".config/waybar/workspaces-slider-rs/.gitignore",
-        ".config/waybar/workspaces-slider-rs/Cargo.lock",
-        ".config/waybar/workspaces-slider-rs/Cargo.toml",
-        ".config/waybar/workspaces-slider-rs/README.md",
-        ".config/waybar/workspaces-slider-rs/src/hypr.rs",
-        ".config/waybar/workspaces-slider-rs/src/main.rs",
-        ".config/waybar/workspaces-slider-rs/src/render.rs",
-        ".config/waybar/workspaces-slider-rs/src/supervisor.rs",
-        ".config/waybar/workspaces-slider-rs/src/termination.rs"
-      ],
+      "disposition": "retired_configuration",
+      "detail": "Retired configuration; replaced by desktop-bar. Do not restore this directory.",
+      "managedTargets": [],
       "seedSources": []
     },
     {

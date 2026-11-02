@@ -23,7 +23,10 @@ rustPlatform.buildRustPackage {
     gtk4
     gtk4-layer-shell
   ];
-  cargoTestFlags = [ "--all-targets" ];
+  cargoTestFlags = [
+    "--workspace"
+    "--all-targets"
+  ];
   postFixup = ''
     wrapProgram "$out/bin/clipboard-picker-native" \
       --prefix PATH : ${

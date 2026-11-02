@@ -83,7 +83,7 @@ until Enter is pressed. These commands do not generate an ISO, install NixOS or
 write installation media. Customize `desktop.rebuild.key` or `.repository`
 declaratively if needed.
 
-Waybar uses the existing OpenWeatherMap credential at
+The NixOS desktop bar reads the existing OpenWeatherMap credential at
 `~/.config/desktop/secrets/weather-key` (0600), copied from the reference machine
 without changing it. The credential is private runtime state and belongs only in
 the encrypted recovery bundle.

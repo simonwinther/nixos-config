@@ -13,20 +13,17 @@ let
     desktop-transcode = transcode;
   };
   hyprspace = import ./hyprspace { inherit inputs; };
-  companions = import ./hyprspace-companions {
-    inherit inputs pkgs unstable;
-    source = inputs.hyprspace;
-  };
+  search = pkgs.callPackage ./desktop-search.nix { rustPlatform = unstable.rustPlatform; };
   compositor = hyprspace.compositor;
 in
 (import ./extra-apps.nix { inherit pkgs unstable; })
 // (pkgs.callPackage ./roblox-dev { })
-// (import ./rust-desktop-tools.nix {
-  inherit pkgs;
-  hyprland = compositor;
-})
+// (import ./rust-desktop-tools.nix { inherit pkgs; })
 // {
+  slicer3d = pkgs.callPackage ./slicer3d.nix { };
   desktop-tools = tools;
+  desktop-search = search;
+  desktop-bar = pkgs.callPackage ./desktop-bar.nix { rustPlatform = unstable.rustPlatform; };
   clipboard-picker = pkgs.callPackage ./clipboard-picker.nix { hyprland = compositor; };
   desktop-transcode = transcode;
   obs-font = pkgs.callPackage ./obs-font.nix { };
@@ -38,7 +35,6 @@ in
   desktop-ring = pkgs.callPackage ./desktop-ring.nix { rustPlatform = unstable.rustPlatform; };
   uipro = pkgs.callPackage ./uipro { };
   ferry = pkgs.callPackage ./ferry.nix { source = inputs.ferry; };
-  waybar-weather = pkgs.callPackage ./waybar-weather.nix { };
   background-grid = pkgs.callPackage ./background-grid.nix { hyprland = compositor; };
   dictate = pkgs.callPackage ./dictate.nix {
     hyprland = compositor;
@@ -46,18 +42,7 @@ in
   file-picker = pkgs.callPackage ./file-picker.nix {
     hyprland = compositor;
   };
-  # Share the already selected Rust toolchain with the other desktop utilities.
-  workspaces-slider = pkgs.callPackage ./workspaces-slider.nix {
-    rustPlatform = unstable.rustPlatform;
-  };
-  walker = companions.walker;
-  elephant = companions.elephant;
   inherit hyprspace;
-  waybar = pkgs.waybar.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [
-      (dots + "/waybar/.config/waybar/tray-fix/electron-properties.patch")
-    ];
-  });
   breakd = (unstable.callPackage ./breakd/source/packaging/nix/package.nix { }).overrideAttrs (old: {
     # Unix-domain socket fixtures exceed SUN_LEN under Nix's long build paths.
     preCheck = (old.preCheck or "") + ''

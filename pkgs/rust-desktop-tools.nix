@@ -1,4 +1,4 @@
-{ pkgs, hyprland }:
+{ pkgs }:
 let
   inherit (pkgs) lib;
   dots = ../dotfiles;
@@ -74,11 +74,6 @@ let
     pname = "dictation-volume-duck";
     src = dots + "/chrome/.local/share/dictation-volume-duck";
   };
-  text = native {
-    pname = "text-picker";
-    src = dots + "/text-picker/.local/share/text-picker";
-    checkInputs = [ pkgs.fzf ];
-  };
   plot = native {
     pname = "formula-plot";
     src = dots + "/bin/.local/share/plot";
@@ -108,14 +103,6 @@ in
     pkgs.wireplumber
     pkgs.pulseaudio
     pkgs.coreutils
-  ];
-  text-picker = wrapped "text-picker-1.0.0" text "text-picker-native" [
-    pkgs.fzf
-    pkgs.wtype
-    pkgs.ghostty
-    pkgs.libnotify
-    pkgs.bash
-    hyprland
   ];
   formula-plot = wrapped "formula-plot-1.0.0" plot "plot-native" [ ];
   iphone-transfer = wrapped "iphone-transfer-1.0.0" iphone "iphone-transfer-native" [
