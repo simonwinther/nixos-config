@@ -33,6 +33,8 @@ services={
  'desktop-search':('Search and clipboard providers','%h/.local/bin/desktop-search serve','exec','Restart=on-failure'),
  'desktop-bar':('Morphing Notch Bar','%h/.local/bin/desktop-bar','exec','Restart=on-failure\nExecReload=kill -USR2 $MAINPID'),
  'desktop-mako':('Notifications','%h/.local/bin/desktopctl run mako','exec','Restart=on-failure'),
+ # Keeps Chromium warm (about 650 MB idle) so project windows open in about 0.6 s.
+ 'desktop-browser':('Background browser','chromium --no-startup-window','exec',''),
  'desktop-monitor-watch':('Recover disconnected laptop displays','%h/.local/bin/desktopctl monitor-watch','exec','Restart=on-failure'),
  'desktop-awww':('Wallpaper daemon','awww-daemon --no-cache','exec','Restart=on-failure'),
  'desktop-swayosd':('Volume and brightness display','%h/.local/bin/desktopctl run swayosd-server','exec','Restart=on-failure'),

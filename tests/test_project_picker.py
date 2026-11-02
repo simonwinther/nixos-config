@@ -56,9 +56,21 @@ class ProjectPickerTests(unittest.TestCase):
                             "PATH": os.pathsep.join([str(self.tools), str(Path(shutil.which("dirname")).parent),
                                                      os.defpath])}
         self.launch = self.root / "launch.json"
-        self.tool("desktopctl", f"""import json, os, sys
+        recorder = f"""import json, os, sys
 from pathlib import Path
 Path({str(self.launch)!r}).write_text(json.dumps({{"argv": sys.argv[1:], "pid": os.getpid(), "sid": os.getsid(0)}}))
+"""
+        self.tool("desktopctl", recorder)
+        self.tool("uwsm-app", recorder)
+        self.focus = self.root / "focus.json"
+        self.tool("hyprctl", f"""import json, sys
+from pathlib import Path
+if sys.argv[1:] == ["-j", "clients"]:
+    print(json.dumps([{{"class": "chrome-chatgpt.com__-Default", "address": "0x1", "focusHistoryID": 3}},
+                      {{"class": "chrome-chatgpt.com__-Default", "address": "0x2", "focusHistoryID": 1}},
+                      {{"class": "chatgpt", "address": "0x3", "focusHistoryID": 0}}]))
+else:
+    Path({str(self.focus)!r}).write_text(json.dumps(sys.argv[1:]))
 """)
 
     def tearDown(self):
@@ -305,8 +317,59 @@ Path({str(self.launch)!r}).write_text(json.dumps({{"argv": sys.argv[1:], "pid": 
         result = self.run_picker("--choose")
         self.assertEqual(result.returncode, 0, result.stderr)
         launch = self.wait_for_launch()
-        self.assertEqual(launch["argv"], ["launch", "webapp", project()["url"]])
+        self.assertEqual(launch["argv"], ["--", "chromium", "--app=" + project()["url"]])
         self.assertEqual(launch["pid"], launch["sid"])
+
+    def listening_host(self):
+        host = subprocess.Popen([BINARY, "--native-host", ORIGIN], env=self.environment,
+                                stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        host.stdin.write(frame({"action": "listen"}))
+        host.stdin.flush()
+        socket_path = self.root / "runtime/project-picker/open.sock"
+        deadline = time.monotonic() + 3
+        while not socket_path.exists():
+            self.assertLess(time.monotonic(), deadline, "The native host did not start listening")
+            time.sleep(0.01)
+        return host, socket_path
+
+    def answer(self, host, ok):
+        size = struct.unpack("=I", host.stdout.read(4))[0]
+        request = json.loads(host.stdout.read(size))
+        self.assertEqual(request["action"], "open")
+        host.stdin.write(frame({"id": request["id"], "ok": ok}))
+        host.stdin.flush()
+        return request
+
+    def test_open_reuses_the_extension_window_and_focuses_it(self):
+        host, socket_path = self.listening_host()
+        url = project()["url"]
+        with ThreadPoolExecutor(1) as pool:
+            opened = pool.submit(self.run_picker, "--open", url)
+            self.assertEqual(self.answer(host, True)["url"], url)
+            self.assertEqual(opened.result().returncode, 0)
+        self.assertFalse(self.launch.exists())
+        self.assertIn('"address:0x2"', json.loads(self.focus.read_text())[1])
+        host.stdin.close()
+        self.assertEqual(host.wait(5), 0)
+        self.assertFalse(socket_path.exists())
+
+    def test_open_starts_a_window_when_the_extension_cannot_reuse_one(self):
+        host, _ = self.listening_host()
+        with ThreadPoolExecutor(1) as pool:
+            opened = pool.submit(self.run_picker, "--open", "https://chatgpt.com")
+            self.answer(host, False)
+            self.assertEqual(opened.result().returncode, 0)
+        self.assertEqual(self.wait_for_launch()["argv"], ["--", "chromium", "--app=https://chatgpt.com"])
+        host.stdin.close()
+        host.wait(5)
+
+    def test_open_without_a_browser_starts_a_window_and_rejects_other_sites(self):
+        self.assertEqual(self.run_picker("--open", "https://chatgpt.com").returncode, 0)
+        self.assertEqual(self.wait_for_launch()["argv"], ["--", "chromium", "--app=https://chatgpt.com"])
+        self.launch.unlink()
+        for url in ("https://example.com/", "https://chatgpt.com.evil.test/", "https://chatgpt.com/\nx"):
+            self.assertNotEqual(self.run_picker("--open", url).returncode, 0)
+        self.assertFalse(self.launch.exists())
 
     def test_deleted_or_invalid_projects_cannot_launch_from_an_old_selection(self):
         self.save(snapshot())

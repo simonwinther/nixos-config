@@ -125,6 +125,19 @@ in
           ExecReload = "${pkgs.coreutils}/bin/kill -USR2 $MAINPID";
         };
       };
+    # Why Chromium always uses RAM: a cold start takes 2-3 s before ChatGPT even
+    # begins loading. Kept running without windows (about 650 MB idle), project
+    # windows open in about 0.6 s. The project-picker extension's background
+    # permission keeps it alive after the last window closes. Never restarted by
+    # rebuilds, which would close open browser windows.
+    desktop-browser = (service "Background browser" "${pkgs.chromium}/bin/chromium --no-startup-window") // {
+      Unit = {
+        Description = "Background browser";
+        PartOf = [ "desktop-session.target" ];
+        After = [ "desktop-prepare.service" ];
+        X-RestartIfChanged = false;
+      };
+    };
     desktop-mako = service "Notifications" "${ctl} run mako";
     desktop-awww = service "Wallpaper daemon" "${pkgs.awww}/bin/awww-daemon --no-cache";
     desktop-swayosd = service "Volume and brightness display" "${ctl} run swayosd-server";

@@ -128,6 +128,9 @@ test("background forwards only top-frame snapshots to the native host and report
       onMessage: { addListener: (value) => { listener = value; } },
       onInstalled: { addListener: (value) => { installed = value; } },
       sendNativeMessage: async (...args) => { sent.push(args); return { ok: true }; },
+      connectNative: () => ({
+        onMessage: { addListener: () => {} }, onDisconnect: { addListener: () => {} }, postMessage: () => {},
+      }),
     },
     action: {
       setBadgeText: async (value) => { badges.push(value); }, setTitle: async () => {},
@@ -167,6 +170,51 @@ test("background forwards only top-frame snapshots to the native host and report
   completed({ method: "DELETE", statusCode: 403, tabId: 7, url: "https://chatgpt.com/backend-api/projects/test" });
   completed({ method: "POST", statusCode: 200, tabId: 7, url: "https://chatgpt.com/backend-api/conversation" });
   assert.equal(refreshes.length, 3);
+});
+
+test("background shows picked projects in the open ChatGPT app window", async () => {
+  let onMessage;
+  const posted = [];
+  const updates = [];
+  let windows = [
+    { id: 1, type: "normal", focused: true, tabs: [{ id: 10, url: "https://chatgpt.com/c/1" }] },
+    { id: 2, type: "app", focused: false, tabs: [{ id: 20, url: "https://chatgpt.com/g/old/project" }] },
+    { id: 3, type: "app", focused: false, tabs: [{ id: 30, url: "https://example.com/" }] },
+  ];
+  const listener = { addListener: () => {} };
+  const chrome = {
+    runtime: {
+      onMessage: listener, onInstalled: listener, sendNativeMessage: async () => ({ ok: true }),
+      connectNative: (host) => {
+        assert.equal(host, "com.desktop.project_picker");
+        return {
+          onMessage: { addListener: (value) => { onMessage = value; } },
+          onDisconnect: listener,
+          postMessage: (value) => { posted.push(value); },
+        };
+      },
+    },
+    action: { setBadgeText: async () => {}, setTitle: async () => {}, onClicked: listener },
+    tabs: { sendMessage: async () => {}, onUpdated: listener, query: async () => [], update: async (...args) => { updates.push(["tab", ...args]); } },
+    windows: { getAll: async () => windows, update: async (...args) => { updates.push(["window", ...args]); } },
+    scripting: { executeScript: async () => {} },
+    webRequest: { onCompleted: listener },
+  };
+  vm.runInNewContext(readFileSync(new URL("background.js", root), "utf8"), { chrome, URL, setTimeout });
+  assert.deepEqual(plain(posted), [{ action: "listen" }]);
+  const url = "https://chatgpt.com/g/g-p-1/project";
+  onMessage({ action: "open", id: 4, url });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(plain(updates), [["tab", 20, { url }], ["window", 2, { focused: true }]]);
+  assert.deepEqual(plain(posted.at(-1)), { id: 4, ok: true });
+  onMessage({ action: "open", id: 5, url: "https://example.com/" });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(posted.length, 2);
+  windows = windows.filter((window) => window.type === "normal");
+  onMessage({ action: "open", id: 6, url });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(plain(posted.at(-1)), { id: 6, ok: false });
+  assert.equal(updates.length, 2);
 });
 
 function contentApp() {

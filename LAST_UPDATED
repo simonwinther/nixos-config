@@ -68,7 +68,7 @@ scripts/benchmark-desktopctl.py: 02/11/2026
 scripts/desktop-bar-dev.py: 02/11/2026
 scripts/inventory.py: 18/10/2026
 scripts/nixos-rebuild-desktop.sh: 29/10/2026
-scripts/render-user-units.py: unknown
+scripts/render-user-units.py: 02/11/2026
 scripts/stow-portable: 28/10/2026
 scripts/verify-target.py: 18/10/2026
 secrets: 22/10/2026
