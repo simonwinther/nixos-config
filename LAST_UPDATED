@@ -8,7 +8,7 @@
 .gitmodules: 24/10/2026
 AGENTS.md: 02/11/2026
 README.md: 02/11/2026
-docs: 02/11/2026
+docs: 03/11/2026
 flake.lock: 02/11/2026
 flake.nix: 02/11/2026
 hosts/desktop: 22/10/2026
@@ -72,4 +72,4 @@ scripts/render-user-units.py: 02/11/2026
 scripts/stow-portable: 28/10/2026
 scripts/verify-target.py: 18/10/2026
 secrets: 22/10/2026
-tests: 02/11/2026
+tests: 03/11/2026

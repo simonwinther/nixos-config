@@ -143,12 +143,12 @@ def exercise(context):
         position = ("WAYLAND-1", context.width // 2, context.height // 2)
         background = context.pixel(*position)
         for name, modifiers, key, panel in (
-            ("apps", [29], 57, "apps"),
+            ("apps", [125], 57, "apps"),
             ("keybindings", [125], 37, "keybindings"),
             ("clipboard", [56], 47, "clipboard"),
             ("notifications", [125], 49, "notifications"),
         ):
-            key_name = {"apps": "CTRL + SPACE", "keybindings": "SUPER + K",
+            key_name = {"apps": "SUPER + SPACE", "keybindings": "SUPER + K",
                         "clipboard": "ALT + V", "notifications": "SUPER + N"}[name]
             if name != "clipboard":
                 context.control("eval", "hl.bind(" + json.dumps(key_name) + ", hl.dsp.exec_cmd(" +
