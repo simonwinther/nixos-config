@@ -11,6 +11,15 @@
 - Build and check individual packages, portable configuration, and the Home Manager environment without activation as needed. Keep source conversion, runtime acceptance, private-state transfer, and installation readiness separate in reports.
 - Installation requires a reviewed host hardware inventory and verified independent backups.
 
+## Installed laptop keyboard recovery
+
+- `lambda` is now running NixOS. For an explicit request to fix its recurring
+  keyboard lockup, including "my keybindings are fucked again", follow
+  [Laptop keyboard recovery](docs/KEYBOARD-RECOVERY.md), including its targeted
+  keyboard rescan. This is maintenance of the installed NixOS host.
+- Confirm whether all physical typing is affected before changing desktop
+  bindings. Preserve the session and verify physical input after recovery.
+
 ## Last updated
 
 - Read [LAST_UPDATED](LAST_UPDATED) before project maintenance. It covers the Nix packages, host configurations, modules, profiles, scripts and repository infrastructure. Paths identify the file or directory covered by each entry.

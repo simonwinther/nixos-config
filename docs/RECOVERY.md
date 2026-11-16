@@ -1,5 +1,9 @@
 # Recovery and rollback
 
+For the recurring built-in keyboard lockup on `lambda`, including reports that
+"keybindings are fucked again", follow [Laptop keyboard recovery](KEYBOARD-RECOVERY.md).
+It records the successful SSH repair and the preventive boot setting.
+
 Before erasure, abort by shutting down the live USB and booting the unchanged old desktop. Keep the backup and laptop intact. After erasure, restoring the old OS requires the tested disk image or file backup and its bootloader/encryption recovery material; a Nix generation cannot reconstruct an erased Arch installation.
 
 For a failed NixOS update, select an older generation in systemd-boot. From a working TTY, use `sudo nixos-rebuild switch --rollback` to return software/system configuration, then inspect Home Manager's activation log and rebuild the intended flake revision. Restoring a Nix generation does not undo edits to home files, browser/database migrations, Flatpak updates, or secrets. Use independent backups or a reviewed Btrfs snapshot for those, with affected applications stopped.

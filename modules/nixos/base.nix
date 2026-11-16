@@ -36,6 +36,9 @@
   };
   system.autoUpgrade.enable = false;
   system.stateVersion = "26.05";
+  environment.etc."codex/config.toml".text = ''
+    model_context_window = 516000
+  '';
   users.groups.simon.gid = 1000;
   users.users.simon = {
     isNormalUser = true;

@@ -20,7 +20,28 @@ in
 // (pkgs.callPackage ./roblox-dev { })
 // (import ./rust-desktop-tools.nix { inherit pkgs; })
 // {
+  antigravity-cli = unstable.antigravity-cli.overrideAttrs (
+    old:
+    let
+      version = "1.5.5";
+      wholeVersion = "${version}-6740358537805824";
+    in
+    {
+      inherit version;
+      src = pkgs.fetchurl {
+        url = "https://storage.googleapis.com/antigravity-public/antigravity-cli/${wholeVersion}/linux-x64/cli_linux_x64.tar.gz";
+        sha512 = "746a2bd73f83b65d9b44f2fc55d0f0f511ff7f89702846213eeabd76d06bc9c98576b424c2babc7b947f15e518447b946ba02dca260b778363c55c07a7f7a277";
+      };
+      passthru = old.passthru // {
+        inherit wholeVersion;
+      };
+      meta = old.meta // {
+        platforms = [ "x86_64-linux" ];
+      };
+    }
+  );
   slicer3d = pkgs.callPackage ./slicer3d.nix { };
+  opencode = pkgs.callPackage ./opencode.nix { };
   desktop-tools = tools;
   desktop-search = search;
   desktop-bar = pkgs.callPackage ./desktop-bar.nix { rustPlatform = unstable.rustPlatform; };

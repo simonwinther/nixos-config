@@ -973,8 +973,8 @@
   {
     "arch": "opencode",
     "referenceVersion": "1.18.29-1",
-    "kind": "package",
-    "source": "unstable",
+    "kind": "custom",
+    "source": "custom",
     "attribute": "opencode",
     "group": "applications"
   },

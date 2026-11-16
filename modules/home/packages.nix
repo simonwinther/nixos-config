@@ -132,6 +132,7 @@ in
     ])
     ++ lib.optionals config.desktop.fullApplications applications
     ++ lib.optionals config.desktop.fullApplications [
+      packages.antigravity-cli
       packages.uipro
       packages.slicer3d
     ]
@@ -178,14 +179,12 @@ in
       with unstable;
       [
         codex
-        antigravity-cli
         cargo
         rustfmt
         clippy
         rust-analyzer
         claude-code
         github-copilot-cli
-        gemini-cli
         ghui
         pi-coding-agent
         kaggle

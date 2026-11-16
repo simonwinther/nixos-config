@@ -4,7 +4,7 @@
     {
       "referenceCommand": "agy",
       "kind": "nix_package",
-      "package": "unstable.antigravity-cli"
+      "package": "custom.antigravity-cli"
     },
     {
       "referenceCommand": "agy.1786845245186832927.old",
@@ -118,8 +118,8 @@
     },
     {
       "referenceCommand": "gemini",
-      "kind": "nix_package",
-      "package": "unstable.gemini-cli"
+      "kind": "removed",
+      "disposition": "Replaced by agy; not installed"
     },
     {
       "referenceCommand": "ghui",
