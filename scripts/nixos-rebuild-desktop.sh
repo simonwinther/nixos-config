@@ -11,7 +11,7 @@ Usage: nixos-rebuild-desktop [build|sync|activate|times]
   build     Build the clean, pinned checkout without activation (default).
   sync      Initialize/check out recorded submodule revisions; no pull or build.
   activate  Apply the last successful build, only if its source still matches.
-  times     Plot successful build durations by date.
+  times     Chart successful build durations (table when piped).
 HELP
 }
 
@@ -20,14 +20,60 @@ plot_times() {
     echo "No successful timed builds yet: $times" >&2
     return 1
   fi
-  gnuplot -e "
-    set terminal dumb size $(tput cols 2>/dev/null || echo 100),25;
-    set datafile separator ',';
-    set xdata time; set timefmt '%Y-%m-%dT%H:%M:%SZ'; set format x '%m-%d';
-    set ylabel 'minutes'; set title 'NixOS build time'; unset key;
-    plot \"< grep ',build,[0-9]*,0\$' '$times'\" using 1:(\$3 / 60.0) with linespoints pt '*'
-  "
-  echo "Data: $times"
+  # Interactive terminals get the chart; pipes and logs get the plain table.
+  if [[ -t 0 && -t 1 ]] && command -v build-times >/dev/null; then
+    build-times "$times"
+    return
+  fi
+  local color=0
+  if [[ -t 1 ]]; then color=1; fi
+  gawk -F, -v cols="$(tput cols 2>/dev/null || echo 100)" -v color="$color" -v data="$times" '
+    function span(s) {
+      if (s < 60) return sprintf("%ds", s)
+      if (s < 3600) return sprintf("%dm %02ds", s / 60, s % 60)
+      return sprintf("%dh %02dm", s / 3600, (s % 3600) / 60)
+    }
+    function paint(code, text) { return color ? "\033[" code "m" text "\033[0m" : text }
+    # Eighth-block characters give the bars sub-cell resolution.
+    function bar(value, width,   cells, full, part, out, i) {
+      cells = value / longest * width
+      full = int(cells)
+      part = int((cells - full) * 8)
+      for (i = 0; i < full; i++) out = out "█"
+      if (part > 0) out = out substr("▏▎▍▌▋▊▉", part, 1)
+      return out
+    }
+    $2 == "build" {
+      pending = ($4 == 0) ? ++n : 0
+      if (pending) {
+        gsub(/[-T:Z]/, " ", $1)
+        when[n] = strftime("%a %d %b  %H:%M", mktime($1, 1))
+        build[n] = $3
+        activate[n] = ""
+        if ($3 > longest) longest = $3
+      }
+      next
+    }
+    $2 == "activate" && $4 == 0 && pending && activate[pending] == "" { activate[pending] = $3 }
+    END {
+      width = cols - 46
+      if (width > 60) width = 60
+      if (width < 10) width = 10
+      print paint("1", "NixOS build times") paint("2", "  ·  " n " successful builds, oldest first")
+      print ""
+      printf "%s%s%s\n", paint("2", sprintf("%-19s", "")), paint("2", sprintf("%-" width "s", "")), paint("2", sprintf("  %8s  %8s", "build", "activate"))
+      for (i = 1; i <= n; i++) {
+        sorted[i] = build[i]
+        line = sprintf("%-" width "s", bar(build[i], width))
+        printf "%s %s  %8s  %8s\n", paint("2", sprintf("%-18s", when[i])), paint("32", line), span(build[i]), activate[i] == "" ? paint("2", "—") : span(activate[i])
+      }
+      asort(sorted)
+      median = (n % 2) ? sorted[(n + 1) / 2] : (sorted[n / 2] + sorted[n / 2 + 1]) / 2
+      print ""
+      print paint("2", "median ") span(median) paint("2", " · fastest ") span(sorted[1]) paint("2", " · slowest ") span(sorted[n]) paint("2", " · last ") span(build[n])
+      print paint("2", "Data: " data)
+    }
+  ' "$times"
 }
 
 operation=${1:-build}

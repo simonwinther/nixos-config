@@ -288,6 +288,35 @@ else:
         self.assertRegex(rows[0][0], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
         self.assertTrue(rows[0][2].isdigit())
 
+    def test_times_lists_successful_builds_with_activation_and_summary(self):
+        log = self.state / "nixos-rebuild/times.csv"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text(
+            "2026-11-02T16:29:46Z,build,622,0\n"
+            "2026-11-02T16:40:21Z,activate,122,0\n"
+            "2026-11-02T17:00:00Z,build,5,1\n"
+            "2026-11-03T22:45:34Z,build,45,0\n"
+        )
+        result = self.run_helper("times")
+        self.assertIn("2 successful builds", result.stdout)
+        self.assertIn("10m 22s", result.stdout)
+        self.assertIn("2m 02s", result.stdout)
+        self.assertIn("median 5m 33s", result.stdout)
+        self.assertNotIn("\033[", result.stdout)
+
+    def test_times_includes_builds_recorded_by_nh(self):
+        log = self.state / "nixos-rebuild/times.csv"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text(
+            "2026-11-02T16:29:46Z,build,622,0\n"
+            "2026-11-04T10:00:00Z,build,90,0,nh\n"
+            "2026-11-04T10:01:30Z,activate,20,0,nh\n"
+        )
+        result = self.run_helper("times")
+        self.assertIn("2 successful builds", result.stdout)
+        self.assertIn("1m 30s", result.stdout)
+        self.assertIn("20s", result.stdout)
+
     def test_times_without_successful_builds_explains_where_data_lives(self):
         result = self.run_helper("times", ok=False)
         self.assertIn("No successful timed builds yet", result.stderr)

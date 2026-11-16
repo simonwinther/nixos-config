@@ -80,11 +80,13 @@
           shellcheck
         ];
         REBUILD_SCRIPT = ../scripts/nixos-rebuild-desktop.sh;
+        NH_SCRIPT = ../scripts/nh-timed.sh;
       }
       ''
         export PYTHONDONTWRITEBYTECODE=1
-        shellcheck "$REBUILD_SCRIPT"
+        shellcheck "$REBUILD_SCRIPT" "$NH_SCRIPT"
         python ${./test_rebuild.py} -v
+        python ${./test_nh_timed.py} -v
         touch "$out"
       '';
   file-picker-integration =

@@ -1,0 +1,16 @@
+[package]
+name = "build-times"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.88"
+
+[dependencies]
+anyhow = "=1.0.103"
+chrono = { version = "=0.4.45", default-features = false, features = ["clock", "std"] }
+crossterm = "=0.29.0"
+ratatui = "=0.30.2"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+strip = true

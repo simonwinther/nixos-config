@@ -1,5 +1,6 @@
 {
   config,
+  osConfig,
   lib,
   pkgs,
   host,
@@ -19,7 +20,8 @@ let
       pkgs.coreutils
       pkgs.util-linux
       pkgs.gnugrep
-      pkgs.gnuplot
+      pkgs.gawk
+      (pkgs.callPackage ../../pkgs/build-times { })
       pkgs.ncurses
     ];
     text = ''
@@ -28,6 +30,17 @@ let
       activation_action=${lib.escapeShellArg action}
     ''
     + builtins.readFile ../../scripts/nixos-rebuild-desktop.sh;
+  };
+  # Shadows the system nh so its rebuilds are charted with the others.
+  timedNh = pkgs.writeShellApplication {
+    name = "nh";
+    runtimeInputs = [ pkgs.coreutils ];
+    text = ''
+      real_nh=${lib.getExe osConfig.programs.nh.package}
+      current_system=/run/current-system
+      system_profile=/nix/var/nix/profiles/system
+    ''
+    + builtins.readFile ../../scripts/nh-timed.sh;
   };
 in
 {
@@ -54,7 +67,10 @@ in
     };
   };
   config = {
-    home.packages = [ rebuild ];
+    home.packages = [
+      rebuild
+    ]
+    ++ lib.optional osConfig.programs.nh.enable timedNh;
     xdg.configFile."desktop/rebuild-bindings.lua".text = ''
       hl.bind(${builtins.toJSON cfg.key}, hl.dsp.exec_cmd(${builtins.toJSON "${pkgs.ghostty}/bin/ghostty -e ${rebuild}/bin/nixos-rebuild-desktop build"}), { description = "Build NixOS (${target}; no activation)" })
     '';

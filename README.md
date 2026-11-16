@@ -73,6 +73,12 @@ All actions refuse staged, unstaged or untracked file changes, including nested
 submodules, and log the repository revision, lock hash and submodule revisions.
 See [PRIVATE-RUNTIME.md](docs/PRIVATE-RUNTIME.md) for the workflow.
 
+`nixos-rebuild-desktop times` charts build and activation durations. Its own
+builds and activations are recorded, and Home Manager wraps `nh` so that
+`nh os build`, `switch`, `boot` and `test` are recorded too, tagged `nh`. Pinned
+builds run with `--max-jobs 1 --cores 4` while `nh` uses the Nix defaults, so
+compare durations within the same tool.
+
 Commit dotfiles changes in their own repository, push that revision, then commit
 the updated submodule pointer here. Keep runtime credentials and private state
 outside both repositories.
