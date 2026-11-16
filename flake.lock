@@ -325,17 +325,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1792979169,
-        "narHash": "sha256-LD3SDWh+YjI/6zVVUTcJDSXQXX06d7yZQX1w9jX0wto=",
+        "lastModified": 1794829882,
+        "narHash": "sha256-zeRzYnffPjrlOQUXsYvnddwrLo0k161ue4GgHC92wPM=",
         "owner": "simonwinther",
         "repo": "hyprspace",
-        "rev": "4de74c8d5e3156b945319a76709e63e695aaddd7",
+        "rev": "600fa5b86042c2d0834e4a7a30e858157421c9ff",
         "type": "github"
       },
       "original": {
         "owner": "simonwinther",
         "repo": "hyprspace",
-        "rev": "4de74c8d5e3156b945319a76709e63e695aaddd7",
+        "rev": "600fa5b86042c2d0834e4a7a30e858157421c9ff",
         "type": "github"
       }
     },
