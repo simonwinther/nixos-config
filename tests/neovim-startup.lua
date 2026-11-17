@@ -1,6 +1,11 @@
 vim.api.nvim_create_autocmd("VimEnter", { once = true, callback = function()
   vim.defer_fn(function()
     local ok, err = xpcall(function()
+      -- lazy.lua must keep dependency-only store plugins out of startup.
+      local startup = require("lazy.core.config").plugins
+      for _, name in ipairs({ "friendly-snippets", "LuaSnip" }) do
+        assert(not startup[name]._.loaded, "Dependency loaded during startup: " .. name)
+      end
       -- Headless startup never emits UIEnter, which used to leave the entire
       -- VeryLazy UI untested and allowed a broken lualine to pass this check.
       vim.api.nvim_exec_autocmds("UIEnter", { modeline = false })
@@ -43,10 +48,10 @@ vim.api.nvim_create_autocmd("VimEnter", { once = true, callback = function()
       end
       assert(vim.v.errmsg == "", vim.v.errmsg)
       assert(#_G.migration_errors == 0, table.concat(_G.migration_errors, "\n"))
-      print("Migration Neovim smoke passed: UI startup, Trouble/lualine, LuaSnip, completion, " .. #languages .. " parsers and queries, five sample parses")
+      io.stdout:write("Migration Neovim smoke passed: UI startup, Trouble/lualine, LuaSnip, completion, " .. #languages .. " parsers and queries, five sample parses\n")
     end, debug.traceback)
     if not ok then
-      print(err)
+      io.stderr:write(err .. "\n")
       vim.cmd("cquit 1")
     else
       vim.cmd("qa!")

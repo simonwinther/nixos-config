@@ -32,7 +32,7 @@ stdenvNoCC.mkDerivation {
   dontBuild = true;
   installPhase = ''
     mkdir -p "$out/share/desktop-tools" "$out/bin"
-    cp desktopctl.py desktop_process.py bar_config.py bar_catalog.py transcode.sh "$out/share/desktop-tools/"
+    cp desktopctl.py desktopctl-entry.py desktop_process.py bar_config.py bar_catalog.py transcode.sh "$out/share/desktop-tools/"
     makeWrapper ${project-picker-tui}/bin/project-picker-core "$out/bin/project-picker" \
       --prefix PATH : "${lib.makeBinPath [ project-picker-tui ]}:$out/bin"
     makeWrapper ${project-picker-tui}/bin/project-picker-core "$out/bin/project-picker-host" \
@@ -54,7 +54,7 @@ stdenvNoCC.mkDerivation {
         ]
       }:"$out/bin"
     makeWrapper ${python3}/bin/python3 "$out/bin/desktopctl" \
-      --add-flags "$out/share/desktop-tools/desktopctl.py" \
+      --add-flags "$out/share/desktop-tools/desktopctl-entry.py" \
       --set-default XDG_DATA_DIRS /usr/local/share:/usr/share \
       --prefix XDG_DATA_DIRS : "${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}" \
       --prefix XDG_DATA_DIRS : "${nautilus}/share/gsettings-schemas/${nautilus.name}" \
@@ -74,6 +74,9 @@ stdenvNoCC.mkDerivation {
           dconf
         ]
       }
+    # The store is read-only, so Python cannot cache bytecode at run time.
+    # Hash-checked bytecode stays valid after the store resets timestamps.
+    ${python3.interpreter} -m compileall -q --invalidation-mode checked-hash "$out/share/desktop-tools"
   '';
   meta = {
     description = "Independent portable Hyprland desktop utilities";

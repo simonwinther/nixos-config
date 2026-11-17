@@ -1,20 +1,24 @@
 """Exercise state transitions without access to a compositor, system bus, or real HOME."""
 from concurrent.futures import ThreadPoolExecutor
+import contextlib
 import importlib.util
 import io
 import json
 import os
 from pathlib import Path
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
 import threading
+import tomllib
 import unittest
 from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "dotfiles/desktop-tools/.local/share/desktop-tools/desktopctl.py"
+ENTRY = SCRIPT.with_name("desktopctl-entry.py")
 spec = importlib.util.spec_from_file_location("desktopctl_test", SCRIPT)
 ctl = importlib.util.module_from_spec(spec)
 with patch.object(sys, "path", [str(SCRIPT.parent), *sys.path]):
@@ -28,7 +32,7 @@ class DesktopTests(unittest.TestCase):
         target.write_text('[coop]\nmode = "host"\nroom_token = ""\n'
                           'relay_url = "ws://example.invalid/ws"\n[other]\nkeep = true\n')
         ctl.prepare_break_reminders()
-        settings = ctl.tomllib.loads(target.read_text())
+        settings = tomllib.loads(target.read_text())
         self.assertEqual(settings["coop"]["mode"], "off")
         self.assertTrue(settings["other"]["keep"])
         self.assertEqual(target.stat().st_mode & 0o777, 0o600)
@@ -418,6 +422,132 @@ class DesktopTests(unittest.TestCase):
                         self.assertRaisesRegex(OSError, "save failed"):
                     ctl.save_screenshot(directory, b"image bytes")
                 self.assertEqual(list(directory.iterdir()), [])
+
+    def test_startup_and_fast_commands_defer_heavy_standard_modules(self):
+        deferred = ["argparse", "configparser", "http.client", "tomllib", "urllib.request", "xml.sax.saxutils"]
+        probe = ("import sys; before = set(sys.modules); import desktopctl; desktopctl.main(['path']); "
+                 "print(sorted(set(sys.argv[1:]) & (set(sys.modules) - before)))")
+        result = subprocess.run([sys.executable, "-B", "-c", probe, *deferred], capture_output=True, text=True,
+                                env={**os.environ, "PYTHONPATH": str(SCRIPT.parent), "PYTHONDONTWRITEBYTECODE": "1"},
+                                timeout=30)
+        self.assertEqual(result.stdout.strip(), "[]", result.stderr)
+        self.assertIn("path requires a tool name", result.stderr)
+
+    def test_entry_point_matches_running_the_script(self):
+        environment = {"HOME": str(self.home), "XDG_CONFIG_HOME": str(self.config), "XDG_DATA_HOME": str(self.data),
+                       "XDG_STATE_HOME": str(self.home / ".local/state"), "XDG_RUNTIME_DIR": str(self.home / "runtime"),
+                       "XDG_CACHE_HOME": str(self.home / ".cache"), "PATH": str(self.home / "bin"),
+                       "LANG": "C.UTF-8", "PYTHONDONTWRITEBYTECODE": "1"}
+        statuses = []
+        for argv in ([], ["-h"], ["desktopctl-unknown"], ["--", "path"], ["path", "desktopctl-missing"]):
+            with self.subTest(argv=argv):
+                script, entry = (subprocess.run([sys.executable, "-B", str(path), *argv], env=environment,
+                                                capture_output=True, text=True, timeout=30)
+                                 for path in (SCRIPT, ENTRY))
+                self.assertEqual((entry.returncode, entry.stdout, entry.stderr),
+                                 (script.returncode, script.stdout, script.stderr))
+                self.assertNotIn("Traceback", script.stderr)
+                statuses.append(script.returncode)
+        self.assertEqual(statuses, [2, 0, 1, 1, 1])
+
+    @contextlib.contextmanager
+    def hyprland_socket(self, request, reply):
+        """Answer one query on a disposable Hyprland request socket."""
+        runtime = self.home / "runtime"
+        path = runtime / "hypr/test/.socket.sock"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        received = []
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as server:
+            server.bind(str(path))
+            server.listen(1)
+            server.settimeout(5)
+
+            def answer():
+                with contextlib.suppress(OSError):
+                    connection, _ = server.accept()
+                    with connection:
+                        received.append(connection.recv(4096))
+                        connection.sendall(json.dumps(reply).encode())
+
+            thread = threading.Thread(target=answer, daemon=True)
+            thread.start()
+            with patch.dict(os.environ, {"XDG_RUNTIME_DIR": str(runtime), "HYPRLAND_INSTANCE_SIGNATURE": "test"}):
+                yield
+            thread.join(timeout=5)
+        path.unlink()
+        self.assertEqual(received, [b"j/" + request.encode()])
+
+    def test_osd_targets_the_monitor_reported_by_the_hyprland_socket(self):
+        with self.hyprland_socket("activeworkspace", {"id": 1, "monitor": "eDP-1"}), \
+                patch.object(ctl, "run", return_value=subprocess.CompletedProcess([], 0)) as run:
+            self.assertEqual(ctl.osd(["--output-volume", "raise"]), 0)
+        run.assert_called_once_with(["swayosd-client", "--monitor", "eDP-1", "--output-volume", "raise"], check=False)
+
+    def test_cwd_falls_back_to_home_without_a_session_or_window_process(self):
+        with patch.object(ctl, "run", side_effect=AssertionError("cwd must not start processes")):
+            with patch.dict(os.environ):
+                os.environ.pop("HYPRLAND_INSTANCE_SIGNATURE", None)
+                self.assertEqual(ctl.cwd(), str(self.home))
+            with self.hyprland_socket("activewindow", {}):
+                self.assertEqual(ctl.cwd(), str(self.home))
+
+    def test_cwd_follows_a_child_of_the_focused_window(self):
+        work = self.home / "work"
+        work.mkdir()
+        with subprocess.Popen(["sleep", "30"], cwd=work) as child:
+            try:
+                with self.hyprland_socket("activewindow", {"pid": 4242}), \
+                        patch.object(ctl, "child_processes", return_value=[child.pid]) as children:
+                    self.assertEqual(ctl.cwd(), str(work.resolve()))
+            finally:
+                child.kill()
+        children.assert_called_once_with(4242)
+
+    def test_child_processes_lists_direct_children_in_ascending_order(self):
+        sleepers = [subprocess.Popen(["sleep", "30"]) for _ in range(2)]
+        try:
+            expected = sorted(child.pid for child in sleepers)
+            # Kernels without CONFIG_PROC_CHILDREN fall back to scanning every parent.
+            for fallback, scan in ((False, contextlib.nullcontext()),
+                                   (True, patch.object(ctl.Path, "iterdir", side_effect=FileNotFoundError))):
+                with self.subTest(fallback=fallback):
+                    with scan:
+                        children = ctl.child_processes(os.getpid())
+                    self.assertEqual(children, sorted(children))
+                    self.assertEqual([pid for pid in children if pid in expected], expected)
+        finally:
+            for child in sleepers:
+                child.kill()
+                child.wait()
+
+    def test_brightness_reads_sysfs_levels_and_spawns_only_the_setter_and_osd(self):
+        sys_class = self.home / "sys/class"
+        devices = {}
+        for kind, device, current, maximum in (("backlight", "amdgpu_bl1", 100, 400),
+                                               ("leds", "tpacpi::kbd_backlight", 1, 2),
+                                               ("leds", "input3::capslock", 0, 1)):
+            directory = sys_class / kind / device
+            directory.mkdir(parents=True)
+            (directory / "brightness").write_text(f"{current}\n")
+            (directory / "max_brightness").write_text(f"{maximum}\n")
+            devices[device] = directory
+        # Levels brightnessctl leaves behind for each requested adjustment.
+        applied = {"10%+": "140\n", "2": "2\n"}
+
+        def set_level(command, **kwargs):
+            if command[0] == "brightnessctl":
+                (devices[command[2]] / "brightness").write_text(applied[command[4]])
+            return subprocess.CompletedProcess(command, 0)
+
+        with patch.object(ctl, "SYS_CLASS", sys_class), patch.object(ctl, "run", side_effect=set_level) as run:
+            ctl.brightness(["display", "10%+"])
+            ctl.brightness(["keyboard", "up"])
+        self.assertEqual([call.args[0] for call in run.call_args_list], [
+            ["brightnessctl", "-d", "amdgpu_bl1", "set", "10%+"],
+            ["swayosd-client", "--custom-icon", "display-brightness-symbolic", "--custom-progress", "0.35"],
+            ["brightnessctl", "-d", "tpacpi::kbd_backlight", "set", "2"],
+            ["swayosd-client", "--custom-icon", "keyboard-brightness-symbolic", "--custom-progress", "1.0"],
+        ])
 
 
 class LockTests(unittest.TestCase):

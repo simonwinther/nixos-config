@@ -37,6 +37,7 @@ TOOLS = (
     Tool("desktop-tools", "project-picker", ".local/share/desktop-tools/project-picker-tui", ("project-picker-core", "project-picker-tui")),
     Tool("dictate", "dictate", ".local/share/dictate", ("dictate", "dictate-overlay")),
     Tool("file-picker", "file-picker", ".local/share/file-picker", ("file-picker-native", "file-picker-drag")),
+    Tool("hendrix", "hendrix", ".local/share/hendrix/ssh", ("hendrix-ssh",)),
     Tool("iphone-transfer", "iphone-transfer", ".local/share/iphone-transfer", ("iphone-transfer-native",)),
 )
 
@@ -334,6 +335,33 @@ os.execv({shutil.which("mv")!r}, ["mv", *sys.argv[1:]])
         self.assertEqual([event["generation"] for event in self.events()], ["v1", "v2"])
         self.assertEqual((cache / "build/generation").read_text(), "v2")
         self.assertEqual((cache / "bin/project-picker-tui").read_text(), "v2")
+
+    def test_read_only_sources_rebuild_and_in_tree_output_is_not_copied(self):
+        # Home Manager deploys the launchers from the read-only Nix store.
+        tool = next(tool for tool in TOOLS if tool.name == "project-picker")
+        source = self.sources[tool.name]
+        (source / "target/release").mkdir(parents=True)
+        (source / "target/release/stale-binary").write_text("in-tree build output")
+        original = {name: data for name, data in tree(source).items()
+                    if not name.startswith("target/")}
+        cache = self.seed_cache(tool)
+        (cache / "source.Ab12Cd/src").mkdir(parents=True)
+        (cache / "source.Ab12Cd/src").chmod(0o500)
+        self.addCleanup(subprocess.run, ["chmod", "-R", "u+w", str(self.root)], check=True)
+        subprocess.run(["chmod", "-R", "a-w", str(source)], check=True)
+        for generation in ("first", "second"):
+            with self.subTest(generation=generation):
+                result = self.run_build(tool.name)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(tree(cache / "build"), original)
+                self.assertEqual(list(cache.glob("source.*")), [])
+                self.assertEqual((cache / "bin/project-picker-tui").read_text(), "v1")
+
+    def test_every_helper_launcher_is_covered(self):
+        launchers = {path.name.removesuffix("-build")
+                     for path in DOTS.glob("*/.local/bin/*-build")
+                     if HELPER.name in path.read_text()}
+        self.assertEqual(launchers - {tool.name for tool in TOOLS}, set())
 
     def test_job_limit_can_be_overridden(self):
         result = self.run_build("project-picker", extra_env={"CARGO_BUILD_JOBS": "5"})

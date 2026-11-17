@@ -134,10 +134,11 @@ impl App {
     fn reload(&mut self) -> Result<()> {
         let text = std::fs::read_to_string(&self.path)
             .with_context(|| format!("Read {}", self.path.display()))?;
-        self.builds = parse(&text);
-        if self.builds.is_empty() {
+        let builds = parse(&text);
+        if builds.is_empty() {
             bail!("No successful timed builds yet: {}", self.path.display());
         }
+        self.builds = builds;
         self.table.select(Some(self.builds.len() - 1));
         Ok(())
     }
@@ -577,6 +578,17 @@ garbage
             bar.iter()
                 .all(|cell| cell.fg == ACCENT && !cell.modifier.contains(Modifier::REVERSED))
         );
+    }
+
+    #[test]
+    fn reload_without_successful_builds_keeps_rendering() {
+        let mut app = sample_app("reload-empty");
+        std::fs::write(&app.path, "2026-11-02T17:00:00Z,build,5,1\n").unwrap();
+        handle(&mut app, Event::Key(KeyCode::Char('r').into()));
+        assert!(app.error.is_some());
+        let text = screen(&mut app, 120, 40);
+        assert!(text.contains("No successful timed builds yet"));
+        assert!(text.contains("10m 22s"));
     }
 
     #[test]

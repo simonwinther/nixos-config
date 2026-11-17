@@ -3,7 +3,6 @@
   lib,
   pkgs,
   inputs,
-  packages,
   ...
 }:
 let
@@ -12,13 +11,7 @@ let
     builtins.attrValues editorSources
   );
   installerSources = pkgs.linkFarm "nixos-installer-sources" (
-    [
-      {
-        name = "nordvpn-tui_0.1.0_linux_amd64.tar.gz";
-        path = packages.nordvpn-tui.src;
-      }
-    ]
-    ++ map (source: {
+    map (source: {
       name = source.archiveName;
       path = pkgs.fetchurl {
         name = source.archiveName;

@@ -1,0 +1,6 @@
+Account information
+Email address: demo@example.com
+Account created: Mar 3, 2021
+Subscription: Active until Apr 18, 2027
+Dedicated IP: Inactive
+Multi-factor authentication (MFA): Turned off

@@ -12,8 +12,11 @@ or source archive.
 - `~/.ssh/hendrix_pc` and `.pub`: existing Hendrix SSH identity. Keep the private
   key 0600 and `.ssh` 0700. The alias is declared in `modules/home/hendrix.nix`.
 
-`ssh hendrix` uses the portable wrapper, starts the on-demand KU VPN if needed,
-then logs in with the existing identity / saved KU password. Only Hendrix and
+On NixOS, `~/.local/bin/ssh` is the native launcher (`hendrix-vpn.launcher`),
+which passes other hosts straight to OpenSSH and hands only the VPN start to
+`hendrix.py`. Other distributions use the portable wrapper, which prefers a
+`hendrix-build` launcher from `~/.cache/hendrix/bin`. `ssh hendrix` starts the
+on-demand KU VPN if needed, then logs in with the existing identity / saved KU password. Only Hendrix and
 KU DNS subnets enter the tunnel. Public DNS and the default route stay on the
 normal network. SSH inspection (`-G`, `-O`) does not activate the VPN.
 

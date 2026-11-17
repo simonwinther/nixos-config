@@ -99,7 +99,7 @@
     {
       "referenceCommand": "dotenv-linter",
       "kind": "nix_package",
-      "package": "unstable.dotenv-linter"
+      "package": "stable.dotenv-linter"
     },
     {
       "referenceCommand": "elephant",
@@ -189,7 +189,7 @@
     {
       "referenceCommand": "opencode",
       "kind": "nix_package",
-      "package": "unstable.opencode"
+      "package": "custom.opencode"
     },
     {
       "referenceCommand": "pdf-picker",

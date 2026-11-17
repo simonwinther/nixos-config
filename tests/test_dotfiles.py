@@ -55,15 +55,18 @@ class DotfilesTests(unittest.TestCase):
         for path in ["unlisted/.unexpected", "a/README.md", "a/tests/test.py", "a/AGENTS.md",
                      "a/.config/tool/AGENTS.md", "a/.config/tool/__pycache__/cache",
                      "a/.config/tool/compiled.pyc", "a/.config/tool/compiled.pyo",
-                     "a/.config/tool/.gitignore", "a/.git/config", "a/ignored[1]"]:
+                     "a/.config/tool/.gitignore", "a/.git/config", "a/ignored[1]",
+                     "a/.local/share/tool/target/release/tool"]:
             self.write(path)
-        for path in ["a/.config/tool/README.md", "a/.config/tool/tests/example", "a/ignored1"]:
+        for path in ["a/.config/tool/README.md", "a/.config/tool/tests/example", "a/ignored1",
+                     "a/.config/tool/target.toml"]:
             self.write(path)
         self.manifest["ignore"]["names"].append("ignored[1]")
         self.save_manifest()
         actual = parity.stow_targets(self.root)
         self.assertEqual(set(actual), {".config/tool/settings", ".config/tool/README.md",
-                                       ".config/tool/tests/example", "ignored1"})
+                                       ".config/tool/tests/example", "ignored1",
+                                       ".config/tool/target.toml"})
         self.assertEqual(parity.differences(self.nix_files(), actual), [])
 
     def test_invalid_manifest_never_changes_target(self):

@@ -201,6 +201,19 @@ class SearchTests(unittest.TestCase):
             self.assertEqual(connection.recv(1), b"")
         self.assertEqual(self.query("calc", "1+1")[0]["text"], "2")
 
+    def test_calculator_survives_deep_and_endless_expressions(self):
+        # Each expression once overflowed a query worker's stack and aborted the
+        # service; results that need more than 150 ms are interrupted instead.
+        for query, accepted in (
+            ("(" * 2047 + "1" + ")" * 2047, ([], ["1"])),
+            ("(" * 4096, ([], [""])),
+            ("(x: x x)(x: x x)", ([],)),
+            ("(f: x: f (f x)) " * 4 + "(x: x + 1) 0", ([], ["65536"])),
+        ):
+            self.assertIn([item["text"] for item in self.query("calc", query)], accepted)
+            self.assertIsNone(self.process.poll(), (self.root / "service.log").read_text())
+        self.assertEqual(self.query("calc", "1+1")[0]["text"], "2")
+
     def test_tasks_and_pause_state_survive_restart(self):
         self.activate("todo", "create")
         self.activate("todo", "save", query="in 10m > Literal $HOME; task !")

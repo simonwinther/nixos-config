@@ -1,5 +1,9 @@
-{ ... }:
+{ lib, packages, ... }:
 {
+  # Every ssh, including Git's, starts the native launcher directly instead of
+  # the portable wrapper's shell and Python. Starting the VPN stays in hendrix.py.
+  home.file.".local/bin/ssh".source = lib.mkForce "${packages.hendrix-vpn.launcher}/bin/hendrix-ssh";
+
   # Authentication material remains mutable private state outside the Nix store.
   programs.ssh = {
     enable = true;

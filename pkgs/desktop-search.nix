@@ -2,6 +2,8 @@
   lib,
   rustPlatform,
   makeWrapper,
+  pkg-config,
+  sqlite,
   fd,
   wl-clipboard,
   xdg-utils,
@@ -20,7 +22,13 @@ rustPlatform.buildRustPackage {
   };
   sourceRoot = "source/desktop-search/.local/share/desktop-search";
   cargoLock.lockFile = ../dotfiles/desktop-search/.local/share/desktop-search/Cargo.lock;
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [
+    makeWrapper
+    pkg-config
+  ];
+  # nixpkgs' cargo setup hook sets LIBSQLITE3_SYS_USE_PKG_CONFIG, which
+  # overrides rusqlite's bundled feature and links the system library.
+  buildInputs = [ sqlite ];
   postFixup = ''
     wrapProgram "$out/bin/desktop-search" \
       --prefix PATH : ${

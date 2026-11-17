@@ -51,6 +51,28 @@ class ProcessTests(unittest.TestCase):
     def log_text(self):
         return "".join(path.read_text() for path in self.logs.glob("processes.jsonl*"))
 
+    def wait_log(self, text):
+        # A supervisor records the outcome just after it reaps the job.
+        deadline = time.monotonic() + 5
+        while text not in self.log_text() and time.monotonic() < deadline:
+            time.sleep(.01)
+        self.assertIn(text, self.log_text())
+
+    def wait_child(self, pid, name):
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
+            for child in ctl.child_processes(pid):
+                with processes.contextlib.suppress(OSError):
+                    if Path(f"/proc/{child}/comm").read_text().strip() == name:
+                        return child
+            time.sleep(.01)
+        self.fail(f"{name} did not start")
+
+    def voluntary_switches(self, pid):
+        return sum(int(line.split()[1]) for task in Path(f"/proc/{pid}/task").iterdir()
+                   for line in (task / "status").read_text().splitlines()
+                   if line.startswith("voluntary_ctxt_switches"))
+
     def tree(self, path):
         return self.command('''
 import json, os, signal, subprocess, sys, time
@@ -121,6 +143,28 @@ except p.Cancelled as error:
         for pid in json.loads(path.read_text()):
             self.assert_stopped(pid)
 
+    def test_sigterm_cancels_a_foreground_run_without_a_deadline(self):
+        source = '''
+import sys
+import desktop_process as p
+try:
+    with p.cancellation_signals():
+        p.run(["sleep", "30"], log_directory=sys.argv[1], operation="interactive")
+except p.Cancelled as error:
+    sys.exit(128 + error.signum)
+'''
+        env = {**os.environ, "PYTHONPATH": str(Path(processes.__file__).parent), "PYTHONDONTWRITEBYTECODE": "1"}
+        with subprocess.Popen(self.command(source, self.logs), env=env,
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE) as caller:
+            child = self.wait_child(caller.pid, "sleep")
+            # Let run() reach its wait, which no deadline or poll interval ends.
+            time.sleep(.3)
+            caller.terminate()
+            stdout, stderr = caller.communicate(timeout=5)
+        self.assertEqual(caller.returncode, 128 + signal.SIGTERM, stderr)
+        self.assertEqual((stdout, stderr), (b"", b""))
+        self.assert_stopped(child)
+
     def test_success_removes_descendants_left_by_the_direct_child(self):
         path = self.root / "pid"
         self.run_code('''
@@ -183,7 +227,18 @@ Path(sys.argv[2]).write_text(str(job.pid))
         self.addCleanup(lambda: self.kill_synthetic(pid))
         self.assert_stopped(pid)
         self.assertIn("after launcher exit", self.log_text())
-        self.assertIn('"event": "timeout"', self.log_text())
+        self.wait_log('"event": "timeout"')
+
+    def test_idle_supervisor_sleeps_until_its_job_exits(self):
+        job = processes.background(["sleep", "30"], log_directory=self.logs, operation="clipboard-owner")
+        self.addCleanup(job.close)
+        time.sleep(.3)
+        before = self.voluntary_switches(job.supervisor.pid)
+        time.sleep(2)
+        self.assertLess(self.voluntary_switches(job.supervisor.pid) - before, 10)
+        job.close()
+        self.assertEqual(job.returncode, 128 + signal.SIGTERM)
+        self.assert_stopped(job.pid)
 
     def kill_synthetic(self, pid):
         with processes.contextlib.suppress(ProcessLookupError):

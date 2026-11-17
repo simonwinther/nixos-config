@@ -28,6 +28,7 @@ for package in sorted(dots.iterdir()):
             continue
         if file.suffix != ".md":
             assert not re.search(r"omarchy", text, re.I), f"Legacy runtime reference: {file}"
+        first = text.splitlines()[0] if text else ""
         if file.suffix == ".py":
             ast.parse(text, filename=str(file))
             checked += 1
@@ -40,8 +41,12 @@ for package in sorted(dots.iterdir()):
         elif file.suffix == ".zsh" or file.name in (".zshrc", ".zshenv"):
             subprocess.run(["zsh", "-n", file], check=True)
             checked += 1
-        elif text.startswith("#!/") and ("bash" in text.splitlines()[0] or text.splitlines()[0].endswith(" sh")):
+        elif file.suffix == ".sh" or (text.startswith("#!/") and ("bash" in first or first.endswith(" sh") or first.split()[0].endswith("/sh"))):
             subprocess.run(["bash", "-n", file], check=True)
+            if text.startswith("#!/") or "# shellcheck shell=" in text:
+                # Relative to the script, so `source-path=SCRIPTDIR` resolves sourced helpers.
+                subprocess.run(["shellcheck", "--external-sources", "--severity=warning", file.name],
+                               cwd=file.parent, check=True)
             checked += 1
 mapping = json.loads((root / "docs/inventory/package-map.json").read_text())
 reference = [line.split()[0] for line in (root / "docs/inventory/arch-explicit.txt").read_text().splitlines() if line.strip()]

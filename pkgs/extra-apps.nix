@@ -3,18 +3,22 @@ let
   inherit (pkgs) lib;
 in
 {
-  nordvpn-tui = pkgs.stdenvNoCC.mkDerivation {
+  # The upstream repository and its release tarball were deleted, so the
+  # tagged source is vendored (docs/VENDOR-SOURCES.md).
+  nordvpn-tui = pkgs.buildGoModule {
     pname = "nordvpn-tui";
     version = "0.1.0";
-    src = pkgs.fetchurl {
-      url = "https://github.com/simonwinther/nordvpn-tui/releases/download/v0.1.0/nordvpn-tui_0.1.0_linux_amd64.tar.gz";
-      sha256 = "dda52009790cc9996b597bcdd935e7c0a84b139948949dbb4d832d40c37962d2";
-    };
-    sourceRoot = ".";
+    src = ./nordvpn-tui/source;
+    vendorHash = "sha256-jDF3vYhwWI7rQ1oiSHIcII51CG7am6nyTkRmbET2K4I=";
+    subPackages = [ "cmd/nordvpn-tui" ];
+    ldflags = [
+      "-s"
+      "-w"
+      "-X main.version=v0.1.0"
+      "-X main.commit=f42fb74"
+    ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
-    dontBuild = true;
-    installPhase = ''
-      install -Dm755 nordvpn-tui "$out/bin/nordvpn-tui"
+    postInstall = ''
       install -Dm444 LICENSE "$out/share/doc/nordvpn-tui/LICENSE"
       wrapProgram "$out/bin/nordvpn-tui" --prefix PATH : ${unstable.nordvpn}/bin
     '';

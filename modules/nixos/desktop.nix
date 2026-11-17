@@ -187,7 +187,6 @@ in
     environment.sessionVariables = {
       QT_QPA_PLATFORMTHEME = "gtk3";
       NIXOS_OZONE_WL = "1";
-      MOZ_ENABLE_WAYLAND = "1";
       NAUTILUS_4_EXTENSION_DIR = "${pkgs.nautilus-python}/lib/nautilus/extensions-4";
     };
   };

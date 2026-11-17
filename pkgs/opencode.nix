@@ -12,11 +12,11 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "opencode";
-  version = "2.2.6";
+  version = "2.3.0";
 
   src = fetchurl {
     url = "https://github.com/anomalyco/opencode/releases/download/v${finalAttrs.version}/opencode-linux-x64-baseline.tar.gz";
-    sha256 = "08bb21d6326ce740d91cce7ebe88a6536933f6e1e30353b91a06b01f25da306c";
+    sha256 = "fc0f81522aceeabac47693d88389efa2bc517ce74c2c38fd6967819fcc6e4d3b";
   };
 
   sourceRoot = ".";

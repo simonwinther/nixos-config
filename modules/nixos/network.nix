@@ -55,6 +55,10 @@
     enable = true;
     settings.Resolve = {
       MulticastDNS = false;
+      # LLMNR multicasts single-label lookups to whatever LAN the laptop joins,
+      # leaking the names it looks up. Avahi resolves .local and unicast DNS
+      # the rest, so disabling it loses nothing.
+      LLMNR = false;
       DNSStubListenerExtra = lib.optional (profile != "live") "172.17.0.1";
     };
   };

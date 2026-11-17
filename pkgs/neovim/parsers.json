@@ -15,9 +15,9 @@
   },
   {
     "name": "c",
-    "revision": "b780e47fc780ddc8da13afa35a3f4ed5c157823d",
-    "url": "https://github.com/tree-sitter/tree-sitter-c",
-    "hash": "sha256-Juuf57GQI7OAP6O03KtSzyKJAoXtGKjyYJ+sTM1A4mU=",
+    "revision": "f3202ac4f1041e0b0a2b908147d5dd0e951da7b1",
+    "url": "https://github.com/tree-sitter-grammars/tree-sitter-c",
+    "hash": "sha256-MKuStLNV7VQy1wZEBqECCRuBnzvVwmAaLTKFWG1AQkY=",
     "requiresNode": false
   },
   {
@@ -137,16 +137,16 @@
     "name": "markdown",
     "url": "https://github.com/tree-sitter-grammars/tree-sitter-markdown",
     "location": "tree-sitter-markdown",
-    "revision": "a0a00f817d02412bd92c54d316f164d827b57b5c",
-    "hash": "sha256-IusQiUs34Ge0Ui7kyLiNA/mHaYMmVJLaMdC0ILmT8Hg=",
+    "revision": "41ff24a6c775492c543b09228aeb98d1cd2b3a0f",
+    "hash": "sha256-8T5EiN8t6nMaKndAxff1hl2DIAhTQY/58oavD9ZrJ5c=",
     "requiresNode": false
   },
   {
     "name": "markdown_inline",
     "url": "https://github.com/tree-sitter-grammars/tree-sitter-markdown",
     "location": "tree-sitter-markdown-inline",
-    "revision": "a0a00f817d02412bd92c54d316f164d827b57b5c",
-    "hash": "sha256-IusQiUs34Ge0Ui7kyLiNA/mHaYMmVJLaMdC0ILmT8Hg=",
+    "revision": "41ff24a6c775492c543b09228aeb98d1cd2b3a0f",
+    "hash": "sha256-8T5EiN8t6nMaKndAxff1hl2DIAhTQY/58oavD9ZrJ5c=",
     "requiresNode": false
   },
   {
@@ -158,9 +158,9 @@
   },
   {
     "name": "nix",
-    "revision": "32c3ce98afdafc2ec9aedf0280a678750f76254c",
+    "revision": "64d4f7827dc1a8c7c88108ffdb47b961a729df05",
     "url": "https://github.com/nix-community/tree-sitter-nix",
-    "hash": "sha256-dYEMpf6vZEFcKCIEHYKsLisxm1kC/GRgDbsgEVo2q94=",
+    "hash": "sha256-iJms78TJKREjwGYea4X9895dhdJK5cMQDmG5y/A8TCA=",
     "requiresNode": false
   },
   {
@@ -265,9 +265,9 @@
   },
   {
     "name": "vimdoc",
-    "revision": "13add92d357b69646c080a8028b82ffb106faf7a",
+    "revision": "a13c5c7e09aa2ec2f724ac5c0fdb91a4a7eeabba",
     "url": "https://github.com/neovim/tree-sitter-vimdoc",
-    "hash": "sha256-rRH3RhZGuBTW7S4pzvvGlDl2YPc426/ZEbLlhZWkvtw=",
+    "hash": "sha256-NEFqR6Qg/JvxmLk27ClEcXkwzYBY7ZwxlEL/1uoLxBQ=",
     "requiresNode": false
   },
   {

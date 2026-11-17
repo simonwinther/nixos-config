@@ -53,18 +53,20 @@
     wantedBy = [ "twingate.service" ];
     partOf = [ "twingate.service" ];
     after = [ "twingate.service" ];
-    path = [
-      pkgs.systemd
-      pkgs.iproute2
-      pkgs.gnugrep
-    ];
+    path = [ pkgs.systemd ];
     script = ''
+      link=sdwan0
       while true; do
-        if ip link show sdwan0 >/dev/null 2>&1; then
-          status=$(resolvectl status sdwan0)
-          if grep -qE '\+DefaultRoute|DNS Servers:' <<<"$status"; then
-            resolvectl default-route sdwan0 false
-            resolvectl dns sdwan0 ""
+        if [ -e "/sys/class/net/$link" ] && read -r index <"/sys/class/net/$link/ifindex"; then
+          # One D-Bus read replaces `resolvectl status` plus grep; a failed or
+          # unexpected reply falls through to the idempotent reset.
+          # resolved escapes the leading ifindex digit: 9 is link/_39, 12 is link/_312.
+          state=$(busctl get-property org.freedesktop.resolve1 \
+            "/org/freedesktop/resolve1/link/_3$index" org.freedesktop.resolve1.Link \
+            DefaultRoute DNS 2>/dev/null) || state=
+          if [ "$state" != $'b false\na(iay) 0' ]; then
+            resolvectl default-route "$link" false || true
+            resolvectl dns "$link" "" || true
           fi
         fi
         sleep 2

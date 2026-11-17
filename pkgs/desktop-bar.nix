@@ -6,7 +6,6 @@
   fontconfig,
   nerd-fonts,
   findutils,
-  wayland,
   libpulseaudio,
   libxkbcommon,
   dbus,
@@ -33,7 +32,6 @@ rustPlatform.buildRustPackage {
   buildInputs = [
     libpulseaudio
     libxkbcommon
-    wayland
   ];
   nativeCheckInputs = [ dbus ];
   preBuild = ''
@@ -45,14 +43,7 @@ rustPlatform.buildRustPackage {
   postFixup = ''
     wrapProgram "$out/bin/desktop-bar" \
       --set-default DESKTOP_BAR_ICON_FONT "$DESKTOP_BAR_ICON_FONT" \
-      --prefix PATH : ${lib.makeBinPath [ fontconfig ]} \
-      --prefix LD_LIBRARY_PATH : ${
-        lib.makeLibraryPath [
-          wayland
-          libpulseaudio
-          libxkbcommon
-        ]
-      }
+      --prefix PATH : ${lib.makeBinPath [ fontconfig ]}
   '';
   meta = {
     description = "Morphing Notch Bar with native search and desktop controls";

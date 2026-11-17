@@ -33,8 +33,12 @@ matching the source configuration's version and scene-collection format.
 Home Manager links the defaults and helper, then materializes writable OBS
 runtime files on the desktop. A content fingerprint avoids overwriting OBS UI
 edits on unrelated rebuilds. Changed defaults are applied after a private backup;
-an update is deferred if OBS is open. The portable OBS launcher applies pending
-defaults on the next launch. Run `obs-config-sync` after closing OBS
+an update is deferred if OBS is open. If the helper refuses an update, for
+example because a runtime file is malformed, activation prints a warning and
+continues; the defaults stay pending. The portable OBS launcher applies pending
+defaults on the next launch. It locates OBS first and changes nothing when OBS
+is missing. If the defaults cannot be applied, it prints a warning and starts
+OBS with the existing runtime files. Run `obs-config-sync` after closing OBS
 to apply them explicitly, or `obs-config-sync --force` to deliberately restore
 the declared settings. On another distribution, Stow the `obs` package and
 provide OBS, Python 3 and URW Bookman.
@@ -61,8 +65,9 @@ Copying only the old scene file would leave these captures black.
 
 `tests/test_obs.py` covers the complete scene graph, audio chain, assets,
 credential preservation, private backups, runtime-edit preservation, portal
-grants and refusal to overwrite live/linked/malformed configurations. The
-`obs-integration` Nix check also verifies the actual package and countdown font.
+grants, refusal to overwrite live/linked/malformed configurations and the
+launcher's OBS lookup and failure handling. The `obs-integration` Nix check also
+verifies the actual package and countdown font.
 
 On the stationary desktop, OBS 32.2.2 loaded all five scenes, seven scene items,
 six audio filters and all 97 declared profile parameters. All three PipeWire

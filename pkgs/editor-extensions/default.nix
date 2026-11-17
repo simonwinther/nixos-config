@@ -1,4 +1,8 @@
-{ lib, pkgs }:
+{
+  lib,
+  pkgs,
+  clang-tools ? pkgs.clang-tools,
+}:
 let
   sources = builtins.fromJSON (builtins.readFile ./sources.json);
   extensions = lib.mapAttrs (
@@ -7,7 +11,17 @@ let
       archive = pkgs.fetchurl {
         name = spec.archiveName;
         inherit (spec) url hash;
+        # The marketplace serves the VSIX with Content-Encoding: gzip; the
+        # locked hashes cover the decoded archive.
+        curlOpts = "--compressed";
       };
+      nixpkgsExtension =
+        if spec.id == "ms-vscode.cpptools" then
+          # cpptools links clang-format and clang-tidy from clang-tools; the
+          # caller's copy avoids a second LLVM of the same version.
+          pkgs.vscode-extensions.ms-vscode.cpptools.override { inherit clang-tools; }
+        else
+          pkgs.vscode-extensions.${spec.publisher}.${spec.name};
     in
     if
       builtins.elem spec.id [
@@ -17,7 +31,7 @@ let
     then
       # Reuse the pinned Nixpkgs compatibility work: cpptools has its own musl
       # loader and .NET debugger; speech loads its audio library with dlopen.
-      pkgs.vscode-extensions.${spec.publisher}.${spec.name}.overrideAttrs (old: {
+      nixpkgsExtension.overrideAttrs (old: {
         version = spec.version;
         src = archive;
         passthru = (old.passthru or { }) // {

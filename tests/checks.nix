@@ -22,10 +22,36 @@
     let
       deployment = import ../lib/dotfiles.nix { };
       dots = "${../dotfiles}/";
+      # Home Manager links these targets to Nix-built programs instead of the
+      # portable launchers Stow links at the same paths.
+      nixPrograms =
+        home:
+        {
+          ".local/bin/desktopctl" = "${packages.desktop-tools}/bin/desktopctl";
+          ".local/bin/desktop-bar" = "${packages.desktop-bar}/bin/desktop-bar";
+          ".local/bin/ssh" = "${packages.hendrix-vpn.launcher}/bin/hendrix-ssh";
+        }
+        // pkgs.lib.optionalAttrs home.desktop.fullApplications (
+          pkgs.lib.genAttrs' [ "luau-lsp" "lune" "rojo" "selene" "stylua" "wally" ] (
+            tool: pkgs.lib.nameValuePair ".local/bin/${tool}" (pkgs.lib.getExe packages.${tool})
+          )
+        );
+      # Generated from the portable file (terminal scaling, the declarative
+      # weather key path, Roblox Studio window rules); compared by target only.
+      # Neither configuration contains the weather credential.
+      nixGenerated =
+        home:
+        [
+          ".config/desktop/weather.json"
+          ".config/ghostty/config"
+        ]
+        ++ pkgs.lib.optional home.desktop.fullApplications ".config/hypr/windows.lua";
       homes = pkgs.lib.genAttrs [ "desktop" "lambda" "desktop-live" ] (
         host:
         let
           home = self.nixosConfigurations.${host}.config.home-manager.users.simon;
+          programs = nixPrograms home;
+          generated = nixGenerated home;
         in
         map (
           item:
@@ -35,15 +61,10 @@
           {
             target = file.target;
             source =
-              if item.target == ".local/bin/desktopctl" then
-                assert toString file.source == "${packages.desktop-tools}/bin/desktopctl";
+              if programs ? ${item.target} then
+                assert toString file.source == programs.${item.target};
                 item.source
-              else if item.target == ".local/bin/desktop-bar" then
-                assert toString file.source == "${packages.desktop-bar}/bin/desktop-bar";
-                item.source
-              else if item.target == ".config/desktop/weather.json" then
-                # NixOS selects the declarative secret path; portable defaults
-                # use ~/.owm-key. Neither configuration contains the credential.
+              else if builtins.elem item.target generated then
                 item.source
               else
                 pkgs.lib.removePrefix dots (toString file.source);
@@ -207,6 +228,10 @@
     let
       live = self.nixosConfigurations.desktop-live.config;
       home = live.home-manager.users.simon;
+      canvasHomes = map (host: self.nixosConfigurations.${host}.config.home-manager.users.simon) [
+        "desktop"
+        "lambda"
+      ];
     in
     assert builtins.hasAttr "ku-vpn" live.systemd.services;
     assert (live.systemd.services.ku-vpn.wantedBy or [ ]) == [ ];
@@ -221,6 +246,16 @@
       self.nixosConfigurations.lambda.config.home-manager.users.simon.desktop.rebuild.target == "lambda";
     assert !(builtins.hasAttr ".config/gh/hosts.yml" home.home.file);
     assert !(builtins.hasAttr ".netrc" home.home.file);
+    # The Canvas token stays in private files, never in the world-readable store.
+    assert builtins.all (
+      canvasHome:
+      !(builtins.any (file: pkgs.lib.hasPrefix ".config/canvas-mcp/" file.target) (
+        builtins.attrValues canvasHome.home.file
+      ))
+      && !(pkgs.lib.hasPrefix builtins.storeDir (
+        toString (canvasHome.systemd.user.services.canvas-mcp.Service.EnvironmentFile or "")
+      ))
+    ) canvasHomes;
     pkgs.runCommand "private-runtime-integration" { nativeBuildInputs = [ pkgs.openssh ]; } ''
       grep -q HENDRIX_SPLIT_TUNNEL_V1 ${packages.hendrix-vpn}/bin/ku-vpn
       ssh -G -F ${home.home.file.".ssh/config".source} hendrix > config
@@ -278,6 +313,13 @@
         pkgs.writeText name (
           builtins.unsafeDiscardStringContext home.xdg.configFile."desktop/${name}".text
         );
+      laptop = self.nixosConfigurations.lambda.config.home-manager.users.simon;
+      laptopLua =
+        name:
+        pkgs.writeText "lambda-${name}" (
+          builtins.unsafeDiscardStringContext laptop.xdg.configFile."desktop/${name}".text
+        );
+      laptopWindows = laptop.home.file.".config/hypr/windows.lua".source;
     in
     pkgs.runCommand "hyprland-config"
       {
@@ -312,6 +354,30 @@
           fi
           grep -F 'config ok' "$TMPDIR/hyprland.log"
         done
+        # NixOS hosts declare the plugin in paths.json, which hyprspace.lua reads
+        # directly; the theme runs above used the portable desktopctl fallback.
+        printf '{"hyprspace":"%s"}\n' "$HYPRSPACE_PLUGIN" > "$HOME/.config/desktop/paths.json"
+        if ! Hyprland --verify-config --config "$HOME/.config/hypr/hyprland.lua" > "$TMPDIR/hyprland.log" 2>&1; then
+          echo "Configuration with a declared Hyprspace path failed"
+          cat "$TMPDIR/hyprland.log"
+          exit 1
+        fi
+        grep -F 'config ok' "$TMPDIR/hyprland.log"
+        # lambda adds the laptop cycle binding and, with the full application set,
+        # the Roblox Studio window rules; parse its generated files once. The
+        # earlier copies are read-only store files, so install replaces them.
+        install -m 644 ${laptopLua "ring-bindings.lua"} "$HOME/.config/desktop/ring-bindings.lua"
+        install -m 644 ${laptopLua "cursor.lua"} "$HOME/.config/desktop/cursor.lua"
+        install -m 644 ${laptopLua "rebuild-bindings.lua"} "$HOME/.config/desktop/rebuild-bindings.lua"
+        install -m 644 ${../hosts/lambda/monitors.lua} "$HOME/.config/desktop/monitors.lua"
+        rm "$HOME/.config/hypr/windows.lua"
+        install -m 644 ${laptopWindows} "$HOME/.config/hypr/windows.lua"
+        if ! Hyprland --verify-config --config "$HOME/.config/hypr/hyprland.lua" > "$TMPDIR/hyprland.log" 2>&1; then
+          echo "lambda configuration failed"
+          cat "$TMPDIR/hyprland.log"
+          exit 1
+        fi
+        grep -F 'config ok' "$TMPDIR/hyprland.log"
         touch "$out"
       '';
   desktop-behavior =
@@ -329,16 +395,21 @@
           pkgs.file
           pkgs.stow
           pkgs.util-linux
+          pkgs.procps
+          pkgs.nix
         ];
       }
       ''
         cp -r ${../.} source
         chmod -R u+w source
+        # The build sandbox only provides /bin/sh; every real host has /usr/bin/env.
+        patchShebangs --build source/dotfiles > /dev/null
         cd source
         export HOME="$TMPDIR/home" PYTHONDONTWRITEBYTECODE=1
+        export HENDRIX_SSH_BINARY=${packages.hendrix-vpn.launcher}/bin/hendrix-ssh
         mkdir -p "$HOME"
         python -m unittest discover -s tests -v
-        node --test tests/project-picker.test.mjs
+        node --test tests/project-picker.test.mjs dotfiles/chrome/.local/share/browser-extensions/pdf-copy/tests/convert.test.mjs
         mkdir -p "$TMPDIR/tools" "$TMPDIR/media"
         export TRANSCODE_TEST_CLIPBOARD="$TMPDIR/clipboard"
         cat > "$TMPDIR/tools/wl-copy" <<'SH'
@@ -459,6 +530,7 @@
           pkgs.zsh
           pkgs.lua
           pkgs.stow
+          pkgs.shellcheck
         ];
       }
       ''

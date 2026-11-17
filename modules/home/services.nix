@@ -9,12 +9,9 @@
 }:
 let
   ctl = "${packages.desktop-tools}/bin/desktopctl";
+  # A store path here would restart every desktop service whenever its package changes.
   environment = [
     "PATH=/run/wrappers/bin:${config.home.profileDirectory}/bin:/run/current-system/sw/bin:/home/simon/.local/bin"
-    "HYPRSPACE_PLUGIN=${packages.hyprspace}/lib/libhyprspace.so"
-    "HENDRIX_VPN_RUNNER=${packages.hendrix-vpn}/bin/ku-vpn"
-    "HENDRIX_VPN_ROUTES=${packages.hendrix-vpn}/bin/ku-vpn-routes"
-    "DESKTOP_SSH_BIN=${pkgs.openssh}/bin/ssh"
   ];
   service = description: command: {
     Unit = {
@@ -39,6 +36,14 @@ let
         ConditionPathExists = "!${config.xdg.stateHome}/desktop/toggles/bar-off";
       };
     };
+  # Children inherit these limits, so only services that never launch apps or
+  # setuid helpers (sudo, PAM, polkit) may use them.
+  unprivileged = {
+    NoNewPrivileges = true;
+    LockPersonality = true;
+    RestrictRealtime = true;
+    RestrictSUIDSGID = true;
+  };
   pickerTerminal = {
     Unit = {
       Description = "Prepare the windowless file and PDF picker terminal";
@@ -105,6 +110,8 @@ in
         RemainAfterExit = true;
         ExecStart = "${ctl} prepare";
         Environment = environment;
+        # Oneshots never time out by default, and the session target waits for this.
+        TimeoutStartSec = "2min";
       };
     };
     desktop-search = service "Desktop search and clipboard providers" "${packages.desktop-search}/bin/desktop-search serve";
@@ -138,7 +145,22 @@ in
         X-RestartIfChanged = false;
       };
     };
-    desktop-mako = service "Notifications" "${ctl} run mako";
+    # When another mako owns the notification bus name, each start fails only
+    # after desktopctl's startup, so restarts every 2 s never reach the default
+    # limit of five starts in 10 s and loop for the whole session. Give up after
+    # five quick failures; the D-Bus activation file in dotfiles/mako starts
+    # this unit again for the next notification.
+    desktop-mako =
+      let
+        unit = service "Notifications" "${ctl} run mako";
+      in
+      unit
+      // {
+        Unit = unit.Unit // {
+          StartLimitIntervalSec = 30;
+          StartLimitBurst = 5;
+        };
+      };
     desktop-awww = service "Wallpaper daemon" "${pkgs.awww}/bin/awww-daemon --no-cache";
     desktop-swayosd = service "Volume and brightness display" "${ctl} run swayosd-server";
     # Keep logind/Wayland sleep coordination running even when idle locking is off.
@@ -167,6 +189,7 @@ in
         RemainAfterExit = true;
         ExecStart = "${ctl} wallpaper restore";
         Environment = environment;
+        TimeoutStartSec = "2min";
       };
     };
     desktop-lock = {
@@ -191,6 +214,7 @@ in
         Type = "oneshot";
         ExecStart = "${ctl} battery --notify";
         Environment = environment;
+        TimeoutStartSec = "1min";
       };
     };
     breakd = lib.mkIf (profile != "live" && profile != "recovery") (
@@ -207,7 +231,8 @@ in
         EnvironmentFile = "/home/simon/.config/canvas-mcp/http-environment";
         Environment = environment;
         Restart = "on-failure";
-      };
+      }
+      // unprivileged;
     };
     taildrop-receive = lib.mkIf (profile != "live" && profile != "recovery") (
       (service "Receive and sort iPhone Taildrop files" "${packages.iphone-transfer}/bin/iphone-transfer-native receive")
@@ -219,7 +244,8 @@ in
           RestartSec = 5;
           UMask = "0077";
           Environment = environment;
-        };
+        }
+        // unprivileged;
       }
     );
   };

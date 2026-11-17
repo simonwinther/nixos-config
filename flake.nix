@@ -27,10 +27,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-flatpak.url = "github:gmodena/nix-flatpak/v0.8.0";
-    breakd = {
-      url = "github:simonwinther/breakd/e912976591fe1e221676dfe2eba65ade82533ee2";
-      inputs.nixpkgs.follows = "unstable";
-    };
   };
 
   outputs =
@@ -75,7 +71,8 @@
           ++ nixpkgs.lib.optionals (profile != "recovery") [
             home-manager.nixosModules.home-manager
             {
-              nixpkgs.config.allowUnfree = true;
+              # NixOS reuses the flake's unfree-enabled package set.
+              nixpkgs.pkgs = pkgs;
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;

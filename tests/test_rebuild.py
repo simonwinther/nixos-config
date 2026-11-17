@@ -3,9 +3,11 @@ import fcntl
 import json
 import os
 from pathlib import Path
+import select
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 
@@ -317,6 +319,17 @@ else:
         self.assertIn("1m 30s", result.stdout)
         self.assertIn("20s", result.stdout)
 
+    def test_times_charts_builds_recorded_only_by_nh(self):
+        log = self.state / "nixos-rebuild/times.csv"
+        log.parent.mkdir(parents=True, exist_ok=True)
+        log.write_text(
+            "2026-11-04T10:00:00Z,build,90,0,nh\n"
+            "2026-11-04T10:01:30Z,activate,20,0,nh\n"
+        )
+        result = self.run_helper("times")
+        self.assertIn("1 successful builds", result.stdout)
+        self.assertIn("1m 30s", result.stdout)
+
     def test_times_without_successful_builds_explains_where_data_lives(self):
         result = self.run_helper("times", ok=False)
         self.assertIn("No successful timed builds yet", result.stderr)
@@ -350,6 +363,37 @@ else:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             self.run_helper("sync", ok=False)
         self.assertEqual(self.commands(), [])
+
+    def test_lock_is_released_while_the_window_waits_for_enter(self):
+        # Only stdin is a terminal; read -p writes its prompt to the merged pipe.
+        primary, replica = os.openpty()
+        first = subprocess.Popen(
+            ["bash", str(SCRIPT), "sync"], env=self.env,
+            stdin=replica, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        )
+        prompt = b"Press Enter to close."
+        try:
+            output = b""
+            deadline = time.monotonic() + 20
+            while prompt not in output:
+                remaining = deadline - time.monotonic()
+                self.assertGreater(remaining, 0, f"No prompt within 20 s: {output!r}")
+                if select.select([first.stdout], [], [], remaining)[0]:
+                    chunk = os.read(first.stdout.fileno(), 4096)
+                    self.assertTrue(chunk, f"Exited before the prompt: {output!r}")
+                    output += chunk
+            self.assertIn(b"sync completed", output.split(prompt)[0])
+            self.run_helper("sync")
+            os.write(primary, b"\n")
+            self.assertEqual(first.wait(timeout=30), 0)
+        finally:
+            os.write(primary, b"\n")
+            if first.poll() is None:
+                first.kill()
+            first.wait()
+            first.stdout.close()
+            os.close(primary)
+            os.close(replica)
 
     def test_help_and_invalid_arguments_never_run_commands(self):
         self.run_helper("--help")

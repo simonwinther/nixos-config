@@ -4,7 +4,7 @@ Simon approved installing the stationary desktop to its internal drive on 2026-1
 
 ## 1. Establish the target and preserve the reference
 
-The inspected machine is `lambda`, a ThinkPad L14 Gen 1 with Ryzen 5 PRO 4650U/Renoir graphics, AX200 wireless, approximately 16 GB RAM, and Arch/Omarchy. It supplies the desired user experience; its disk layout is not the desktop's layout. No installation command in this document should be run on that laptop during the desktop migration.
+The inspected machine is `lambda`, a ThinkPad L14 Gen 1 with Ryzen 5 PRO 4650U/Renoir graphics, AX200 wireless, approximately 16 GB RAM, and, at inventory time, Arch/Omarchy. It supplied the desired user experience; its disk layout is not the desktop's layout. The laptop now runs NixOS from `hosts/lambda` (see section 8); no installation command in this document should be run on it.
 
 The initial reference records 1,367 installed packages, 260 explicit packages, 46 foreign packages, four Flatpaks, 62 pinned Neovim plugins, and 203 registered Hyprland bindings. Plain source files, appearance assets, local tools, and their provenance were copied into this isolated repository. The original dotfiles were already dirty: `hypr/.config/hypr/monitors.lua` and `nvim/.config/nvim/lazy-lock.json` have user changes. Do not reset or overwrite them.
 
@@ -32,7 +32,7 @@ Flatpak commits can disappear from remote history. The installer therefore uses 
 
 Nix store executables do not use `/usr/bin` paths. The portable wrappers, Hendrix service, font discovery, browser native-messaging manifest, and desktop tools account for that. Foreign binaries, SDKMAN/NVM/GHCup downloads, and language project toolchains may still require a project `devShell`, FHS environment, AppImage runtime, or `nix-ld`. The shell uses packaged Node when NVM is absent. Existing SDK directories are data to migrate deliberately, not reproducible inputs.
 
-Neovim's 62 plugin sources and the 37 installed parser sources are hash-pinned. On NixOS, plugin downloads/builds and Mason installs are disabled; language servers/formatters and the native completion library are packaged. On other distributions the same config uses its normal Lazy workflow. Validate every active language project, especially Java, Haskell, Flutter, TeX, and Typst. Container evaluation cannot verify their interactive behavior.
+Neovim's 62 plugin sources and the 37 installed parser sources are hash-pinned. On NixOS, plugin downloads/builds and Mason installs are disabled; language servers/formatters and the native completion library are packaged. On other distributions the same config uses its normal Lazy workflow. On NixOS the store plugin directories attach as dependencies of a never-loaded `nix-plugin-dirs` plugin, so dependency-only plugins stay lazy as on Stow installs. `python3 pkgs/neovim/update.py [--check]` refreshes `plugins.json`, `parsers.json`, `lazy-lock.json` and `blink-Cargo.lock`, writing them only after every query and download has succeeded. Validate every active language project, especially Java, Haskell, Flutter, TeX, and Typst. Container evaluation cannot verify their interactive behavior.
 
 VS Code and Cursor retain all 142 and three recorded extension entries respectively through hash-pinned VSIX sources and Nix-compatible native libraries. Headless discovery matches the recorded IDs and versions; interactive debugger/language-server behavior still needs the real projects. Retain the cached extension archives listed in [VENDOR-SOURCES.md](VENDOR-SOURCES.md); extension-managed downloads and private databases are restored separately.
 
@@ -84,6 +84,6 @@ Complete every item in `VALIDATION.md` on real hardware. Compare launcher behavi
 
 Run a fresh backup and repeat a sample restore. Keep old boot media and the full old-system backup until the new system has survived several reboots, suspend/resume cycles, and normal work. Nix generations restore software/configuration; they do not restore changed personal data. Home snapshots and Restic complement, but do not replace, that first independent backup.
 
-## 8. Add the laptop later
+## 8. The laptop
 
-Reuse shared modules and Stow sources. Inventory `lambda` again at that time, review its own target disk and backup proof, complete its hardware file, and run the same acceptance process. Its current display layout is included as a reference; do not erase it as part of the desktop rollout. Each machine retains separate authentication, machine IDs, and host-specific hardware settings.
+`lambda` was installed from `hosts/lambda`, configured for installation in 969f3f4 on 2026-10-25, and now runs NixOS with the shared modules and Stow sources. Its reviewed hardware, disk and backup decision is in `hosts/lambda/local.nix`. Each machine retains separate authentication, machine IDs, and host-specific hardware settings.

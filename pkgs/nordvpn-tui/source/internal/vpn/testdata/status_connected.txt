@@ -1,0 +1,9 @@
+Status: Connected
+Hostname: us4521.nordvpn.com
+IP: 198.51.100.42
+Country: United States
+City: New York
+Current technology: NORDLYNX
+Current protocol: UDP
+Transfer: 1.23 MiB received, 456.78 KiB sent
+Uptime: 1 hour 23 minutes 5 seconds

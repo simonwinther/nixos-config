@@ -95,6 +95,9 @@ let
       pkgs.ripgrep
     ];
     preCheck = "export TMPDIR=/tmp";
+    # The Cargo hook turns off the profile's strip = true, and stdenv strips
+    # only debug info by default: drop the symbols that every upload carries.
+    stripAllList = [ "bin" ];
     meta.platforms = lib.platforms.linux;
   };
 in

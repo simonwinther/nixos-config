@@ -7,7 +7,6 @@
   rustPlatform,
   tree-sitter,
   nodejs,
-  neovim-unwrapped,
   luajitPackages,
 }:
 let

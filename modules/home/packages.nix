@@ -9,6 +9,15 @@
 }:
 let
   inventory = builtins.fromJSON (builtins.readFile ../../docs/inventory/package-map.json);
+  # The reference explicitly installed tesseract-data-eng; osd adds orientation
+  # detection. The default package bundles all 129 tessdata models (about 1 GB);
+  # desktop OCR requests English.
+  tesseractEnglish = pkgs.tesseract.override {
+    enableLanguages = [
+      "eng"
+      "osd"
+    ];
+  };
   select =
     row:
     if row.kind == "custom" then
@@ -26,6 +35,8 @@ let
           lib.setPrio 30 (select row)
         else if row.arch == "clang" then
           lib.setPrio 20 (select row)
+        else if row.arch == "tesseract-data-eng" then
+          tesseractEnglish
         else
           select row
       )
@@ -73,7 +84,7 @@ in
       grim
       slurp
       satty
-      tesseract
+      tesseractEnglish
       imagemagick
       ffmpeg
       sox
@@ -141,7 +152,8 @@ in
       [
         nodejs
         jdk
-        maven
+        # Default JAVA_HOME to the JDK above instead of a second headless JDK.
+        (maven.override { jdk_headless = jdk; })
         ant
         gnumake
         gcc
@@ -151,6 +163,7 @@ in
         cargo-watch
         shellcheck
         shfmt
+        dotenv-linter
         black
         isort
         basedpyright
@@ -188,7 +201,6 @@ in
         ghui
         pi-coding-agent
         kaggle
-        dotenv-linter
         # Preserve Flutter's SDK-root documentation in the merged profile;
         # Playwright's executable uses its own immutable package contents.
         (lib.lowPrio playwright)

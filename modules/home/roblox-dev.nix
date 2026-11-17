@@ -8,6 +8,25 @@
 let
   vinegar = "${config.home.homeDirectory}/.var/app/org.vinegarhq.Vinegar";
   pluginDir = "${vinegar}/data/vinegar/prefixes/studio/drive_c/users/${config.home.username}/AppData/Local/Roblox/Plugins";
+  # The portable wrappers exec Rokit shims: copies of the Nix-patched Rokit
+  # that stop starting once its glibc is garbage-collected. Link the pinned
+  # binaries at the same paths, which Neovim and project scripts call.
+  pinnedToolLinks =
+    lib.genAttrs'
+      [
+        "luau-lsp"
+        "lune"
+        "rojo"
+        "selene"
+        "stylua"
+        "wally"
+      ]
+      (
+        tool:
+        lib.nameValuePair ".local/bin/${tool}" {
+          source = lib.mkForce (lib.getExe packages.${tool});
+        }
+      );
 in
 {
   config = lib.mkIf config.desktop.fullApplications {
@@ -16,7 +35,7 @@ in
         packages.roblox-toolchain
         pkgs.vulkan-tools
       ];
-      file = {
+      file = pinnedToolLinks // {
         ".config/hypr/windows.lua".source = lib.mkForce (
           pkgs.writeText "hypr-studio-windows.lua" ''
             -- Wine dialogs may repeatedly request activation after the pointer leaves.
@@ -41,7 +60,8 @@ in
         if [[ ! -e "${vinegar}/config/vinegar/config.toml" ]]; then
           run install -m600 "$HOME/.config/roblox-dev/vinegar.toml" "${vinegar}/config/vinegar/config.toml"
         fi
-        if [[ ! -e "${pluginDir}/Rojo.rbxm" ]]; then
+        # Keep the Studio plugin on the pinned server's protocol after updates.
+        if ! cmp -s ${packages.rojo-studio-plugin} "${pluginDir}/Rojo.rbxm"; then
           run install -m644 ${packages.rojo-studio-plugin} "${pluginDir}/Rojo.rbxm"
         fi
       '';

@@ -1,0 +1,16 @@
+Technology: NORDLYNX
+Firewall: enabled
+Firewall Mark: 0xe1f1
+Routing: enabled
+User Consent: disabled
+Kill Switch: disabled
+Threat Protection Lite: disabled
+Notify: enabled
+Tray: enabled
+Auto-connect: disabled
+Meshnet: disabled
+DNS: disabled
+LAN Discovery: disabled
+Virtual Location: enabled
+Post-quantum VPN: disabled
+ARP Ignore: enabled

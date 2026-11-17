@@ -13,7 +13,11 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULTS = ROOT / "dotfiles/obs/.local/share/obs-defaults"
-spec = importlib.util.spec_from_file_location("obs_sync", ROOT / "dotfiles/obs/.local/share/obs-sync/sync.py")
+SYNC = ROOT / "dotfiles/obs/.local/share/obs-sync/sync.py"
+LAUNCHER = ROOT / "dotfiles/obs/.local/bin/obs"
+# Resolved before launcher tests replace PATH, which may then hold only test programs.
+BASH = shutil.which("bash")
+spec = importlib.util.spec_from_file_location("obs_sync", SYNC)
 obs = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(obs)
 
@@ -44,6 +48,36 @@ class ObsMigration(unittest.TestCase):
 
     def sync(self, **kwargs):
         return obs.synchronize(self.defaults, self.home, self.config, self.data, self.state, **kwargs)
+
+    def native_obs(self, directory):
+        directory.mkdir(parents=True)
+        native = directory / "obs"
+        native.write_text(f"#!{sys.executable}\nimport json,sys\nprint(json.dumps(sys.argv[1:]))\n")
+        native.chmod(0o700)
+        return native
+
+    def select(self, text):
+        selection = self.config / "desktop/obs-bin"
+        selection.parent.mkdir(parents=True, exist_ok=True)
+        selection.write_text(text)
+
+    def private_path(self):
+        """Only the programs the launcher needs, so an installed OBS can never start."""
+        tools = Path(self.directory.name) / "tools"
+        tools.mkdir()
+        for name, program in [("python3", sys.executable), ("readlink", shutil.which("readlink"))]:
+            (tools / name).write_text(f'#!{BASH}\nexec "{program}" "$@"\n')
+            (tools / name).chmod(0o700)
+        return str(tools)
+
+    def launch(self, *arguments, path, data, status=0):
+        environment = dict(os.environ, HOME=str(self.home), PATH=path, XDG_CONFIG_HOME=str(self.config),
+                           XDG_DATA_HOME=str(data), XDG_STATE_HOME=str(self.state))
+        environment.pop("DESKTOP_OBS_BIN", None)
+        result = subprocess.run([BASH, str(LAUNCHER), *arguments], env=environment, text=True,
+                                capture_output=True)
+        self.assertEqual(result.returncode, status, result.stderr)
+        return result
 
     def test_restores_complete_scene_graph_audio_and_assets(self):
         self.sync()
@@ -157,25 +191,41 @@ class ObsMigration(unittest.TestCase):
         self.assertNotIn("key", service["settings"])
 
     def test_launcher_skips_itself_and_preserves_arguments(self):
-        directory = self.home / "native programs"
-        directory.mkdir(parents=True)
-        native = directory / "obs"
-        native.write_text(f"#!{sys.executable}\nimport json,sys\nprint(json.dumps(sys.argv[1:]))\n")
-        native.chmod(0o700)
-        launcher = ROOT / "dotfiles/obs/.local/bin/obs"
-        environment = dict(os.environ, HOME=str(self.home), XDG_DATA_HOME=str(self.home / "data"),
-                           XDG_CONFIG_HOME=str(self.config),
-                           PATH=f"{launcher.parent}:{directory}:{os.environ['PATH']}")
-        environment.pop("DESKTOP_OBS_BIN", None)
-        result = subprocess.run(["bash", str(launcher), "--profile", "Profile with spaces"],
-                                env=environment, text=True, capture_output=True, check=True)
+        native = self.native_obs(self.home / "native programs")
+        path = f"{LAUNCHER.parent}:{native.parent}:{os.environ['PATH']}"
+        result = self.launch("--profile", "Profile with spaces", path=path, data=self.home / "data")
         self.assertEqual(json.loads(result.stdout), ["--profile", "Profile with spaces"])
-        selection = self.config / "desktop/obs-bin"
-        selection.parent.mkdir(parents=True)
-        selection.write_text(str(native) + "\n")
-        result = subprocess.run(["bash", str(launcher), "--collection", "Collection with spaces"],
-                                env=environment, text=True, capture_output=True, check=True)
+        self.select(str(native) + "\n")
+        result = self.launch("--collection", "Collection with spaces", path=path, data=self.home / "data")
         self.assertEqual(json.loads(result.stdout), ["--collection", "Collection with spaces"])
+
+    def test_launcher_reads_selection_without_trailing_newline(self):
+        native = self.native_obs(self.home / "selected programs")
+        self.select(str(native))
+        result = self.launch("--minimize-to-tray", path=self.private_path(), data=self.home / "data")
+        self.assertEqual(json.loads(result.stdout), ["--minimize-to-tray"])
+
+    def test_launcher_warns_and_starts_obs_when_defaults_fail(self):
+        self.running.stop()  # The launcher's sync sees real processes, not this patch.
+        if obs.obs_running():
+            self.skipTest("OBS is running, so synchronization would be deferred")
+        native = self.native_obs(self.home / "native programs")
+        shutil.copytree(SYNC.parent, self.data / "obs-sync")
+        scene = self.write("basic/scenes/Untitled.json", "malformed private JSON")
+        result = self.launch("--scene", "Scene 2", path=f"{native.parent}:{self.private_path()}", data=self.data)
+        self.assertEqual(json.loads(result.stdout), ["--scene", "Scene 2"])
+        self.assertIn("run obs-config-sync", result.stderr)
+        self.assertEqual(scene.read_text(), "malformed private JSON")
+        self.assertFalse((self.state / "obs-sync/applied.json").exists())
+
+    def test_launcher_without_usable_obs_changes_no_configuration(self):
+        # A stale selection falls back to the PATH search, which finds no OBS either.
+        self.select(str(self.home / "removed/obs") + "\n")
+        shutil.copytree(SYNC.parent, self.data / "obs-sync")
+        result = self.launch(path=self.private_path(), data=self.data, status=127)
+        self.assertIn("OBS executable not found", result.stderr)
+        self.assertFalse(self.target.exists())
+        self.assertFalse((self.state / "obs-sync").exists())
 
 
 if __name__ == "__main__":

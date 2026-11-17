@@ -2,9 +2,39 @@
 
 Current reference: **2026-10-18**, including the newer Rust tools and dirty Hyprspace/Breakd working trees approved by Simon. Source provenance is in [current-reference.json](inventory/current-reference.json). The previous snapshot-only decision is superseded.
 
-Initial validation used an isolated checkout and Docker Nix store. Dated follow-ups record subsequent repository and package checks. The reference Arch configuration has not been activated or reloaded, and no host packages have been installed. On 2026-10-19 Simon approved building a fresh live image and preparing the Cruzer USB for the stationary desktop. Current media evidence belongs under `.work/usb-2026-10-19/`; the older ISO is historical output. Desktop installation and real-hardware acceptance remain pending.
+Initial validation used an isolated checkout and Docker Nix store. Dated follow-ups record subsequent repository and package checks. Until `lambda` was installed with NixOS (configured in 969f3f4 on 2026-10-25), the reference Arch configuration was not activated or reloaded and no host packages were installed; this paragraph is pre-installation history. Agents never activate configurations; Simon does. On 2026-10-19 Simon approved building a fresh live image and preparing the Cruzer USB for the stationary desktop. Current media evidence belongs under `.work/usb-2026-10-19/`; the older ISO is historical output. Desktop installation and real-hardware acceptance remain pending.
 
 ## Current-source results
+
+### November audit integration — 2026-11-17
+
+Validation of the uncommitted audit changes in both repositories (see
+[AUDIT-2026-11.md](AUDIT-2026-11.md)), third round, with no failures:
+
+- Static: `git diff --check` is clean in both repositories, and
+  `nix-instantiate --parse` passes on every changed or new `.nix` file.
+  `nixfmt --check` passes on the changed files except
+  `modules/home/services.nix`, whose `desktop-browser` block is also
+  unformatted at HEAD. `py_compile` passes on all changed Python; ruff reports
+  no new findings (12 in this repository versus 14 at HEAD, 39 in dotfiles
+  versus 42, all pre-existing). Shellcheck is clean on changed scripts
+  (`hendrix-build` with `-x`; `roblox-studio-mcp` has only the SC2012 info).
+  `jq`, `luajit -bl`, `zsh -n` and `node --check` pass on changed JSON, Lua,
+  `core.zsh` and JavaScript.
+- Evaluation: the `lambda`, `desktop`, `desktop-live` and `desktop-recovery`
+  toplevels and the desktop Home Manager activation package evaluate to
+  derivation paths (lambda:
+  `020l986bpway4r7p56bxyr6pmiqhyd33-nixos-system-lambda-26.05.20261115.b349185.drv`).
+  `config.warnings` and `home-manager.users.simon.warnings` are empty on lambda.
+- Build: all 20 affected packages, including `editor-extensions`, and all 17
+  checks built in one `nix build --keep-going` run (exit 0, 181 s).
+- Dry run: lambda's toplevel would build 710 derivations and fetch 3,066 paths
+  (7.3 GiB); the previous round would have built 992. None of the 141 VSIX
+  fetches that failed in round 2 (gzip-encoded marketplace downloads) remain.
+
+No toplevel or activation package was built, nothing was activated, and no
+private state was transferred. The user-unit, sysctl, zram and kernel changes
+take effect only after Simon's next switch and reboot.
 
 ### Final source synchronization — 2026-10-28
 
@@ -252,20 +282,21 @@ Historical integration checks established the compiler wrapper priorities, Pulse
 
 ## Reproducing configuration checks
 
-From this checkout on an x86_64 Nix-capable Linux system:
+From this checkout on an x86_64 Nix-capable Linux system. `nix flake show` lists every check and package; for example:
 
 ```sh
-nix build .#checks.x86_64-linux.desktop-behavior \
+nix build --max-jobs 1 --cores 4 .#checks.x86_64-linux.desktop-behavior \
   .#checks.x86_64-linux.hyprland-config \
   .#checks.x86_64-linux.portable-syntax \
   .#checks.x86_64-linux.neovim-startup \
   .#checks.x86_64-linux.tmux-startup
-nix build .#nixosConfigurations.desktop.config.home-manager.users.simon.home.activationPackage
+nix eval --raw .#nixosConfigurations.desktop.config.home-manager.users.simon.home.activationPackage.drvPath
+nix build --max-jobs 1 --cores 4 .#nixosConfigurations.desktop.config.home-manager.users.simon.home.activationPackage
 ```
 
-Building an activation package does not run it. Do not run its activation script on the reference laptop. Installed NixOS system outputs remain guarded until the desktop's actual hardware, disk and backups are reviewed. The live image is built separately as `.#desktop-iso` for the approved USB preparation phase.
+Building an activation package does not run it, and agents never run its activation script; Simon activates. The `drvPath` evaluation is a cheap first step, but only the build catches build failures. Both installed profiles pass their installation guards because their reviewed `hosts/<host>/local.nix` files are tracked. Run the Python suites through the flake checks: host runs pick up installed binaries from `PATH`. The live image is built separately as `.#desktop-iso` for the approved USB preparation phase.
 
-The builder uses the pinned Nix Docker image, two CPUs and 4 GiB RAM, with `/src` read-only, `.work/` writable, and the separate `nixos-config-store` volume. Large builds run sequentially at reduced scheduling priority. Evaluate the Home Manager derivation path first and build that derivation separately to release evaluation memory. Logs and output JSON under `.work/` are local evidence, not independent backups.
+Historical: the original builder used the pinned Nix Docker image, two CPUs and 4 GiB RAM, with `/src` read-only, `.work/` writable, and the separate `nixos-config-store` volume. Large builds run sequentially at reduced scheduling priority. Evaluate the Home Manager derivation path first and build that derivation separately to release evaluation memory. Logs and output JSON under `.work/` are local evidence, not independent backups. That builder had sandboxing off and `/usr/bin/env` present, which hid test failures; `lambda`'s native Nix sandbox (`sandbox = true`, only `/bin/sh`) has no `/usr/bin/env`.
 
 ## Compatibility and state still requiring acceptance
 

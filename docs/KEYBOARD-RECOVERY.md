@@ -7,7 +7,10 @@ Host: `lambda`, ThinkPad L14 Gen 1 AMD, type `20U6`, running NixOS.
 Reports such as "my keyboard stopped working" or "my keybindings are fucked
 again" may refer to this incident. The built-in keyboard becomes unresponsive
 across applications while the desktop remains visible and SSH from a phone
-continues to work. A key may appear permanently held.
+continues to work. A key may appear permanently held. That phone SSH path is
+Tailscale SSH, declared on `lambda` by `services.tailscale.extraSetFlags = [
+"--ssh" ]` in `hosts/lambda/default.nix` and re-applied by
+`tailscaled-set.service` at boot.
 
 Confirm the actual symptom first. If ordinary typing still works and only a
 shortcut fails, inspect the desktop bindings and input mode instead. A held key

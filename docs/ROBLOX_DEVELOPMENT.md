@@ -5,7 +5,17 @@ It contains Rojo 7.7.1, Lune 0.11.1, Selene 0.32.0, Luau LSP 1.70.1,
 StyLua 2.6.0, Wally 0.3.2, Rokit 1.2.0 and the `roblox-studio` launcher.
 Upstream release archives have fixed hashes; Nix supplies their ELF interpreter
 and required libraries. Activation no longer downloads tools through Rokit.
-Existing Rokit caches and project manifests remain available.
+
+Home Manager links `~/.local/bin/{rojo,lune,selene,stylua,wally,luau-lsp}` to
+these builds instead of the portable Rokit wrappers, so project `rokit.toml`,
+`aftman.toml` and `foreman.toml` pins are not consulted for those commands.
+Spell's pins match; other manifests, such as rojo 7.4.x and the Quenty forks in
+`RESOURCE_LIBRARY`, are no longer honoured. `rokit` stays installed. Activation
+reinstalls the Rojo 7.7.1 Studio plugin whenever it differs. The Roblox types
+come from luau-lsp commit `7a10f6d2`, whose SHA-256 Spell's typecheck verifies.
+The `roblox-dev` dotfiles package also provides `roblox-studio-mcp`, Studio's MCP
+bridge launcher. These links date from November 2026, after the validation below.
+Stow hosts keep the Rokit setup in that package's `SETUP.txt`.
 
 `devShells.x86_64-linux.roblox` provides the same tools, Python with Pillow and
 the pinned Roblox types through `SPELL_ROBLOX_TYPES`. Enter with

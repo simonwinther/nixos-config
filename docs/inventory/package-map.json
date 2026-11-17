@@ -452,10 +452,11 @@
   {
     "arch": "github-cli",
     "referenceVersion": "2.100.0-1",
-    "kind": "package",
+    "kind": "module",
     "source": "stable",
     "attribute": "github-cli",
-    "group": "applications"
+    "group": "applications",
+    "reason": "Home Manager programs.gh installs gh"
   },
   {
     "arch": "gnome-calculator",
@@ -801,10 +802,11 @@
   {
     "arch": "man-db",
     "referenceVersion": "2.13.1-2",
-    "kind": "package",
+    "kind": "module",
     "source": "stable",
     "attribute": "man-db",
-    "group": "applications"
+    "group": "applications",
+    "reason": "Home Manager programs.man installs man-db"
   },
   {
     "arch": "mariadb-libs",
@@ -1336,7 +1338,8 @@
     "kind": "package",
     "source": "stable",
     "attribute": "tesseract",
-    "group": "applications"
+    "group": "applications",
+    "note": "modules/home/packages.nix limits tesseract to the eng and osd models instead of all 129"
   },
   {
     "arch": "texlive-basic",
@@ -1586,10 +1589,11 @@
   {
     "arch": "twingate",
     "referenceVersion": "2026.239.6882-1",
-    "kind": "package",
+    "kind": "module",
     "source": "unstable",
     "attribute": "twingate",
-    "group": "applications"
+    "group": "applications",
+    "reason": "services.twingate installs the pinned unstable CLI system-wide"
   },
   {
     "arch": "tzupdate",
@@ -1692,10 +1696,11 @@
   {
     "arch": "vulkan-radeon",
     "referenceVersion": "1:26.2.2-1",
-    "kind": "package",
+    "kind": "module",
     "source": "stable",
     "attribute": "mesa",
-    "group": "applications"
+    "group": "applications",
+    "reason": "hardware.graphics provides Mesa RADV through /run/opengl-driver; a profile copy enumerates every Vulkan device twice"
   },
   {
     "arch": "vulkan-tools",

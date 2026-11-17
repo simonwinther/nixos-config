@@ -20,7 +20,8 @@ Bluetooth, or desktop policy daemon is installed.
   Real suspend/resume still requires physical acceptance on each host.
 - Move into a sector and left-click. Click the center, right-click, or press
   Backspace to go back. Escape closes. Tab / arrows select, Enter activates.
-  More than eight entries are paginated into another circular submenu.
+  Any level with more than eight entries, including the Bluetooth and audio
+  device lists, shows seven of them plus a More sector that opens the rest.
 - Active devices / arrangements have an accent dot. Unavailable audio routes
   remain visible and disabled. Device names and explanatory status appear in
   the center when selected.
@@ -127,8 +128,10 @@ active rules and is not repeatedly retried for the same plan.
 ## Backends and lifecycle
 
 - Hyprland: direct command socket and event socket; startup, hotplug and config
-  reload trigger reconciliation. A new compositor instance can be rediscovered
-  after EOF. logind `PrepareForSleep(false)` triggers reevaluation after resume.
+  reload trigger reconciliation. Hyprland posts each hotplug as a v1 event
+  followed by its v2 twin; the twin is skipped, so one hotplug reconciles once.
+  A new compositor instance can be rediscovered after EOF. logind
+  `PrepareForSleep(false)` triggers reevaluation after resume.
 - Audio: one persistent libpulse context connects to PipeWire's existing
   PulseAudio-compatible API. A dedicated Rust worker owns requests; libpulse's
   threaded mainloop delivers replies and subscription events under its lock.

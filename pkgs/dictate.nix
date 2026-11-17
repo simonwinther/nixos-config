@@ -3,7 +3,7 @@
   rustPlatform,
   pkg-config,
   wrapGAppsHook4,
-  makeWrapper,
+  makeBinaryWrapper,
   symlinkJoin,
   gtk4,
   gtk4-layer-shell,
@@ -27,7 +27,6 @@ let
     nativeBuildInputs = [
       pkg-config
       wrapGAppsHook4
-      makeWrapper
     ];
     buildInputs = [
       gtk4
@@ -58,6 +57,11 @@ let
           ]
         }'
     '';
+    # Only the overlay loads GTK; the CLI and its recording worker run unwrapped.
+    dontWrapGApps = true;
+    postFixup = ''
+      wrapGApp "$out/bin/dictate-overlay"
+    '';
     meta = {
       description = "Streaming dictation with a native Wayland overlay";
       mainProgram = "dictate";
@@ -68,7 +72,7 @@ in
 symlinkJoin {
   name = "dictate-1.0.0";
   paths = [ native ];
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [ makeBinaryWrapper ];
   inherit (native) meta;
   passthru.unwrapped = native;
   postBuild = ''
@@ -82,9 +86,6 @@ symlinkJoin {
           wl-clipboard
           ffmpeg
           coreutils
-          procps
-          util-linux
-          bash
           hyprland
         ]
       }

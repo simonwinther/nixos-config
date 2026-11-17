@@ -16,7 +16,7 @@ HELP
 }
 
 plot_times() {
-  if ! grep -q ',build,[0-9]*,0$' "$times" 2>/dev/null; then
+  if ! grep -Eq ',build,[0-9]+,0(,|$)' "$times" 2>/dev/null; then
     echo "No successful timed builds yet: $times" >&2
     return 1
   fi
@@ -113,6 +113,8 @@ finish() {
   else
     echo "NixOS $target: $operation failed (exit $status). Details: $log" | tee -a "$log"
   fi
+  # The action is recorded; free the lock while this window waits for Enter.
+  exec 9>&-
   if [[ -t 0 ]]; then read -r -p "Press Enter to close." _ || true; fi
   exit "$status"
 }

@@ -16,7 +16,8 @@ in
   config = lib.mkIf (host == "desktop" && config.desktop.fullApplications) {
     xdg.configFile."desktop/obs-bin".text = "${packages.obs-studio}/bin/obs\n";
     home.activation.obsDefaults = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-      run ${pkgs.python3}/bin/python3 ${sync} --defaults ${defaults} --defer-if-running
+      run ${pkgs.python3}/bin/python3 ${sync} --defaults ${defaults} --defer-if-running ||
+        warnEcho "OBS defaults were not applied; fix the reported problem, then run obs-config-sync."
     '';
     home.file.".local/share/fonts/obs".source = "${packages.obs-font}/share/fonts";
   };

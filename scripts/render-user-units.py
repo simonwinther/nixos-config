@@ -29,7 +29,7 @@ ExecStart={command}
 WantedBy=desktop-session.target
 '''
 services={
- 'desktop-prepare':('Prepare writable desktop state','%h/.local/bin/desktopctl prepare','oneshot','RemainAfterExit=yes'),
+ 'desktop-prepare':('Prepare writable desktop state','%h/.local/bin/desktopctl prepare','oneshot','RemainAfterExit=yes\nTimeoutStartSec=2min'),
  'desktop-search':('Search and clipboard providers','%h/.local/bin/desktop-search serve','exec','Restart=on-failure'),
  'desktop-bar':('Morphing Notch Bar','%h/.local/bin/desktop-bar','exec','Restart=on-failure\nExecReload=kill -USR2 $MAINPID'),
  'desktop-mako':('Notifications','%h/.local/bin/desktopctl run mako','exec','Restart=on-failure'),
@@ -40,7 +40,7 @@ services={
  'desktop-swayosd':('Volume and brightness display','%h/.local/bin/desktopctl run swayosd-server','exec','Restart=on-failure'),
  'desktop-hypridle':('Idle and suspend coordination','%h/.local/bin/desktopctl idle-worker','exec','Restart=on-failure'),
  'desktop-fcitx5':('Keyboard input method','fcitx5 --disable notificationitem','exec','Restart=on-failure'),
- 'desktop-wallpaper':('Restore wallpapers','%h/.local/bin/desktopctl wallpaper restore','oneshot',''),
+ 'desktop-wallpaper':('Restore wallpapers','%h/.local/bin/desktopctl wallpaper restore','oneshot','TimeoutStartSec=2min'),
  'desktop-file-picker':('Prepare windowless file and PDF picker terminal','%h/.local/bin/file-picker --prepare-terminal','oneshot','RemainAfterExit=yes\nTimeoutStartSec=20'),
 }
 for name,(description,command,kind,extra) in services.items():
@@ -51,7 +51,7 @@ for name,(description,command,kind,extra) in services.items():
  if name=='desktop-wallpaper':text=text.replace('After=desktop-prepare.service','After=desktop-prepare.service desktop-awww.service\nRequires=desktop-awww.service')
  if name == 'desktop-bar':text=text.replace('PartOf=desktop-session.target','PartOf=desktop-session.target\nConditionPathExists=!%h/.local/state/desktop/toggles/bar-off')
  (units/(name+'.service')).write_text(text)
-for name,command in {'desktop-lock':'desktopctl lock-worker','desktop-lock-only':'desktopctl lock-worker --only','desktop-hyprsunset':'hyprsunset'}.items():
+for name,command in {'desktop-lock':'%h/.local/bin/desktopctl lock-worker','desktop-lock-only':'%h/.local/bin/desktopctl lock-worker --only','desktop-hyprsunset':'hyprsunset'}.items():
  (units/(name+'.service')).write_text('[Unit]\nDescription='+name+'\n\n[Service]\nType=exec\nEnvironment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin\nExecStart='+command+'\n')
 print(a.target/'desktop-services')
 print('Rendered only. Review, Stow to the target home, reload the target user manager, then start desktop-session.target.')

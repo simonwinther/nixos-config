@@ -50,12 +50,17 @@
     extraGroups = [
       "wheel"
       "docker"
-      "network"
       "nordvpn"
     ];
   };
   users.groups.nordvpn = { };
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    # The Home Manager zsh dotfiles run their own cached compinit and set the
+    # oh-my-posh prompt; the system-wide versions only slow every shell down.
+    enableGlobalCompInit = lib.mkIf (profile != "recovery") false;
+    promptInit = lib.mkIf (profile != "recovery") "";
+  };
   programs.bash.completion.enable = true;
   services.openssh = {
     enable = true;
@@ -71,10 +76,22 @@
   services.dbus.enable = true;
   security.polkit.enable = true;
   security.rtkit.enable = true;
-  boot.kernel.sysctl = {
-    "fs.inotify.max_user_watches" = 524288;
-    "net.ipv4.tcp_mtu_probing" = 1;
-  };
+  boot.kernel.sysctl = lib.mkMerge [
+    {
+      "fs.inotify.max_user_watches" = 524288;
+      "net.ipv4.tcp_mtu_probing" = 1;
+    }
+    # Faulting a page back from zram takes microseconds, far less than
+    # rereading it from the encrypted disk. Prefer compressing idle anonymous
+    # memory over evicting page cache, skip swap readahead and let kswapd
+    # reclaim before allocations stall (kernel vm sysctl docs, ArchWiki zram).
+    (lib.mkIf config.zramSwap.enable {
+      "vm.swappiness" = lib.mkDefault 180;
+      "vm.page-cluster" = lib.mkDefault 0;
+      "vm.watermark_boost_factor" = lib.mkDefault 0;
+      "vm.watermark_scale_factor" = lib.mkDefault 125;
+    })
+  ];
   hardware.enableRedistributableFirmware = true;
   boot.supportedFilesystems = [ "ntfs" ];
   environment.systemPackages = with pkgs; [
@@ -97,10 +114,9 @@
     lsof
     openssl
   ];
-  zramSwap = {
-    enable = lib.mkDefault true;
-    memoryPercent = 25;
-  };
+  # zstd packs lambda's idle memory about 4:1, and the former 25% cap stayed
+  # full. The module default lets zram hold up to half the RAM.
+  zramSwap.enable = lib.mkDefault true;
   services.power-profiles-daemon.enable = true;
   services.logind.settings.Login.HandlePowerKey = "ignore";
   services.udev.extraRules = lib.optionalString config.workstation.laptop ''

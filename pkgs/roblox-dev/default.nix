@@ -14,6 +14,9 @@
   vimPlugins,
 }:
 let
+  # Upstream release archives, as Rokit installs them from project manifests.
+  # Projects check these exact versions, so nixpkgs builds that move with
+  # flake updates are not used even when they are equally new.
   mkTool =
     {
       pname,
@@ -50,14 +53,12 @@ let
         mainProgram = pname;
       };
     };
+  # Immutable luau-lsp snapshot of 21 October 2026. Spell's typecheck verifies
+  # this exact SHA-256, so update it together with the project pin.
   types = fetchurl {
     name = "roblox-globalTypes.d.luau";
-    url = "https://luau-lsp.pages.dev/type-definitions/globalTypes.RobloxScriptSecurity.d.luau";
+    url = "https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/7a10f6d2dc6067934c66f9e3ad6cb4095594ac62/scripts/globalTypes.RobloxScriptSecurity.d.luau";
     sha256 = "71698e2454aacef1a144a498ffc1d7ea80654b9593025344672bc9106997bf6a";
-    curlOptsList = [
-      "--user-agent"
-      "nixos-config-runtime-audit"
-    ];
   };
   docs = fetchurl {
     name = "roblox-api-docs.json";

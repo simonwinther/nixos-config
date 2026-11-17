@@ -3,7 +3,6 @@
   rustPlatform,
   pkg-config,
   wrapGAppsHook4,
-  makeWrapper,
   gtk4,
   gtk4-layer-shell,
   pulseaudio,
@@ -20,7 +19,6 @@ rustPlatform.buildRustPackage {
   nativeBuildInputs = [
     pkg-config
     wrapGAppsHook4
-    makeWrapper
   ];
   buildInputs = [
     gtk4
@@ -33,13 +31,14 @@ rustPlatform.buildRustPackage {
   ];
   preCheck = "export TMPDIR=/tmp";
   cargoTestFlags = [ "--all-targets" ];
-  postFixup = ''
-    wrapProgram "$out/bin/desktop-ring" --prefix PATH : ${
+  # One compiled GApps wrapper also carries the PATH used for systemctl and notify-send.
+  preFixup = ''
+    gappsWrapperArgs+=(--prefix PATH : ${
       lib.makeBinPath [
         systemd
         libnotify
       ]
-    }
+    })
   '';
   meta = {
     description = "Hardware-aware displays and a universal Wayland pie menu";
