@@ -881,9 +881,8 @@
   {
     "arch": "nordvpn-tui-bin",
     "referenceVersion": "0.1.0-1",
-    "kind": "custom",
-    "attribute": "nordvpn-tui",
-    "group": "applications"
+    "kind": "excluded",
+    "reason": "Removed at user request; no longer used."
   },
   {
     "arch": "noto-fonts",

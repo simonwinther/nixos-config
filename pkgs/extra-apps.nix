@@ -1,33 +1,8 @@
-{ pkgs, unstable }:
+{ pkgs, ... }:
 let
   inherit (pkgs) lib;
 in
 {
-  # The upstream repository and its release tarball were deleted, so the
-  # tagged source is vendored (docs/VENDOR-SOURCES.md).
-  nordvpn-tui = pkgs.buildGoModule {
-    pname = "nordvpn-tui";
-    version = "0.1.0";
-    src = ./nordvpn-tui/source;
-    vendorHash = "sha256-jDF3vYhwWI7rQ1oiSHIcII51CG7am6nyTkRmbET2K4I=";
-    subPackages = [ "cmd/nordvpn-tui" ];
-    ldflags = [
-      "-s"
-      "-w"
-      "-X main.version=v0.1.0"
-      "-X main.commit=f42fb74"
-    ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postInstall = ''
-      install -Dm444 LICENSE "$out/share/doc/nordvpn-tui/LICENSE"
-      wrapProgram "$out/bin/nordvpn-tui" --prefix PATH : ${unstable.nordvpn}/bin
-    '';
-    meta = {
-      license = lib.licenses.mit;
-      platforms = [ "x86_64-linux" ];
-      mainProgram = "nordvpn-tui";
-    };
-  };
   tobi-try = pkgs.stdenvNoCC.mkDerivation {
     pname = "tobi-try";
     version = "1.10.1";
