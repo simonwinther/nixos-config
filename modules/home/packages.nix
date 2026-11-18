@@ -10,6 +10,10 @@
 }:
 let
   inventory = builtins.fromJSON (builtins.readFile ../../docs/inventory/package-map.json);
+  agentPackages = import inputs.chatgpt-nixpkgs {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
   # The reference explicitly installed tesseract-data-eng; osd adds orientation
   # detection. The default package bundles all 129 tessdata models (about 1 GB);
   # desktop OCR requests English.
@@ -33,10 +37,7 @@ let
         row:
         # Compiler wrappers also provide cc/c++; retain GCC as the default.
         if row.arch == "chatgpt-bin" then
-          (import inputs.chatgpt-nixpkgs {
-            system = pkgs.stdenv.hostPlatform.system;
-            config.allowUnfree = true;
-          }).chatgpt
+          agentPackages.chatgpt
         else if row.arch == "gcc-fortran" then
           lib.setPrio 30 (select row)
         else if row.arch == "clang" then
@@ -197,7 +198,7 @@ in
     ++ lib.optionals config.desktop.fullApplications (
       with unstable;
       [
-        codex
+        agentPackages.codex
         cargo
         rustfmt
         clippy
