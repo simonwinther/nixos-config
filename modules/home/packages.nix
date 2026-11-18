@@ -3,6 +3,7 @@
   lib,
   pkgs,
   unstable,
+  inputs,
   packages,
   profile,
   ...
@@ -31,7 +32,12 @@ let
       (
         row:
         # Compiler wrappers also provide cc/c++; retain GCC as the default.
-        if row.arch == "gcc-fortran" then
+        if row.arch == "chatgpt-bin" then
+          (import inputs.chatgpt-nixpkgs {
+            system = pkgs.stdenv.hostPlatform.system;
+            config.allowUnfree = true;
+          }).chatgpt
+        else if row.arch == "gcc-fortran" then
           lib.setPrio 30 (select row)
         else if row.arch == "clang" then
           lib.setPrio 20 (select row)

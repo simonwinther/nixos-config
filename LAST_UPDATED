@@ -9,8 +9,8 @@
 AGENTS.md: 12/11/2026
 README.md: 17/11/2026
 docs: 17/11/2026
-flake.lock: 17/11/2026
-flake.nix: 17/11/2026
+flake.lock: 18/11/2026
+flake.nix: 18/11/2026
 hosts/desktop: 22/10/2026
 hosts/lambda: 17/11/2026
 lib: 28/10/2026
@@ -23,7 +23,7 @@ modules/home/dotfiles.nix: 28/10/2026
 modules/home/editors.nix: unknown
 modules/home/hendrix.nix: 16/11/2026
 modules/home/obs.nix: 17/11/2026
-modules/home/packages.nix: 17/11/2026
+modules/home/packages.nix: 18/11/2026
 modules/home/rebuild.nix: 16/11/2026
 modules/home/roblox-dev.nix: 16/11/2026
 modules/home/services.nix: 17/11/2026
