@@ -1,6 +1,6 @@
 diff -ruN hs.orig/src/Config.cpp hs/src/Config.cpp
---- a/src/Config.cpp	2026-11-22 16:30:08.097644095 +0100
-+++ b/src/Config.cpp	2026-11-22 16:30:08.133569037 +0100
+--- a/src/Config.cpp	2026-11-22 16:53:11.563778810 +0100
++++ b/src/Config.cpp	2026-11-22 16:52:42.835518182 +0100
 @@ -30,6 +30,7 @@
              SP<Config::Values::CColorValue>  overviewActiveBorder;
              SP<Config::Values::CColorValue>  overviewHoverBorder;
@@ -28,8 +28,8 @@ diff -ruN hs.orig/src/Config.cpp hs/src/Config.cpp
          return g_values.overviewIncludeSpecial ? g_values.overviewIncludeSpecial->value() : true;
      }
 diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
---- a/src/Config.hpp	2026-11-22 16:30:08.097644095 +0100
-+++ b/src/Config.hpp	2026-11-22 16:30:08.131950763 +0100
+--- a/src/Config.hpp	2026-11-22 16:53:11.563778810 +0100
++++ b/src/Config.hpp	2026-11-22 16:52:42.836750977 +0100
 @@ -27,6 +27,7 @@
      CHyprColor overviewActiveBorder();
      CHyprColor overviewHoverBorder();
@@ -39,9 +39,48 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      bool       overviewExcludesWorkspace(std::string_view name);
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
---- a/src/Overview.cpp	2026-11-22 16:30:08.099644142 +0100
-+++ b/src/Overview.cpp	2026-11-22 16:30:08.136645013 +0100
-@@ -1649,7 +1649,8 @@
+--- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
++++ b/src/Overview.cpp	2026-11-22 16:53:11.546025910 +0100
+@@ -41,12 +41,38 @@
+ #include <cmath>
+ #include <optional>
+ #include <ranges>
++#include <string>
++#include <vector>
+ 
+ namespace hyprspace {
+ 
+     namespace {
+         constexpr double EMPTY_WORKSPACE_TEXT_SCALE = 0.9;
+         constexpr double EMPTY_WORKSPACE_KEY_SCALE  = 0.75;
++
++        // Agent CLIs prefix titles with an animated status glyph (U+2000-U+2FFF, such as a
++        // braille spinner) that names nothing. Shells title windows with their directory, whose
++        // end names the place, so keep its last two components before the badge is shortened.
++        std::string displayTitle(std::string title) {
++            const auto* BYTES = reinterpret_cast<const unsigned char*>(title.data());
++            if (title.size() > 4 && BYTES[0] == 0xE2 && title[3] == ' ') {
++                const unsigned CODEPOINT = ((BYTES[0] & 0x0Fu) << 12) | ((BYTES[1] & 0x3Fu) << 6) | (BYTES[2] & 0x3Fu);
++                if (CODEPOINT != 0x2026)
++                    title.erase(0, title.find_first_not_of(' ', 3));
++            }
++            if (title.starts_with('/') || title.starts_with('~') || title.starts_with("\u2026/")) {
++                std::vector<std::string> parts;
++                for (size_t start = 0; start < title.size();) {
++                    const size_t END = std::min(title.find('/', start), title.size());
++                    if (END > start)
++                        parts.emplace_back(title.substr(start, END - start));
++                    start = END + 1;
++                }
++                if (parts.size() > 2)
++                    title = "\u2026/" + parts[parts.size() - 2] + "/" + parts.back();
++            }
++            return title;
++        }
+     } // namespace
+ 
+     COverview::COverview(PHLMONITOR monitor) : m_monitor(monitor) {
+@@ -1649,7 +1675,8 @@
                              MARK);
                  }
  
@@ -51,14 +90,14 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
                      continue;
  
                  constexpr double PAD_X = 10, PAD_Y = 4, INSET = 8;
-@@ -1657,8 +1658,10 @@
+@@ -1657,8 +1684,10 @@
                  if (TEXT_WIDTH <= 0)
                      continue;
  
 -                const auto LABEL = slot.fullscreen == Fullscreen::FSMODE_FULLSCREEN ? "fullscreen" : "maximized";
 -                const auto tb    = textures().text(LABEL, FONT, COL, TEXT_WIDTH, SCALE);
 +                const std::string MODE  = slot.fullscreen == Fullscreen::FSMODE_FULLSCREEN ? "fullscreen" : "maximized";
-+                const std::string LABEL = SHOW_TITLE ? W->m_title : MODE;
++                const std::string LABEL = SHOW_TITLE ? displayTitle(W->m_title) : MODE;
 +                const auto        INK   = SHOW_TITLE && !FULLSCREEN && !HOVER ? config::overviewLabelColor() : COL;
 +                const auto        tb    = textures().text(LABEL, FONT, INK, TEXT_WIDTH, SCALE);
                  if (!tb)
