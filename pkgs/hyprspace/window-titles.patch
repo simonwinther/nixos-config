@@ -40,7 +40,7 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 --- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
-+++ b/src/Overview.cpp	2026-11-22 19:30:33.922341849 +0100
++++ b/src/Overview.cpp	2026-11-22 19:45:33.706492649 +0100
 @@ -41,12 +41,49 @@
  #include <cmath>
  #include <optional>
@@ -78,12 +78,12 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +            return title;
 +        }
 +
-+        // Window tags match the desktop window-labels: bold monospace, a little smaller than the overview font.
++        // Window tags match the desktop window-labels: bold monospace, clearly smaller than the overview font.
 +        std::string tagFont(const std::string& font) {
-+            int size = 11;
++            int size = 9;
 +            if (const auto SPACE = font.find_last_of(' '); SPACE != std::string::npos) {
 +                try {
-+                    size = std::max(9, static_cast<int>(std::lround(std::stod(font.substr(SPACE + 1)) * 0.9)));
++                    size = std::max(8, static_cast<int>(std::lround(std::stod(font.substr(SPACE + 1)) * 0.75)));
 +                } catch (...) {}
 +            }
 +            return "monospace Bold " + std::to_string(size);
