@@ -40,7 +40,7 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 --- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
-+++ b/src/Overview.cpp	2026-11-22 19:45:33.706492649 +0100
++++ b/src/Overview.cpp	2026-11-22 19:50:20.132462656 +0100
 @@ -41,12 +41,49 @@
  #include <cmath>
  #include <optional>
@@ -220,3 +220,14 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
              if (const auto state = scrollingFor(entry); state && PROGRESS >= 0.95F) {
                  const auto controls = scrollControls(cell, state->horizontal);
                  const auto pointer  = g_pInputManager->getMouseCoordsInternal() - MONITOR->m_position;
+@@ -1716,7 +1804,10 @@
+                 const auto bgBox = overviewWorkspaceLabelBox(cell, SZ.x, SZ.y);
+ 
+                 const auto BGCOL = config::overviewTitleBgColor();
++                // Same chip style as the window tags: a hairline edge, accented on the selected workspace.
++                const auto EDGE = SELECTED ? config::overviewActiveBorder() : CHyprColor{1.0, 1.0, 1.0, 0.12};
+                 rect(bgBox, BGCOL.modifyA(BGCOL.a * LABEL_A), bgBox.h / 2.0);
++                border(bgBox, EDGE.modifyA(EDGE.a * LABEL_A), 1, bgBox.h / 2.0);
+                 tex(t2, SBoxF{bgBox.x + (bgBox.w - SZ.x) / 2.0, bgBox.y + 5, SZ.x, SZ.y}, LABEL_A);
+             }
+         }
