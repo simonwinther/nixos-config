@@ -12,6 +12,36 @@ or source archive.
 - `~/.ssh/hendrix_pc` and `.pub`: existing Hendrix SSH identity. Keep the private
   key 0600 and `.ssh` 0700. The alias is declared in `modules/home/hendrix.nix`.
 
+## Syncing application keys between the laptop and stationary PC
+
+The portable `workstation-keys` helper in the dotfiles bin package packs the
+application key files into `~/.workstation-keys.age`. Apps keep reading their
+usual runtime paths. Refresh the bundle on the laptop after changing a key.
+The file list in the helper covers Canvas, weather, dictation, shell keys,
+GitHub CLI, netrc, and the my-life, Canvas development and Roblox project
+environments. Add a path there when introducing another credential file.
+SSH identities, browser sessions, KU passwords and MFA seeds use their own
+recovery procedures.
+
+For a desktop with the updated dotfiles, run these on the laptop:
+
+```sh
+~/nixos-config/dotfiles/bin/.local/bin/workstation-keys pack --passphrase
+rsync -av -e ssh ~/.workstation-keys.age stationary:
+ssh -t stationary '~/.local/bin/workstation-keys restore --passphrase'
+```
+
+Choose a strong passphrase and keep it in your password manager. Restore
+checks every destination before writing, skips matching private files and
+creates new files with mode 0600. Review any reported conflicts before
+repeating restore with `--replace`. Restore project environments into private
+working trees and keep their `.env` files ignored by Git.
+
+For key-based operation, plain `pack` uses the existing Hendrix public key.
+Use `pack --recipient PUBLIC_KEY_FILE` on each refresh to include a desktop
+public key as well, and `restore --identity PRIVATE_KEY_FILE` on that desktop.
+Only the encrypted bundle travels between machines.
+
 On NixOS, `~/.local/bin/ssh` is the native launcher (`hendrix-vpn.launcher`),
 which passes other hosts straight to OpenSSH and hands only the VPN start to
 `hendrix.py`. Other distributions use the portable wrapper, which prefers a
