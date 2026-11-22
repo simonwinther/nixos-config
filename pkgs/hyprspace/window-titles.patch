@@ -40,7 +40,7 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 --- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
-+++ b/src/Overview.cpp	2026-11-22 18:23:34.972072834 +0100
++++ b/src/Overview.cpp	2026-11-22 19:25:44.395173083 +0100
 @@ -41,12 +41,49 @@
  #include <cmath>
  #include <optional>
@@ -78,20 +78,37 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +            return title;
 +        }
 +
-+        // Window titles read as captions, so they use the overview font at a smaller size.
-+        std::string captionFont(const std::string& font) {
-+            const auto SPACE = font.find_last_of(' ');
-+            if (SPACE == std::string::npos)
-+                return font;
-+            try {
-+                const double SIZE = std::stod(font.substr(SPACE + 1));
-+                return font.substr(0, SPACE + 1) + std::to_string(std::max(8, static_cast<int>(std::lround(SIZE * 0.8))));
-+            } catch (...) { return font; }
++        // Window tags match the desktop window-labels: bold monospace, a little smaller than the overview font.
++        std::string tagFont(const std::string& font) {
++            int size = 11;
++            if (const auto SPACE = font.find_last_of(' '); SPACE != std::string::npos) {
++                try {
++                    size = std::max(9, static_cast<int>(std::lround(std::stod(font.substr(SPACE + 1)) * 0.9)));
++                } catch (...) {}
++            }
++            return "monospace Bold " + std::to_string(size);
 +        }
      } // namespace
  
      COverview::COverview(PHLMONITOR monitor) : m_monitor(monitor) {
-@@ -1627,38 +1664,55 @@
+@@ -1613,6 +1650,16 @@
+                 }
+             }
+ 
++            // Tags can extend into the gap above their window, so they are drawn after every preview.
++            struct STitleTag {
++                SP<Render::ITexture> text;
++                SBoxF                chip;
++                Vector2D             size;
++                CHyprColor           edge;
++                double               fill;
++                float                alpha;
++            };
++            std::vector<STitleTag> tags;
+             for (const auto index : entry.drawOrder) {
+                 const auto& slot = entry.windows[index];
+                 const auto  W    = slot.window.lock();
+@@ -1627,38 +1674,54 @@
                      continue;
  
                  const float VISIBILITY = visibilityFor(entry, slot) * SOURCE_ALPHA;
@@ -127,23 +144,22 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +                if (FULLSCREEN || HOVER || entry.spread)
 +                    outline(VISIBLE, COL.modifyA(COL.a * FADE * PROGRESS), MARK);
 +
-+                // The title badge sits over the preview's top-left corner: a compact, near-opaque
-+                // neutral chip with a hairline edge, legible on any content and theme accent.
++                // The title tag sits just above the preview's top edge, like the desktop window-labels,
++                // so it never covers window content.
 +                bool caption = false;
-+                if (config::overviewShowWindowTitles() && !W->m_title.empty() && PROGRESS > 0.35F) {
-+                    constexpr double PAD_X = 8, PAD_Y = 3, INSET = 6;
-+                    const int        TEXT_WIDTH = static_cast<int>(VISIBLE.w - 2 * (INSET + MARK + PAD_X));
-+                    const auto       INK        = HOVER ? config::overviewActiveBorder() : CHyprColor{0.94, 0.94, 0.94, 0.92};
-+                    const auto       tb = TEXT_WIDTH > 0 ? textures().text(displayTitle(W->m_title), captionFont(FONT), INK, TEXT_WIDTH, SCALE) : nullptr;
-+                    const auto       SZ = tb ? logicalSize(tb) : Vector2D{};
-+                    if (tb && SZ.y + 2 * (INSET + MARK + PAD_Y) <= VISIBLE.h) {
-+                        caption              = true;
-+                        const float  ALPHA   = (PROGRESS - 0.35F) / 0.65F * FADE;
-+                        const SBoxF  chip{VISIBLE.x + INSET + MARK, VISIBLE.y + INSET + MARK, std::round(SZ.x + 2 * PAD_X), std::round(SZ.y + 2 * PAD_Y)};
-+                        const double RADIUS = std::min(6.0, chip.h / 2);
-+                        rect(chip, CHyprColor{0.07, 0.07, 0.08, 0.90 * ALPHA}, RADIUS);
-+                        border(chip, CHyprColor{1.0, 1.0, 1.0, 0.12 * ALPHA}, 1, RADIUS);
-+                        tex(tb, {chip.x + PAD_X, chip.y + PAD_Y, SZ.x, SZ.y}, ALPHA);
++                if (config::overviewShowWindowTitles() && !W->m_title.empty() && PROGRESS > 0.35F && TOP <= b.y) {
++                    constexpr double PAD_X = 8, PAD_Y = 3, INSET = 10;
++                    const int        TEXT_WIDTH = static_cast<int>(VISIBLE.w - 2 * (INSET + PAD_X));
++                    const auto       INK        = CHyprColor{1.0, 1.0, 1.0, HOVER ? 1.0 : 0.80};
++                    const auto       tb = TEXT_WIDTH > 0 ? textures().text(displayTitle(W->m_title), tagFont(FONT), INK, TEXT_WIDTH, SCALE) : nullptr;
++                    if (tb) {
++                        caption             = true;
++                        const auto   SZ     = logicalSize(tb);
++                        const float  ALPHA  = (PROGRESS - 0.35F) / 0.65F * FADE;
++                        const double HEIGHT = std::round(SZ.y + 2 * PAD_Y);
++                        const SBoxF  chip{VISIBLE.x + INSET, VISIBLE.y - HEIGHT, std::round(SZ.x + 2 * PAD_X), HEIGHT};
++                        const auto   EDGE   = HOVER ? config::overviewActiveBorder() : CHyprColor{0.35, 0.35, 0.35, 0.67};
++                        tags.push_back({tb, chip, SZ, EDGE, HOVER ? 0.94 : 0.85, ALPHA});
 +                    }
                  }
  
@@ -164,7 +180,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
                  if (!tb)
                      continue;
  
-@@ -1666,7 +1720,6 @@
+@@ -1666,13 +1729,20 @@
                  if (SZ.y + 2 * (INSET + MARK + PAD_Y) > b.h)
                      continue;
  
@@ -172,3 +188,17 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
                  const SBoxF badge{b.x + INSET + MARK, b.y + INSET + MARK, SZ.x + PAD_X * 2, SZ.y + PAD_Y * 2};
                  const auto  BGCOL = config::overviewTitleBgColor();
                  rect(badge, BGCOL.modifyA(BGCOL.a * BADGE_A), badge.h / 2.0);
+                 tex(tb, {badge.x + PAD_X, badge.y + PAD_Y, SZ.x, SZ.y}, BADGE_A);
+             }
+ 
++            for (const auto& tag : tags) {
++                constexpr double PAD_X = 8, PAD_Y = 3;
++                const double     RADIUS = std::min(5.0, tag.chip.h / 2);
++                rect(tag.chip, CHyprColor{0.055, 0.06, 0.07, tag.fill * tag.alpha}, RADIUS);
++                border(tag.chip, tag.edge.modifyA(tag.edge.a * tag.alpha), 1, RADIUS);
++                tex(tag.text, {tag.chip.x + PAD_X, tag.chip.y + PAD_Y, tag.size.x, tag.size.y}, tag.alpha);
++            }
++
+             if (const auto state = scrollingFor(entry); state && PROGRESS >= 0.95F) {
+                 const auto controls = scrollControls(cell, state->horizontal);
+                 const auto pointer  = g_pInputManager->getMouseCoordsInternal() - MONITOR->m_position;
