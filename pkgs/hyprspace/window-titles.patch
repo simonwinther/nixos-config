@@ -40,7 +40,7 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 --- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
-+++ b/src/Overview.cpp	2026-11-22 17:32:15.764734993 +0100
++++ b/src/Overview.cpp	2026-11-22 18:23:34.972072834 +0100
 @@ -41,12 +41,49 @@
  #include <cmath>
  #include <optional>
@@ -91,7 +91,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
      } // namespace
  
      COverview::COverview(PHLMONITOR monitor) : m_monitor(monitor) {
-@@ -1627,38 +1664,69 @@
+@@ -1627,38 +1664,55 @@
                      continue;
  
                  const float VISIBILITY = visibilityFor(entry, slot) * SOURCE_ALPHA;
@@ -119,46 +119,32 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +                const double LEFT = std::max(b.x, clip.x), TOP = std::max(b.y, clip.y);
 +                const SBoxF  VISIBLE{LEFT, TOP, std::min(b.x + b.w, clip.x + clip.w) - LEFT, std::min(b.y + b.h, clip.y + clip.h) - TOP};
 +
-+                // With titles shown, each window becomes a card: a title band on top and the
-+                // preview scaled to fit below it, so the title never covers window content.
-+                constexpr double     TITLE_PAD_X = 8, TITLE_PAD_Y = 4;
-+                const float          TITLE_A = std::clamp((PROGRESS - 0.35F) / 0.65F, 0.F, 1.F);
-+                SP<Render::ITexture> caption;
-+                double               band = 0;
-+                if (config::overviewShowWindowTitles() && !W->m_title.empty() && TITLE_A > 0 && TOP <= b.y && VISIBLE.w > 2 * TITLE_PAD_X) {
-+                    // Neutral colours stay legible on any preview and theme accent.
-+                    const auto INK = HOVER ? config::overviewActiveBorder() : CHyprColor{0.92, 0.92, 0.92, 0.88};
-+                    caption        = textures().text(displayTitle(W->m_title), captionFont(FONT), INK, static_cast<int>(VISIBLE.w - 2 * TITLE_PAD_X), SCALE);
-+                    const double FULL = caption ? std::round(logicalSize(caption).y + 2 * TITLE_PAD_Y) : 0;
-+                    if (caption && FULL <= b.h * 0.3)
-+                        band = FULL * TITLE_A;
-+                    else
-+                        caption = nullptr;
-+                }
-+
-+                SBoxF content = b;
-+                if (band > 0) {
-+                    const double SHRINK = (b.h - band) / b.h;
-+                    content             = {b.x + b.w * (1 - SHRINK) / 2, b.y + band, b.w * SHRINK, b.h - band};
-+                    const CHyprColor CARD{0.06, 0.06, 0.06, 0.94};
-+                    renderPass::appendSolidFill(out, b, CARD.modifyA(CARD.a * VISIBILITY), SCALE, round, VISIBLE);
-+                }
-+
 +                if (t)
-+                    windowTexture(W, t, content, VISIBILITY, round, slot.blur, VISIBLE);
-+                else {
-+                    const double left = std::max(content.x, clip.x), top = std::max(content.y, clip.y);
-+                    const SBoxF  fallback{left, top, std::min(content.x + content.w, clip.x + clip.w) - left, std::min(content.y + content.h, clip.y + clip.h) - top};
-+                    if (fallback.w > 0 && fallback.h > 0)
-+                        rect(fallback, config::overviewTitleBgColor().modifyA(VISIBILITY), round);
-+                }
++                    windowTexture(W, t, b, VISIBILITY, round, slot.blur, GEOMETRY.clip);
++                else if (VISIBLE.w > 0 && VISIBLE.h > 0)
++                    rect(VISIBLE, config::overviewTitleBgColor().modifyA(VISIBILITY), round);
 +
 +                if (FULLSCREEN || HOVER || entry.spread)
 +                    outline(VISIBLE, COL.modifyA(COL.a * FADE * PROGRESS), MARK);
 +
-+                if (caption && band > 0) {
-+                    const auto SZ = logicalSize(caption);
-+                    tex(caption, {b.x + TITLE_PAD_X, b.y + std::round((band - SZ.y) / 2), SZ.x, SZ.y}, TITLE_A * FADE, 0, SBoxF{b.x, b.y, b.w, band});
++                // The title badge sits over the preview's top-left corner: a compact, near-opaque
++                // neutral chip with a hairline edge, legible on any content and theme accent.
++                bool caption = false;
++                if (config::overviewShowWindowTitles() && !W->m_title.empty() && PROGRESS > 0.35F) {
++                    constexpr double PAD_X = 8, PAD_Y = 3, INSET = 6;
++                    const int        TEXT_WIDTH = static_cast<int>(VISIBLE.w - 2 * (INSET + MARK + PAD_X));
++                    const auto       INK        = HOVER ? config::overviewActiveBorder() : CHyprColor{0.94, 0.94, 0.94, 0.92};
++                    const auto       tb = TEXT_WIDTH > 0 ? textures().text(displayTitle(W->m_title), captionFont(FONT), INK, TEXT_WIDTH, SCALE) : nullptr;
++                    const auto       SZ = tb ? logicalSize(tb) : Vector2D{};
++                    if (tb && SZ.y + 2 * (INSET + MARK + PAD_Y) <= VISIBLE.h) {
++                        caption              = true;
++                        const float  ALPHA   = (PROGRESS - 0.35F) / 0.65F * FADE;
++                        const SBoxF  chip{VISIBLE.x + INSET + MARK, VISIBLE.y + INSET + MARK, std::round(SZ.x + 2 * PAD_X), std::round(SZ.y + 2 * PAD_Y)};
++                        const double RADIUS = std::min(6.0, chip.h / 2);
++                        rect(chip, CHyprColor{0.07, 0.07, 0.08, 0.90 * ALPHA}, RADIUS);
++                        border(chip, CHyprColor{1.0, 1.0, 1.0, 0.12 * ALPHA}, 1, RADIUS);
++                        tex(tb, {chip.x + PAD_X, chip.y + PAD_Y, SZ.x, SZ.y}, ALPHA);
++                    }
                  }
  
 -                if (!FULLSCREEN || PROGRESS <= 0.35F)
@@ -178,7 +164,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
                  if (!tb)
                      continue;
  
-@@ -1666,7 +1734,6 @@
+@@ -1666,7 +1720,6 @@
                  if (SZ.y + 2 * (INSET + MARK + PAD_Y) > b.h)
                      continue;
  
