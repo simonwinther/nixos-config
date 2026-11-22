@@ -1,5 +1,8 @@
 # Local source maintenance dates; format DD/MM/YYYY.
 # Portable projects: dotfiles/LAST_UPDATED (their canonical tracker).
+# Initial unchanged dates come from the last recorded Git change.
+# unknown = existing uncommitted work without a recorded date.
+# Reading, building or testing alone does not advance these dates.
 .gitattributes: 18/10/2026
 .gitignore: 27/10/2026
 .gitmodules: 24/10/2026
