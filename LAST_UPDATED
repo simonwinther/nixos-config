@@ -24,7 +24,7 @@ modules/home/packages.nix: 22/11/2026
 modules/home/rebuild.nix: 16/11/2026
 modules/home/roblox-dev.nix: 16/11/2026
 modules/home/services.nix: 17/11/2026
-modules/nixos/base.nix: 17/11/2026
+modules/nixos/base.nix: 21/11/2026
 modules/nixos/default.nix: 22/10/2026
 modules/nixos/desktop.nix: 16/11/2026
 modules/nixos/network.nix: 17/11/2026

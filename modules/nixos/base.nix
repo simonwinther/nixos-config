@@ -38,6 +38,10 @@
   system.stateVersion = "26.05";
   environment.etc."codex/config.toml".text = ''
     model_context_window = 516000
+    ${lib.optionalString (builtins.elem host [ "lambda" "desktop" ]) ''
+      [mcp_servers.canvas]
+      command = "/etc/profiles/per-user/${config.users.users.simon.name}/bin/canvas-mcp-stdio"
+    ''}
   '';
   users.groups.simon.gid = 1000;
   users.users.simon = {
