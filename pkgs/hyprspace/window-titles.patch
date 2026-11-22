@@ -40,7 +40,7 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 --- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
-+++ b/src/Overview.cpp	2026-11-22 19:55:03.157196793 +0100
++++ b/src/Overview.cpp	2026-11-22 19:59:09.416158725 +0100
 @@ -41,12 +41,49 @@
  #include <cmath>
  #include <optional>
@@ -95,10 +95,10 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
          auto logicalSize = [&](const SP<Render::ITexture>& t) { return Vector2D{t->m_size.x / SCALE, t->m_size.y / SCALE}; };
  
          auto border        = [&](const SBoxF& b, const CHyprColor& col, double width, double round) { renderPass::appendOutline(out, b, col, SCALE, width, round); };
-+        // A chip with an exact one-physical-pixel edge: a scaled 1px outline at fractional
-+        // monitor scales is anti-aliased unevenly, while two snapped fills stay crisp.
++        // A chip edge of whole physical pixels (about 1.5 logical): a scaled 1px outline at
++        // fractional monitor scales is anti-aliased unevenly, while two snapped fills stay crisp.
 +        auto chip = [&](const SBoxF& b, const CHyprColor& fill, const CHyprColor& edge, double round) {
-+            const double PX = 1.0 / SCALE;
++            const double PX = std::max(1.0, std::round(1.5 * SCALE)) / SCALE;
 +            rect(b, edge, round);
 +            rect({b.x + PX, b.y + PX, b.w - 2 * PX, b.h - 2 * PX}, fill, std::max(0.0, round - PX));
 +        };
@@ -192,18 +192,20 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 -                const auto LABEL = slot.fullscreen == Fullscreen::FSMODE_FULLSCREEN ? "fullscreen" : "maximized";
 -                const auto tb    = textures().text(LABEL, FONT, COL, TEXT_WIDTH, SCALE);
 +                const std::string LABEL = slot.fullscreen == Fullscreen::FSMODE_FULLSCREEN ? "fullscreen" : "maximized";
-+                const auto        tb    = textures().text(LABEL, FONT, COL, TEXT_WIDTH, SCALE);
++                const auto        tb    = textures().text(LABEL, tagFont(FONT), CHyprColor{1.0, 1.0, 1.0, 0.9}, TEXT_WIDTH, SCALE);
                  if (!tb)
                      continue;
  
-@@ -1666,13 +1738,34 @@
+@@ -1666,13 +1738,33 @@
                  if (SZ.y + 2 * (INSET + MARK + PAD_Y) > b.h)
                      continue;
  
 -                const float BADGE_A = (PROGRESS - 0.35F) / 0.65F * FADE;
-                 const SBoxF badge{b.x + INSET + MARK, b.y + INSET + MARK, SZ.x + PAD_X * 2, SZ.y + PAD_Y * 2};
-                 const auto  BGCOL = config::overviewTitleBgColor();
-                 rect(badge, BGCOL.modifyA(BGCOL.a * BADGE_A), badge.h / 2.0);
+-                const SBoxF badge{b.x + INSET + MARK, b.y + INSET + MARK, SZ.x + PAD_X * 2, SZ.y + PAD_Y * 2};
+-                const auto  BGCOL = config::overviewTitleBgColor();
+-                rect(badge, BGCOL.modifyA(BGCOL.a * BADGE_A), badge.h / 2.0);
++                const SBoxF badge{b.x + INSET + MARK, b.y + INSET + MARK, std::round(SZ.x + PAD_X * 2), std::round(SZ.y + PAD_Y * 2)};
++                chip(badge, CHyprColor{0.055, 0.06, 0.07, BADGE_A}, COL.modifyA(COL.a * BADGE_A), std::min(6.0, badge.h / 2));
                  tex(tb, {badge.x + PAD_X, badge.y + PAD_Y, SZ.x, SZ.y}, BADGE_A);
              }
  
@@ -232,7 +234,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
              if (const auto state = scrollingFor(entry); state && PROGRESS >= 0.95F) {
                  const auto controls = scrollControls(cell, state->horizontal);
                  const auto pointer  = g_pInputManager->getMouseCoordsInternal() - MONITOR->m_position;
-@@ -1716,7 +1809,9 @@
+@@ -1716,7 +1808,9 @@
                  const auto bgBox = overviewWorkspaceLabelBox(cell, SZ.x, SZ.y);
  
                  const auto BGCOL = config::overviewTitleBgColor();
