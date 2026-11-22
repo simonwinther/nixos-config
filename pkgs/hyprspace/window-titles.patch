@@ -40,7 +40,7 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 --- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
-+++ b/src/Overview.cpp	2026-11-22 19:25:44.395173083 +0100
++++ b/src/Overview.cpp	2026-11-22 19:30:33.922341849 +0100
 @@ -41,12 +41,49 @@
  #include <cmath>
  #include <optional>
@@ -91,13 +91,14 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
      } // namespace
  
      COverview::COverview(PHLMONITOR monitor) : m_monitor(monitor) {
-@@ -1613,6 +1650,16 @@
+@@ -1613,6 +1650,18 @@
                  }
              }
  
 +            // Tags can extend into the gap above their window, so they are drawn after every preview.
 +            struct STitleTag {
 +                SP<Render::ITexture> text;
++                SBoxF                frame;
 +                SBoxF                chip;
 +                Vector2D             size;
 +                CHyprColor           edge;
@@ -105,10 +106,11 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +                float                alpha;
 +            };
 +            std::vector<STitleTag> tags;
++            std::vector<SBoxF>     frames;
              for (const auto index : entry.drawOrder) {
                  const auto& slot = entry.windows[index];
                  const auto  W    = slot.window.lock();
-@@ -1627,38 +1674,54 @@
+@@ -1627,38 +1676,55 @@
                      continue;
  
                  const float VISIBILITY = visibilityFor(entry, slot) * SOURCE_ALPHA;
@@ -143,6 +145,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +
 +                if (FULLSCREEN || HOVER || entry.spread)
 +                    outline(VISIBLE, COL.modifyA(COL.a * FADE * PROGRESS), MARK);
++                frames.push_back(VISIBLE);
 +
 +                // The title tag sits just above the preview's top edge, like the desktop window-labels,
 +                // so it never covers window content.
@@ -159,7 +162,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +                        const double HEIGHT = std::round(SZ.y + 2 * PAD_Y);
 +                        const SBoxF  chip{VISIBLE.x + INSET, VISIBLE.y - HEIGHT, std::round(SZ.x + 2 * PAD_X), HEIGHT};
 +                        const auto   EDGE   = HOVER ? config::overviewActiveBorder() : CHyprColor{0.35, 0.35, 0.35, 0.67};
-+                        tags.push_back({tb, chip, SZ, EDGE, HOVER ? 0.94 : 0.85, ALPHA});
++                        tags.push_back({tb, VISIBLE, chip, SZ, EDGE, HOVER ? 0.94 : 0.85, ALPHA});
 +                    }
                  }
  
@@ -180,7 +183,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
                  if (!tb)
                      continue;
  
-@@ -1666,13 +1729,20 @@
+@@ -1666,13 +1732,35 @@
                  if (SZ.y + 2 * (INSET + MARK + PAD_Y) > b.h)
                      continue;
  
@@ -191,6 +194,21 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
                  tex(tb, {badge.x + PAD_X, badge.y + PAD_Y, SZ.x, SZ.y}, BADGE_A);
              }
  
++            // A tag goes above its window when that space is free, else below it, and only
++            // over the window's own top-left corner when another window blocks both.
++            const auto blocked = [&](const SBoxF& chip, const SBoxF& own) {
++                return std::ranges::any_of(frames, [&](const SBoxF& other) {
++                    if (other.x == own.x && other.y == own.y && other.w == own.w && other.h == own.h)
++                        return false;
++                    return chip.x < other.x + other.w - 1 && other.x < chip.x + chip.w - 1 && chip.y < other.y + other.h - 1 && other.y < chip.y + chip.h - 1;
++                });
++            };
++            for (auto& tag : tags) {
++                if (blocked(tag.chip, tag.frame)) {
++                    const SBoxF BELOW{tag.chip.x, tag.frame.y + tag.frame.h, tag.chip.w, tag.chip.h};
++                    tag.chip = blocked(BELOW, tag.frame) ? SBoxF{tag.chip.x, tag.frame.y + 6, tag.chip.w, tag.chip.h} : BELOW;
++                }
++            }
 +            for (const auto& tag : tags) {
 +                constexpr double PAD_X = 8, PAD_Y = 3;
 +                const double     RADIUS = std::min(5.0, tag.chip.h / 2);
