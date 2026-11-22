@@ -136,6 +136,7 @@ in
     ++ (with packages; [
       desktop-tools
       desktop-bar
+      window-labels
       clipboard-picker
       project-picker-tui
       background-grid

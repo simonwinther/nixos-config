@@ -20,7 +20,7 @@ modules/home/dotfiles.nix: 28/10/2026
 modules/home/editors.nix: unknown
 modules/home/hendrix.nix: 16/11/2026
 modules/home/obs.nix: 17/11/2026
-modules/home/packages.nix: 18/11/2026
+modules/home/packages.nix: 22/11/2026
 modules/home/rebuild.nix: 16/11/2026
 modules/home/roblox-dev.nix: 16/11/2026
 modules/home/services.nix: 17/11/2026
@@ -36,7 +36,7 @@ pkgs/breakd: 18/10/2026
 pkgs/build-times: 17/11/2026
 pkgs/canvas-mcp: 18/10/2026
 pkgs/clipboard-picker.nix: unknown
-pkgs/default.nix: 17/11/2026
+pkgs/default.nix: 22/11/2026
 pkgs/desktop-bar.nix: 17/11/2026
 pkgs/desktop-ring.nix: 17/11/2026
 pkgs/desktop-search.nix: 17/11/2026
@@ -58,6 +58,7 @@ pkgs/rust-desktop-tools.nix: 17/11/2026
 pkgs/slicer3d.nix: unknown
 pkgs/tmux: 18/10/2026
 pkgs/uipro: 18/10/2026
+pkgs/window-labels.nix: 22/11/2026
 profiles/laptop.nix: 18/10/2026
 profiles/live.nix: 17/11/2026
 profiles/recovery.nix: 18/10/2026
