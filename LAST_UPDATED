@@ -1,16 +1,13 @@
 # Local source maintenance dates; format DD/MM/YYYY.
 # Portable projects: dotfiles/LAST_UPDATED (their canonical tracker).
-# Initial unchanged dates come from the last recorded Git change.
-# unknown = existing uncommitted work without a recorded date.
-# Reading, building or testing alone does not advance these dates.
 .gitattributes: 18/10/2026
 .gitignore: 27/10/2026
 .gitmodules: 24/10/2026
 AGENTS.md: 12/11/2026
 README.md: 17/11/2026
 docs: 17/11/2026
-flake.lock: 18/11/2026
-flake.nix: 18/11/2026
+flake.lock: 22/11/2026
+flake.nix: 22/11/2026
 hosts/desktop: 22/10/2026
 hosts/lambda: 17/11/2026
 lib: 28/10/2026
@@ -50,7 +47,7 @@ pkgs/editor-extensions: 17/11/2026
 pkgs/extra-apps.nix: 17/11/2026
 pkgs/ferry.nix: 25/10/2026
 pkgs/file-picker.nix: 24/10/2026
-pkgs/hyprspace: 02/11/2026
+pkgs/hyprspace: 22/11/2026
 pkgs/neovim: 17/11/2026
 pkgs/obs-font.nix: 24/10/2026
 pkgs/obs-studio.nix: 24/10/2026

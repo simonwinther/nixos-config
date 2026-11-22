@@ -1,0 +1,66 @@
+diff -ruN hs.orig/src/Config.cpp hs/src/Config.cpp
+--- a/src/Config.cpp	2026-11-22 16:30:08.097644095 +0100
++++ b/src/Config.cpp	2026-11-22 16:30:08.133569037 +0100
+@@ -30,6 +30,7 @@
+             SP<Config::Values::CColorValue>  overviewActiveBorder;
+             SP<Config::Values::CColorValue>  overviewHoverBorder;
+             SP<Config::Values::CBoolValue>   overviewShowLabels;
++            SP<Config::Values::CBoolValue>   overviewShowWindowTitles;
+             SP<Config::Values::CBoolValue>   overviewIncludeSpecial;
+             SP<Config::Values::CStringValue> overviewExcludeWorkspaces;
+             SP<Config::Values::CBoolValue>   overviewAllWorkspaces;
+@@ -147,6 +148,7 @@
+         g_values.overviewActiveBorder   = reg<CColorValue>("plugin:hyprspace:overview:active_border", "border colour of the selected tile", 0xff89b4fa);
+         g_values.overviewHoverBorder    = reg<CColorValue>("plugin:hyprspace:overview:hover_border", "border colour of the hovered tile", 0x8089b4fa);
+         g_values.overviewShowLabels     = reg<CBoolValue>("plugin:hyprspace:overview:workspace_labels", "show the workspace name under each tile", true);
++        g_values.overviewShowWindowTitles = reg<CBoolValue>("plugin:hyprspace:overview:window_titles", "show each window's title in a badge on its preview", false);
+         g_values.overviewIncludeSpecial = reg<CBoolValue>("plugin:hyprspace:overview:include_special", "include special (scratchpad) workspaces", true);
+         g_values.overviewExcludeWorkspaces =
+             reg<CStringValue>("plugin:hyprspace:overview:exclude_workspaces", "comma-separated exact workspace names to omit from the overview and window board", "");
+@@ -263,6 +265,9 @@
+     bool overviewShowLabels() {
+         return g_values.overviewShowLabels ? g_values.overviewShowLabels->value() : true;
+     }
++    bool overviewShowWindowTitles() {
++        return g_values.overviewShowWindowTitles ? g_values.overviewShowWindowTitles->value() : false;
++    }
+     bool overviewIncludeSpecial() {
+         return g_values.overviewIncludeSpecial ? g_values.overviewIncludeSpecial->value() : true;
+     }
+diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
+--- a/src/Config.hpp	2026-11-22 16:30:08.097644095 +0100
++++ b/src/Config.hpp	2026-11-22 16:30:08.131950763 +0100
+@@ -27,6 +27,7 @@
+     CHyprColor overviewActiveBorder();
+     CHyprColor overviewHoverBorder();
+     bool       overviewShowLabels();
++    bool       overviewShowWindowTitles();
+     bool       overviewIncludeSpecial();
+     bool       overviewExcludesWorkspace(std::string_view name);
+     [[deprecated("compatibility option has no effect")]]
+diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
+--- a/src/Overview.cpp	2026-11-22 16:30:08.099644142 +0100
++++ b/src/Overview.cpp	2026-11-22 16:30:08.136645013 +0100
+@@ -1649,7 +1649,8 @@
+                             MARK);
+                 }
+ 
+-                if (!FULLSCREEN || PROGRESS <= 0.35F)
++                const bool SHOW_TITLE = config::overviewShowWindowTitles() && !W->m_title.empty();
++                if ((!FULLSCREEN && !SHOW_TITLE) || PROGRESS <= 0.35F)
+                     continue;
+ 
+                 constexpr double PAD_X = 10, PAD_Y = 4, INSET = 8;
+@@ -1657,8 +1658,10 @@
+                 if (TEXT_WIDTH <= 0)
+                     continue;
+ 
+-                const auto LABEL = slot.fullscreen == Fullscreen::FSMODE_FULLSCREEN ? "fullscreen" : "maximized";
+-                const auto tb    = textures().text(LABEL, FONT, COL, TEXT_WIDTH, SCALE);
++                const std::string MODE  = slot.fullscreen == Fullscreen::FSMODE_FULLSCREEN ? "fullscreen" : "maximized";
++                const std::string LABEL = SHOW_TITLE ? W->m_title : MODE;
++                const auto        INK   = SHOW_TITLE && !FULLSCREEN && !HOVER ? config::overviewLabelColor() : COL;
++                const auto        tb    = textures().text(LABEL, FONT, INK, TEXT_WIDTH, SCALE);
+                 if (!tb)
+                     continue;
+ 
