@@ -40,7 +40,7 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 --- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
-+++ b/src/Overview.cpp	2026-11-22 19:59:09.416158725 +0100
++++ b/src/Overview.cpp	2026-11-22 20:23:33.549192148 +0100
 @@ -41,12 +41,49 @@
  #include <cmath>
  #include <optional>
@@ -123,7 +123,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
              for (const auto index : entry.drawOrder) {
                  const auto& slot = entry.windows[index];
                  const auto  W    = slot.window.lock();
-@@ -1627,38 +1682,55 @@
+@@ -1627,38 +1682,54 @@
                      continue;
  
                  const float VISIBILITY = visibilityFor(entry, slot) * SOURCE_ALPHA;
@@ -162,14 +162,12 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +
 +                // The title tag sits just above the preview's top edge, like the desktop window-labels,
 +                // so it never covers window content.
-+                bool caption = false;
 +                if (config::overviewShowWindowTitles() && !W->m_title.empty() && PROGRESS > 0.35F && TOP <= b.y) {
 +                    constexpr double PAD_X = 8, PAD_Y = 3, INSET = 10;
 +                    const int        TEXT_WIDTH = static_cast<int>(VISIBLE.w - 2 * (INSET + PAD_X));
 +                    const auto       INK        = CHyprColor{1.0, 1.0, 1.0, HOVER ? 1.0 : 0.80};
 +                    const auto       tb = TEXT_WIDTH > 0 ? textures().text(displayTitle(W->m_title), tagFont(FONT), INK, TEXT_WIDTH, SCALE) : nullptr;
 +                    if (tb) {
-+                        caption             = true;
 +                        const auto   SZ     = logicalSize(tb);
 +                        const float  ALPHA  = (PROGRESS - 0.35F) / 0.65F * FADE;
 +                        const double HEIGHT = std::round(SZ.y + 2 * PAD_Y);
@@ -179,8 +177,8 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +                    }
                  }
  
--                if (!FULLSCREEN || PROGRESS <= 0.35F)
-+                if (!FULLSCREEN || caption || PROGRESS <= 0.35F)
++                // The fullscreen/maximized marker stays visible alongside the title tag.
+                 if (!FULLSCREEN || PROGRESS <= 0.35F)
                      continue;
  
 +                const float BADGE_A = (PROGRESS - 0.35F) / 0.65F * FADE;
@@ -196,7 +194,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
                  if (!tb)
                      continue;
  
-@@ -1666,13 +1738,33 @@
+@@ -1666,13 +1737,35 @@
                  if (SZ.y + 2 * (INSET + MARK + PAD_Y) > b.h)
                      continue;
  
@@ -204,7 +202,9 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 -                const SBoxF badge{b.x + INSET + MARK, b.y + INSET + MARK, SZ.x + PAD_X * 2, SZ.y + PAD_Y * 2};
 -                const auto  BGCOL = config::overviewTitleBgColor();
 -                rect(badge, BGCOL.modifyA(BGCOL.a * BADGE_A), badge.h / 2.0);
-+                const SBoxF badge{b.x + INSET + MARK, b.y + INSET + MARK, std::round(SZ.x + PAD_X * 2), std::round(SZ.y + PAD_Y * 2)};
++                // Top-right, clear of a title tag that had to fall back over the top-left corner.
++                const double BADGE_W = std::round(SZ.x + PAD_X * 2);
++                const SBoxF  badge{VISIBLE.x + VISIBLE.w - INSET - MARK - BADGE_W, VISIBLE.y + INSET + MARK, BADGE_W, std::round(SZ.y + PAD_Y * 2)};
 +                chip(badge, CHyprColor{0.055, 0.06, 0.07, BADGE_A}, COL.modifyA(COL.a * BADGE_A), std::min(6.0, badge.h / 2));
                  tex(tb, {badge.x + PAD_X, badge.y + PAD_Y, SZ.x, SZ.y}, BADGE_A);
              }
@@ -234,7 +234,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
              if (const auto state = scrollingFor(entry); state && PROGRESS >= 0.95F) {
                  const auto controls = scrollControls(cell, state->horizontal);
                  const auto pointer  = g_pInputManager->getMouseCoordsInternal() - MONITOR->m_position;
-@@ -1716,7 +1808,9 @@
+@@ -1716,7 +1809,9 @@
                  const auto bgBox = overviewWorkspaceLabelBox(cell, SZ.x, SZ.y);
  
                  const auto BGCOL = config::overviewTitleBgColor();
