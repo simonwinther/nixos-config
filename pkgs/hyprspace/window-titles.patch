@@ -40,7 +40,7 @@ diff -ruN hs.orig/src/Config.hpp hs/src/Config.hpp
      [[deprecated("compatibility option has no effect")]]
 diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 --- a/src/Overview.cpp	2026-11-22 16:53:11.565026247 +0100
-+++ b/src/Overview.cpp	2026-11-22 19:50:20.132462656 +0100
++++ b/src/Overview.cpp	2026-11-22 19:55:03.157196793 +0100
 @@ -41,12 +41,49 @@
  #include <cmath>
  #include <optional>
@@ -91,7 +91,21 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
      } // namespace
  
      COverview::COverview(PHLMONITOR monitor) : m_monitor(monitor) {
-@@ -1613,6 +1650,18 @@
+@@ -1501,6 +1538,13 @@
+         auto logicalSize = [&](const SP<Render::ITexture>& t) { return Vector2D{t->m_size.x / SCALE, t->m_size.y / SCALE}; };
+ 
+         auto border        = [&](const SBoxF& b, const CHyprColor& col, double width, double round) { renderPass::appendOutline(out, b, col, SCALE, width, round); };
++        // A chip with an exact one-physical-pixel edge: a scaled 1px outline at fractional
++        // monitor scales is anti-aliased unevenly, while two snapped fills stay crisp.
++        auto chip = [&](const SBoxF& b, const CHyprColor& fill, const CHyprColor& edge, double round) {
++            const double PX = 1.0 / SCALE;
++            rect(b, edge, round);
++            rect({b.x + PX, b.y + PX, b.w - 2 * PX, b.h - 2 * PX}, fill, std::max(0.0, round - PX));
++        };
+         auto windowTexture = [&](const PHLWINDOW& w, SP<Render::ITexture> t, const SBoxF& b, float visibility, double round, bool blur,
+                                  std::optional<SBoxF> clip = std::nullopt) {
+             const float OPACITY = windowPreviewOpacity(w->alphaValue(Desktop::View::WINDOW_ALPHA_ACTIVE), w->m_ruleApplicator->opaque().valueOrDefault(), visibility);
+@@ -1613,6 +1657,17 @@
                  }
              }
  
@@ -102,7 +116,6 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +                SBoxF                chip;
 +                Vector2D             size;
 +                CHyprColor           edge;
-+                double               fill;
 +                float                alpha;
 +            };
 +            std::vector<STitleTag> tags;
@@ -110,7 +123,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
              for (const auto index : entry.drawOrder) {
                  const auto& slot = entry.windows[index];
                  const auto  W    = slot.window.lock();
-@@ -1627,38 +1676,55 @@
+@@ -1627,38 +1682,55 @@
                      continue;
  
                  const float VISIBILITY = visibilityFor(entry, slot) * SOURCE_ALPHA;
@@ -162,7 +175,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +                        const double HEIGHT = std::round(SZ.y + 2 * PAD_Y);
 +                        const SBoxF  chip{VISIBLE.x + INSET, VISIBLE.y - HEIGHT, std::round(SZ.x + 2 * PAD_X), HEIGHT};
 +                        const auto   EDGE   = HOVER ? config::overviewActiveBorder() : CHyprColor{0.35, 0.35, 0.35, 0.67};
-+                        tags.push_back({tb, VISIBLE, chip, SZ, EDGE, HOVER ? 0.94 : 0.85, ALPHA});
++                        tags.push_back({tb, VISIBLE, chip, SZ, EDGE, ALPHA});
 +                    }
                  }
  
@@ -183,7 +196,7 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
                  if (!tb)
                      continue;
  
-@@ -1666,13 +1732,35 @@
+@@ -1666,13 +1738,34 @@
                  if (SZ.y + 2 * (INSET + MARK + PAD_Y) > b.h)
                      continue;
  
@@ -212,22 +225,21 @@ diff -ruN hs.orig/src/Overview.cpp hs/src/Overview.cpp
 +            for (const auto& tag : tags) {
 +                constexpr double PAD_X = 8, PAD_Y = 3;
 +                const double     RADIUS = std::min(5.0, tag.chip.h / 2);
-+                rect(tag.chip, CHyprColor{0.055, 0.06, 0.07, tag.fill * tag.alpha}, RADIUS);
-+                border(tag.chip, tag.edge.modifyA(tag.edge.a * tag.alpha), 1, RADIUS);
++                chip(tag.chip, CHyprColor{0.055, 0.06, 0.07, tag.alpha}, tag.edge.modifyA(tag.edge.a * tag.alpha), RADIUS);
 +                tex(tag.text, {tag.chip.x + PAD_X, tag.chip.y + PAD_Y, tag.size.x, tag.size.y}, tag.alpha);
 +            }
 +
              if (const auto state = scrollingFor(entry); state && PROGRESS >= 0.95F) {
                  const auto controls = scrollControls(cell, state->horizontal);
                  const auto pointer  = g_pInputManager->getMouseCoordsInternal() - MONITOR->m_position;
-@@ -1716,7 +1804,10 @@
+@@ -1716,7 +1809,9 @@
                  const auto bgBox = overviewWorkspaceLabelBox(cell, SZ.x, SZ.y);
  
                  const auto BGCOL = config::overviewTitleBgColor();
+-                rect(bgBox, BGCOL.modifyA(BGCOL.a * LABEL_A), bgBox.h / 2.0);
 +                // Same chip style as the window tags: a hairline edge, accented on the selected workspace.
 +                const auto EDGE = SELECTED ? config::overviewActiveBorder() : CHyprColor{1.0, 1.0, 1.0, 0.12};
-                 rect(bgBox, BGCOL.modifyA(BGCOL.a * LABEL_A), bgBox.h / 2.0);
-+                border(bgBox, EDGE.modifyA(EDGE.a * LABEL_A), 1, bgBox.h / 2.0);
++                chip(bgBox, BGCOL.modifyA(LABEL_A), EDGE.modifyA(EDGE.a * LABEL_A), bgBox.h / 2.0);
                  tex(t2, SBoxF{bgBox.x + (bgBox.w - SZ.x) / 2.0, bgBox.y + 5, SZ.x, SZ.y}, LABEL_A);
              }
          }
