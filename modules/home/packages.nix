@@ -118,6 +118,7 @@ in
       btop
       fastfetch
       git
+      git-lfs
       delta
       lazygit
       yaru-theme

@@ -23,7 +23,7 @@ modules/home/dotfiles.nix: 28/10/2026
 modules/home/editors.nix: unknown
 modules/home/hendrix.nix: 16/11/2026
 modules/home/obs.nix: 17/11/2026
-modules/home/packages.nix: 22/11/2026
+modules/home/packages.nix: 24/11/2026
 modules/home/rebuild.nix: 24/11/2026
 modules/home/roblox-dev.nix: 16/11/2026
 modules/home/services.nix: 17/11/2026
