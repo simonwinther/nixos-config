@@ -124,6 +124,24 @@ else:
         pointer = self.state / "nixos-rebuild/last-log"
         return Path(pointer.read_text().strip()).read_text()
 
+    def test_update_pulls_pinned_sources_and_switches(self):
+        self.git(self.repo, "branch", "-M", "main")
+        upstream = self.root / "upstream"
+        self.git(self.repo, "clone", "--quiet", str(self.repo), str(upstream))
+        self.git(self.repo, "remote", "add", "origin", str(upstream))
+        self.git(upstream, "update-index", "--cacheinfo", f"160000,{self.newer},dotfiles")
+        self.git(upstream, "commit", "-qm", "update dotfiles pin")
+        self.run_helper("update")
+        self.assertEqual(self.git(self.repo, "rev-parse", "HEAD"), self.git(upstream, "rev-parse", "HEAD"))
+        self.assertEqual(self.git(self.submodule, "rev-parse", "HEAD"), self.newer)
+        self.assertEqual([cmd[:2] for cmd in self.commands()], [["nix", "build"], ["nixos-rebuild", "switch"]])
+
+    def test_update_stops_before_switch_on_build_failure(self):
+        self.git(self.repo, "branch", "-M", "main")
+        self.git(self.repo, "remote", "add", "origin", str(self.repo))
+        self.run_helper("update", ok=False, FAKE_BUILD_EXIT="1")
+        self.assertEqual([cmd[0] for cmd in self.commands()], ["nix"])
+
     def test_default_build_only_reports_revisions_and_locks_inputs(self):
         head = self.git(self.repo, "rev-parse", "HEAD")
         self.run_helper()
@@ -145,7 +163,7 @@ else:
 
     def test_dirty_parent_blocks_all_actions_and_is_logged(self):
         for kind in ("tracked", "staged", "untracked"):
-            for action in ("sync", "build", "activate"):
+            for action in ("sync", "build", "activate", "update"):
                 with self.subTest(kind=kind, action=action):
                     path = self.repo / ("new-file" if kind == "untracked" else "flake.nix")
                     path.write_text("local edit\n")
@@ -165,7 +183,7 @@ else:
     def test_dirty_submodule_blocks_all_actions_even_if_git_ignores_it(self):
         self.git(self.repo, "config", "submodule.dotfiles.ignore", "all")
         for kind in ("tracked", "staged", "untracked"):
-            for action in ("sync", "build", "activate"):
+            for action in ("sync", "build", "activate", "update"):
                 with self.subTest(kind=kind, action=action):
                     path = self.submodule / ("new-file" if kind == "untracked" else "config")
                     path.write_text("submodule edit\n")

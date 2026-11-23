@@ -70,6 +70,11 @@ in
     home.packages = [
       rebuild
     ]
+    ++ lib.optional (action == "switch") (
+      pkgs.writeShellScriptBin "rebuild" ''
+        exec ${rebuild}/bin/nixos-rebuild-desktop update "$@"
+      ''
+    )
     ++ lib.optional osConfig.programs.nh.enable timedNh;
     xdg.configFile."desktop/rebuild-bindings.lua".text = ''
       hl.bind(${builtins.toJSON cfg.key}, hl.dsp.exec_cmd(${builtins.toJSON "${pkgs.ghostty}/bin/ghostty -e ${rebuild}/bin/nixos-rebuild-desktop build"}), { description = "Build NixOS (${target}; no activation)" })

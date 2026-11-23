@@ -4,7 +4,7 @@ Existing credentials are reused outside the repository and Nix store. Never add
 these files to a Stow package, Nix path literal, environment-variable declaration
 or source archive.
 
-- `~/.config/dictate/secrets.env`: existing `OPENAI_API_KEY`, mode 0600.
+- `~/.config/dictate/secrets.env`: Soniox live dictation and batch transcription credentials, mode 0600.
 - `~/.config/hendrix/ku-password`: existing KU password, mode 0600.
 - `~/.config/hendrix/totp.json`: selected existing Netiq token (secret, issuer,
   type, algorithm, digits and period), mode 0600. No browser profile is required.
@@ -23,7 +23,15 @@ environments. Add a path there when introducing another credential file.
 SSH identities, browser sessions, KU passwords and MFA seeds use their own
 recovery procedures.
 
-For a desktop with the updated dotfiles, run these on the laptop:
+The stationary can restore the global bundle at every Home Manager activation.
+Enroll a dedicated age identity under `~/.config/workstation-keys/identity.txt`
+on the stationary (owner-only permissions). Include its public recipient with
+`workstation-keys pack --recipient PUBLIC_KEY_FILE` on the laptop and transfer the
+encrypted bundle to the stationary's `~/.workstation-keys.age`. The laptop's
+Hendrix identity remains a recovery recipient. After a rotation, refresh and
+transfer the bundle again. A differing destination is reported for review.
+
+For an interactive passphrase transfer to a desktop without a dedicated identity:
 
 ```sh
 ~/nixos-config/dotfiles/bin/.local/bin/workstation-keys pack --passphrase
@@ -85,7 +93,8 @@ Unrelated production SSH identities and browser sessions are not transferred.
 
 The Home Manager `desktop.rebuild` module adds **Super+Ctrl+Alt+N**. It opens
 Ghostty and runs `nixos-rebuild-desktop build` against `~/nixos-config`, without
-activation. The command has three separate actions:
+activation. The installed-host `rebuild` command pulls published main, syncs the submodule
+pins, builds and switches. The individual operations are also available:
 
 - `nixos-rebuild-desktop sync` initializes or checks out the submodule commits
   recorded in Git, recursively. It permits clean submodules at different commits,

@@ -61,11 +61,18 @@ in
         location = "https://international.download.nvidia.com/GFNLinux/flatpak/geforcenow.flatpakrepo";
       }
     ];
-    packages = map (row: {
-      appId = "${row.appId}/${row.arch}/${row.branch}";
-      # Inventory commits record the reference installation, but remotes can
-      # prune them. One unavailable downgrade blocks every subsequent app.
-      origin = row.origin;
-    }) inventory;
+    packages =
+      map (row: {
+        appId = "${row.appId}/${row.arch}/${row.branch}";
+        # Inventory commits record the reference installation, but remotes can
+        # prune them. One unavailable downgrade blocks every subsequent app.
+        origin = row.origin;
+      }) inventory
+      ++ [
+        {
+          appId = "org.audacityteam.Audacity/x86_64/stable";
+          origin = "flathub";
+        }
+      ];
   };
 }

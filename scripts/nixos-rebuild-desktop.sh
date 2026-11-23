@@ -7,10 +7,11 @@ activation_action=${activation_action:?Missing activation action}
 
 usage() {
   cat <<'HELP'
-Usage: nixos-rebuild-desktop [build|sync|activate|times]
+Usage: nixos-rebuild-desktop [build|sync|activate|update|times]
   build     Build the clean, pinned checkout without activation (default).
   sync      Initialize/check out recorded submodule revisions; no pull or build.
   activate  Apply the last successful build, only if its source still matches.
+  update    Fast-forward main, sync pinned sources, build and switch this host.
   times     Chart successful build durations (table when piped).
 HELP
 }
@@ -79,7 +80,7 @@ plot_times() {
 operation=${1:-build}
 case "$operation" in
   -h|--help) usage; exit 0 ;;
-  build|sync|activate|times) ;;
+  build|sync|activate|update|times) ;;
   *) usage >&2; exit 2 ;;
 esac
 if (( $# > 1 )); then usage >&2; exit 2; fi
@@ -178,7 +179,7 @@ main() {
   result="$state_dir/$target-result"
   record="$state_dir/$target-build"
   echo "NixOS $target: $operation. Log: $log"
-  if [[ "$operation" == build ]]; then
+  if [[ "$operation" == build || "$operation" == update ]]; then
     # Any failed build attempt must make the previous build ineligible.
     rm -f -- "$record"
   fi
@@ -195,19 +196,32 @@ main() {
   source_revision
   check_clean
 
-  if [[ "$operation" == sync ]]; then
+  if [[ "$operation" == update ]]; then
+    if [[ "$activation_action" != switch || "$(git branch --show-current)" != main ]]; then
+      echo 'Update requires an installed host and a checkout on main.' >&2
+      return 1
+    fi
+    git fetch --no-recurse-submodules origin refs/heads/main
+    if ! git merge-base --is-ancestor HEAD FETCH_HEAD; then
+      echo 'Local main has unpublished commits. Publish or reconcile them before updating.' >&2
+      return 1
+    fi
+    git -c submodule.recurse=false merge --ff-only FETCH_HEAD
+  fi
+
+  if [[ "$operation" == sync || "$operation" == update ]]; then
     # Explicit checkout mode overrides any per-submodule merge/rebase setting.
     git submodule update --init --recursive --checkout
     check_clean
     check_pinned
     echo 'Synchronized source revisions:'
     source_revision
-    return
+    if [[ "$operation" == sync ]]; then return; fi
   fi
 
   check_pinned
   revision=$(source_revision)
-  if [[ "$operation" == build ]]; then
+  if [[ "$operation" == build || "$operation" == update ]]; then
     nix build "$repo#nixosConfigurations.$target.config.system.build.toplevel" \
       --no-update-lock-file --no-write-lock-file \
       --out-link "$result" --max-jobs 1 --cores 4
@@ -220,24 +234,26 @@ main() {
     closure=$(readlink -e -- "$result")
     build_record > "$record"
     echo "Built system: $closure"
-    echo 'To apply this build separately: nixos-rebuild-desktop activate'
-  else
-    if [[ ! -f "$record" || ! -L "$result" ]]; then
-      echo 'No successful recorded build. Run nixos-rebuild-desktop build first.' >&2
-      return 1
+    if [[ "$operation" == build ]]; then
+      echo 'To apply this build separately: nixos-rebuild-desktop activate'
+      return
     fi
-    closure=$(readlink -e -- "$result")
-    if [[ $(cat "$record") != "$(build_record)" ]]; then
-      echo 'Source revisions or build output differ from the recorded build. Build again before activation.' >&2
-      return 1
-    fi
-    echo "Activating recorded system: $closure ($activation_action)"
-    if [[ "$activation_action" == test ]]; then
-      echo 'Live session only; persistent installation is separate.'
-    fi
-    # A prebuilt closure needs no re-exec, which would require <nixpkgs> on NIX_PATH.
-    nixos-rebuild "$activation_action" --store-path "$closure" --sudo --no-reexec
   fi
+  if [[ ! -f "$record" || ! -L "$result" ]]; then
+    echo 'No successful recorded build. Run nixos-rebuild-desktop build first.' >&2
+    return 1
+  fi
+  closure=$(readlink -e -- "$result")
+  if [[ $(cat "$record") != "$(build_record)" ]]; then
+    echo 'Source revisions or build output differ from the recorded build. Build again before activation.' >&2
+    return 1
+  fi
+  echo "Activating recorded system: $closure ($activation_action)"
+  if [[ "$activation_action" == test ]]; then
+    echo 'Live session only; persistent installation is separate.'
+  fi
+  # A prebuilt closure needs no re-exec, which would require <nixpkgs> on NIX_PATH.
+  nixos-rebuild "$activation_action" --store-path "$closure" --sudo --no-reexec
 }
 
 main 2>&1 | tee "$log"

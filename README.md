@@ -65,6 +65,12 @@ cd nixos-config
 git submodule update --init --recursive
 ```
 
+On the installed laptop or stationary, run `rebuild` to fast-forward the local
+main branch to the published revision, check out its pinned dotfiles, build this
+host and switch to the result. It stops on local edits, unpublished commits or
+a failed build. Publish shared changes from the machine where you made them
+before running it on the other machine.
+
 The flake enables submodule fetching. **Super+Ctrl+Alt+N** only builds the clean,
 locked checkout; it never synchronizes source or activates the result. Use
 `nixos-rebuild-desktop sync` separately to initialize or check out the recorded
