@@ -127,9 +127,14 @@ def nix_shell(command):
       DESKTOP_BAR_ICON_ROOT = "${pkgs.nerd-fonts.symbols-only}/share/fonts";
       DESKTOP_BAR_FONTCONFIG_BIN = "${pkgs.fontconfig}/bin";
     }""" % (quoted("git+file://" + str(ROOT) + "?submodules=1"), quoted(ROOT / "pkgs"))
-    os.execvp("nix", ["nix", "develop", "--impure", "--expr", expression,
-                      "--command", "python3", str(Path(__file__).resolve()),
-                      "--in-shell", command])
+    develop = ["nix", "develop", "--impure", "--expr", expression,
+               "--command", "python3", str(Path(__file__).resolve()),
+               "--in-shell", command]
+    # Evaluation and compilation share one memory budget, so a build slows
+    # down or fails instead of exhausting the desktop's memory.
+    os.execvp("systemd-run", ["systemd-run", "--user", "--scope", "--quiet",
+                              "--property=MemoryHigh=40%", "--property=MemoryMax=55%",
+                              "--", *develop])
 
 
 def main():

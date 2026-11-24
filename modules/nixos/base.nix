@@ -34,6 +34,26 @@
     enable = true;
     flake = "${config.users.users.simon.home}/nixos-config";
   };
+  # Builds slow down under memory pressure instead of freezing the desktop;
+  # past the hard limit only the build is killed.
+  systemd.services.nix-daemon.serviceConfig = {
+    MemoryHigh = "60%";
+    MemoryMax = "75%";
+  };
+  # The kernel OOM killer reacts only after zram thrashing has frozen the
+  # session. earlyoom acts first and sacrifices compilers before the desktop.
+  services.earlyoom = {
+    enable = true;
+    freeMemThreshold = 5;
+    freeSwapThreshold = 10;
+    enableNotifications = true;
+    extraArgs = [
+      "--prefer"
+      "^(rustc|cargo|cc1|cc1plus|ld|ld\\.lld|mold|clang|nix|nix-daemon|node|tsc)$"
+      "--avoid"
+      "^(Hyprland|systemd|systemd-.*|dbus-.*|pipewire.*|wireplumber|greetd|desktop-bar|hyprlock)$"
+    ];
+  };
   system.autoUpgrade.enable = false;
   system.stateVersion = "26.05";
   environment.etc."codex/config.toml".text = ''
