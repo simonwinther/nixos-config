@@ -1,5 +1,9 @@
 # Configuration rules
 
+- The purpose of this repository is to reproduce Simon’s workstation from Git on both the laptop (`lambda`) and the stationary PC (`desktop`).
+- Treat “install this” as a request to declare the software in a shared NixOS or Home Manager module for both installed hosts. Apply the same default to persistent program settings and services. A one-off local install does not fulfill the request.
+- Scope a requested change to one host only when Simon asks for or agrees to that scope. Declare it in that host’s configuration or profile so rebuilding that machine reproduces it.
+
 - Work only in this isolated repository. The active Arch configuration and original dotfiles are reference sources.
 - Home Manager owns links on NixOS; GNU Stow owns links on other distributions. Never manage a target with both.
 - Keep portable desktop tools and plain configuration in Stow packages under dotfiles/.
@@ -28,4 +32,4 @@
 - After changing a component, update only its entry in the same change. Add entries for new projects and remove entries for deleted projects. Keep all package definitions and configuration areas covered when reorganizing the repository.
 - Reading, auditing, building or testing a component alone does not reset its date. These are local source-maintenance dates, not upstream release dates or proof that updates and runtime checks have been completed.
 - Preserve recorded historical dates when initializing or extending a tracker. Existing uncommitted work without a recorded date remains `unknown` until a substantive change establishes a date.
-- Update tracker files as part of the work; commit only when explicitly requested.
+- Include tracker updates in the same commit as the component change.
