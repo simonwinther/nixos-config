@@ -192,8 +192,11 @@ in
         TimeoutStartSec = "2min";
       };
     };
+    # Restarting an active lock on activation kills hyprlock; Hyprland then keeps
+    # the session locked with no client and refuses a replacement.
     desktop-lock = {
       Unit.Description = "Lock session and turn displays off";
+      Unit.X-RestartIfChanged = false;
       Service = {
         Type = "exec";
         ExecStart = "${ctl} lock-worker";
@@ -202,6 +205,7 @@ in
     };
     desktop-lock-only = {
       Unit.Description = "Lock session";
+      Unit.X-RestartIfChanged = false;
       Service = {
         Type = "exec";
         ExecStart = "${ctl} lock-worker --only";
