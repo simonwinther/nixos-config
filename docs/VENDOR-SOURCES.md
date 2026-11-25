@@ -2,7 +2,7 @@
 
 ## Private flake input
 
-`ferry` is locked to `git+ssh://git@github.com/simonwinther/ferry` at `0ef83bbc5672c553fbc4cc40a3d27a424856d71c`. The repository is private; unauthenticated HTTPS returns 404. Evaluating a configuration that installs ferry (desktop and lambda) reads its `Cargo.lock` from that source, so a machine whose store lacks the locked source needs SSH access to the repository first. Flatpak commits have their own availability limits; see [MIGRATION.md](MIGRATION.md).
+`ferry` is locked to `git+ssh://git@github.com/simonwinther/ferry` at `4fed1881a4d82d78655c6d5fcca26bb3744af777`. The repository is private; unauthenticated HTTPS returns 404. Evaluating a configuration that installs ferry (desktop and lambda) reads its `Cargo.lock` from that source, so a machine whose store lacks the locked source needs SSH access to the repository first. Flatpak commits have their own availability limits; see [MIGRATION.md](MIGRATION.md).
 
 ## Vendored source trees
 

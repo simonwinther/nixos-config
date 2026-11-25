@@ -8,9 +8,9 @@
 .gitmodules: 24/10/2026
 AGENTS.md: 24/11/2026
 README.md: 24/11/2026
-docs: 24/11/2026
-flake.lock: 22/11/2026
-flake.nix: 22/11/2026
+docs: 25/11/2026
+flake.lock: 25/11/2026
+flake.nix: 25/11/2026
 hosts/desktop: 24/11/2026
 hosts/lambda: 17/11/2026
 lib: 28/10/2026
