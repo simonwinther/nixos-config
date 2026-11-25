@@ -58,7 +58,7 @@ pkgs/opencode.nix: 16/11/2026
 pkgs/project-picker.nix: 28/10/2026
 pkgs/roblox-dev: 16/11/2026
 pkgs/rust-desktop-tools.nix: 17/11/2026
-pkgs/slicer3d.nix: unknown
+pkgs/slicer3d.nix: 25/11/2026
 pkgs/tmux: 18/10/2026
 pkgs/uipro: 18/10/2026
 pkgs/window-labels.nix: 22/11/2026
