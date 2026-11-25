@@ -142,6 +142,29 @@ else:
         self.run_helper("update", ok=False, FAKE_BUILD_EXIT="1")
         self.assertEqual([cmd[0] for cmd in self.commands()], ["nix"])
 
+    def test_update_refuses_unpublished_local_commits(self):
+        self.git(self.repo, "branch", "-M", "main")
+        upstream = self.root / "upstream"
+        self.git(self.repo, "clone", "--quiet", str(self.repo), str(upstream))
+        self.git(self.repo, "remote", "add", "origin", str(upstream))
+        (self.repo / "flake.lock").write_text("local only\n")
+        self.commit(self.repo)
+        local = self.git(self.repo, "rev-parse", "HEAD")
+        result = self.run_helper("update", ok=False)
+        self.assertIn("Local main has unpublished commits", result.stdout + result.stderr)
+        self.assertEqual(self.git(self.repo, "rev-parse", "HEAD"), local)
+        self.assertEqual(self.commands(), [])
+
+    def test_update_requires_main_and_an_installed_host(self):
+        self.git(self.repo, "branch", "-M", "feature")
+        self.git(self.repo, "remote", "add", "origin", str(self.repo))
+        result = self.run_helper("update", ok=False)
+        self.assertIn("Update requires an installed host and a checkout on main", result.stdout)
+        self.git(self.repo, "branch", "-M", "main")
+        result = self.run_helper("update", ok=False, target="desktop-live", activation_action="test")
+        self.assertIn("Update requires an installed host and a checkout on main", result.stdout)
+        self.assertEqual(self.commands(), [])
+
     def test_default_build_only_reports_revisions_and_locks_inputs(self):
         head = self.git(self.repo, "rev-parse", "HEAD")
         self.run_helper()

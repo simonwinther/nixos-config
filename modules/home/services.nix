@@ -249,7 +249,8 @@ in
       }
     );
   };
-  systemd.user.timers.desktop-battery = {
+  # Machines without a battery would start the check every minute for nothing.
+  systemd.user.timers.desktop-battery = lib.mkIf osConfig.workstation.laptop {
     Unit = {
       Description = "Monitor battery level";
       PartOf = [ "desktop-session.target" ];

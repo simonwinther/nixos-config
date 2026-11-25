@@ -97,6 +97,17 @@
   services.timesyncd.enable = true;
   services.fstrim.enable = profile != "live";
   services.fwupd.enable = profile != "live";
+  # The hourly metadata refresh restarted the daemon's default two-hour idle
+  # timer, so it stayed resident (about 30 MB) for the whole session. Refresh
+  # daily and let the D-Bus-activated daemon exit soon after each use.
+  services.fwupd.daemonSettings.IdleTimeout = 300;
+  systemd.timers.fwupd-refresh.timerConfig = lib.mkIf config.services.fwupd.enable {
+    OnCalendar = [
+      ""
+      "daily"
+    ];
+    RandomizedDelaySec = "6h";
+  };
   services.dbus.enable = true;
   security.polkit.enable = true;
   security.rtkit.enable = true;

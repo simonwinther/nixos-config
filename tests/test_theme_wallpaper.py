@@ -119,6 +119,17 @@ class ThemeWallpaperTests(unittest.TestCase):
                 component.apply_wallpaper(["awww", "img", "--transition-type", "any"], "/chosen.png", None, 2)
                 self.assertEqual(sum(call.args[0][1] == "img" for call in calls.call_args_list), 1)
 
+    def test_renderer_accepts_the_canonical_path_of_a_symlinked_image(self):
+        target = self.data / "target.png"
+        target.write_bytes(b"")
+        link = self.data / "link.png"
+        link.symlink_to(target)
+        current = f': eDP-1: 1600x900, scale: 1.2, currently displaying: image: {target.resolve()}\n'
+        for modular in (False, True):
+            with self.subTest(modular=modular), self.renderer(modular, [current]) as (component, calls):
+                component.apply_wallpaper(["awww", "img", "--transition-type", "none"], str(link), None, 2)
+                self.assertEqual(sum(call.args[0][1] == "img" for call in calls.call_args_list), 1)
+
     def test_renderer_retries_a_rejected_image_without_a_transition(self):
         old = ': eDP-1: 1600x900, scale: 1.2, currently displaying: image: /previous.png\n'
         current = old.replace('/previous.png', '/chosen.png')

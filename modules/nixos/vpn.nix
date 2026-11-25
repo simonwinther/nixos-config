@@ -56,6 +56,9 @@
     path = [ pkgs.systemd ];
     script = ''
       link=sdwan0
+      # A read timeout on a pipe this shell holds open for writing waits without
+      # forking sleep(1) every iteration.
+      exec {idle_fd}<> <(:)
       while true; do
         if [ -e "/sys/class/net/$link" ] && read -r index <"/sys/class/net/$link/ifindex"; then
           # One D-Bus read replaces `resolvectl status` plus grep; a failed or
@@ -69,7 +72,7 @@
             resolvectl dns "$link" "" || true
           fi
         fi
-        sleep 2
+        read -rt 2 -u "$idle_fd" || true
       done
     '';
     serviceConfig.Restart = "on-failure";
