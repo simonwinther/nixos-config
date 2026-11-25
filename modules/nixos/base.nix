@@ -33,6 +33,21 @@
   programs.nh = {
     enable = true;
     flake = "${config.users.users.simon.home}/nixos-config";
+    # Weekly cleanup keeps every generation from the last two weeks and never
+    # fewer than the ten boot entries. Indirect roots (result links, desktop-bar
+    # session packages, dev shells) are left alone; their owners manage them.
+    clean = {
+      enable = true;
+      dates = "weekly";
+      extraArgs = "--keep 10 --keep-since 14d --no-gcroots";
+    };
+  };
+  # A missed run catches up after boot or resume; keep it off the login path.
+  systemd.timers.nh-clean.timerConfig.RandomizedDelaySec = "1h";
+  systemd.services.nh-clean.serviceConfig = {
+    Nice = 19;
+    CPUSchedulingPolicy = "idle";
+    IOSchedulingClass = "idle";
   };
   # Builds slow down under memory pressure instead of freezing the desktop;
   # past the hard limit only the build is killed.
