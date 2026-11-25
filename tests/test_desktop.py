@@ -424,7 +424,8 @@ class DesktopTests(unittest.TestCase):
                 self.assertEqual(list(directory.iterdir()), [])
 
     def test_startup_and_fast_commands_defer_heavy_standard_modules(self):
-        deferred = ["argparse", "configparser", "http.client", "tomllib", "urllib.request", "xml.sax.saxutils"]
+        deferred = ["argparse", "configparser", "hashlib", "http.client", "shlex", "shutil", "socket", "tempfile",
+                    "tomllib", "urllib.request", "uuid", "xml.sax.saxutils"]
         probe = ("import sys; before = set(sys.modules); import desktopctl; desktopctl.main(['path']); "
                  "print(sorted(set(sys.argv[1:]) & (set(sys.modules) - before)))")
         result = subprocess.run([sys.executable, "-B", "-c", probe, *deferred], capture_output=True, text=True,
@@ -592,7 +593,7 @@ class LockTests(unittest.TestCase):
         self.assertIn("$color = rgba(0,0,0,1.0)", self.assert_started())
         self.assertFalse((self.state / "theme").exists())
         self.sleep.assert_not_called()
-        self.assertNotIn(["hyprctl", "dispatch", "dpms", "off"], [c.args[0] for c in self.run.call_args_list])
+        self.assertNotIn(["hyprctl", "eval", 'hl.dispatch(hl.dsp.dpms({ action = "off" }))'], [c.args[0] for c in self.run.call_args_list])
 
     def test_login_falls_back_for_invalid_appearance_state(self):
         for content in ("{", "[]", "null", '{"theme": "absent"}', '{"theme": 42}',
@@ -667,8 +668,8 @@ class LockTests(unittest.TestCase):
         self.sleep.assert_called_once_with(3)
         self.assertEqual([c.args[0] for c in self.run.call_args_list], [
             ["hyprctl", "switchxkblayout", "all", "0"],
-            ["hyprctl", "dispatch", "dpms", "off"],
-            ["hyprctl", "dispatch", "dpms", "on"],
+            ["hyprctl", "eval", 'hl.dispatch(hl.dsp.dpms({ action = "off" }))'],
+            ["hyprctl", "eval", 'hl.dispatch(hl.dsp.dpms({ action = "on" }))'],
         ])
         self.assertEqual([c.args[0] for c in self.brightness.call_args_list],
                          [["keyboard", "off"], ["keyboard", "restore"]])
@@ -680,7 +681,7 @@ class LockTests(unittest.TestCase):
             with self.subTest(args=args):
                 self.assertEqual(ctl.main(["lock-worker", *args]), 1)
                 self.assert_started()
-        self.assertNotIn(["hyprctl", "dispatch", "dpms", "off"], [c.args[0] for c in self.run.call_args_list])
+        self.assertNotIn(["hyprctl", "eval", 'hl.dispatch(hl.dsp.dpms({ action = "off" }))'], [c.args[0] for c in self.run.call_args_list])
         self.assertIn("non-zero exit status 1", self.stderr.getvalue())
 
     def test_locker_launch_and_required_config_failures_are_reported(self):
