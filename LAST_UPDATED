@@ -30,7 +30,7 @@ modules/home/services.nix: 25/11/2026
 modules/nixos/base.nix: 25/11/2026
 modules/nixos/default.nix: 22/10/2026
 modules/nixos/desktop.nix: 16/11/2026
-modules/nixos/network.nix: 17/11/2026
+modules/nixos/network.nix: 25/11/2026
 modules/nixos/secrets.nix: 18/10/2026
 modules/nixos/storage.nix: 30/10/2026
 modules/nixos/vpn.nix: 25/11/2026

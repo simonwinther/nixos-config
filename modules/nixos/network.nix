@@ -45,6 +45,10 @@
       networkConfig = {
         DHCP = "yes";
         MulticastDNS = true;
+        # iwd drops the carrier for about half a second on every roam between
+        # access points; keep the lease and routes instead of tearing them down.
+        # Joining a different SSID still reconfigures the link.
+        IgnoreCarrierLoss = "3s";
       };
       dhcpV4Config.RouteMetric = 600;
       ipv6AcceptRAConfig.RouteMetric = 600;
@@ -64,6 +68,11 @@
   };
   services.tailscale = {
     enable = true;
+    # Without Wi-Fi, Docker bridges and the Twingate/KU tunnels made tailscaled
+    # assume a network and retry every few seconds, writing ~200 lines a minute.
+    package = pkgs.tailscale.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ./patches/tailscale-ignore-overlay-interfaces.patch ];
+    });
     openFirewall = true;
     extraUpFlags = [ "--accept-dns=false" ];
     extraSetFlags = [
@@ -82,5 +91,19 @@
       dns = [ "172.17.0.1" ];
       bip = "172.17.0.1/16";
     };
+  };
+  # Docker still waits for network-online, but multi-user.target (and through
+  # graphical.target the uwsm session) no longer waits for Docker: a target only
+  # orders itself after wanted units with default dependencies. The defaults
+  # that matter are restored so Docker still stops cleanly before shutdown.
+  systemd.services.docker = lib.mkIf (profile != "live") {
+    unitConfig.DefaultDependencies = false;
+    requires = [ "sysinit.target" ];
+    after = [
+      "sysinit.target"
+      "basic.target"
+    ];
+    conflicts = [ "shutdown.target" ];
+    before = [ "shutdown.target" ];
   };
 }
