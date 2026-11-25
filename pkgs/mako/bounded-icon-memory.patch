@@ -1,0 +1,49 @@
+--- a/icon.c
++++ b/icon.c
+@@ -70,6 +70,33 @@
+ 	return longest > square_size ? square_size/longest : 1.0;
+ }
+ 
++// Icons live as long as their notifications, including in the history, and a
++// screenshot sent as an icon would otherwise keep every one of its pixels.
++// Keep only what an icon can show on outputs up to this buffer scale.
++#define MAX_RETAINED_BUFFER_SCALE 4
++
++static GdkPixbuf *drop_undisplayable_pixels(GdkPixbuf *image, int max_icon_size) {
++	int width = gdk_pixbuf_get_width(image);
++	int height = gdk_pixbuf_get_height(image);
++	double scale = fit_to_square(width, height,
++			max_icon_size * MAX_RETAINED_BUFFER_SCALE);
++	if (scale >= 1.0) {
++		return image;
++	}
++
++	int retained_width = width * scale + 0.5;
++	int retained_height = height * scale + 0.5;
++	GdkPixbuf *retained = gdk_pixbuf_scale_simple(image,
++			retained_width > 0 ? retained_width : 1,
++			retained_height > 0 ? retained_height : 1,
++			GDK_INTERP_BILINEAR);
++	if (retained == NULL) {
++		return image;
++	}
++	g_object_unref(image);
++	return retained;
++}
++
+ static char hex_val(char digit) {
+ 	assert(isxdigit(digit));
+ 	if (digit >= 'a') {
+@@ -278,6 +305,12 @@
+ 	icon->width = image_width * icon->scale;
+ 	icon->height = image_height * icon->scale;
+ 
++	image = drop_undisplayable_pixels(image, notif->style.max_icon_size);
++	if (gdk_pixbuf_get_width(image) != image_width) {
++		// Draw the retained pixels at the size the original would have had.
++		icon->scale = icon->width / gdk_pixbuf_get_width(image);
++	}
++
+ 	icon->image = create_cairo_surface_from_gdk_pixbuf(image);
+ 	g_object_unref(image);
+ 	if (icon->image == NULL) {

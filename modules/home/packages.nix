@@ -81,7 +81,7 @@ in
       hyprlock
       hyprsunset
       hyprpicker
-      mako
+      packages.mako
       swayosd
       awww
       xdg-utils

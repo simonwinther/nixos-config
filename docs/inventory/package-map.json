@@ -794,8 +794,7 @@
   {
     "arch": "mako",
     "referenceVersion": "1.11.0-1",
-    "kind": "package",
-    "source": "stable",
+    "kind": "custom",
     "attribute": "mako",
     "group": "applications"
   },

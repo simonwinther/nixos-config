@@ -75,7 +75,7 @@ in
     dictate = "${packages.dictate}/bin/dictate";
     file-picker-native = "${packages.file-picker}/bin/file-picker-native";
     hyprspace = "${packages.hyprspace}/lib/libhyprspace.so";
-    mako = "${pkgs.mako}/bin/mako";
+    mako = "${packages.mako}/bin/mako";
     swayosd-server = "${pkgs.swayosd}/bin/swayosd-server";
     background-grid-native = "${packages.background-grid}/bin/background-grid-native";
     dictation-volume-duck-native = "${packages.dictation-volume-duck}/bin/dictation-volume-duck-native";

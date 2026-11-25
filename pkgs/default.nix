@@ -46,6 +46,7 @@ in
   desktop-search = search;
   desktop-bar = pkgs.callPackage ./desktop-bar.nix { rustPlatform = unstable.rustPlatform; };
   window-labels = pkgs.callPackage ./window-labels.nix { rustPlatform = unstable.rustPlatform; };
+  mako = pkgs.callPackage ./mako { };
   clipboard-picker = pkgs.callPackage ./clipboard-picker.nix { hyprland = compositor; };
   desktop-transcode = transcode;
   obs-font = pkgs.callPackage ./obs-font.nix { };
